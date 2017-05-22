@@ -18,6 +18,9 @@ class SensorModel {
     var maxValue: Int?
     var time: String
     
+    
+    // sensor types
+    
     enum SensorType: String {
         case Temperatur = "Temperatur"
         case Luftfeuchtigkeit = "Luftfeuchtigkeit"

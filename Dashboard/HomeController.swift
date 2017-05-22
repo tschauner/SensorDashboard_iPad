@@ -25,7 +25,7 @@ class HomeController: UICollectionViewController, UICollectionViewDelegateFlowLa
         
         navigationItem.title = "Dashboard"
         
-        navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(eventButton))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "camera")?.withRenderingMode(.alwaysOriginal), style: .done, target: self, action: #selector(eventButton))
         
         collectionView?.backgroundColor = UIColor(white: 1, alpha: 1)
         collectionView?.delegate = self
@@ -40,13 +40,20 @@ class HomeController: UICollectionViewController, UICollectionViewDelegateFlowLa
         
     }
     
+    
+    // init headerView
+    
     var headerView: HeaderView = {
         let view = HeaderView()
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
     
+    
+    
     override func viewDidLayoutSubviews() {
+        
+        // gradient layer for header
         
         let layer = CAGradientLayer()
         layer.startPoint = CGPoint(x: 0.5, y: 0)
@@ -58,11 +65,13 @@ class HomeController: UICollectionViewController, UICollectionViewDelegateFlowLa
         layer.colors = [topColor, bottomColor]
         
         headerView.eventView.clipsToBounds = true
-        
         headerView.eventView.layer.insertSublayer(layer, at: 0)
         
 
     }
+    
+    
+    // setup headerView
     
     func setupHeaderView() {
         
@@ -83,21 +92,25 @@ class HomeController: UICollectionViewController, UICollectionViewDelegateFlowLa
     }
     
     
+    // show viewcontroller with sensordata
+    
     func show(sensorData: SensorModel) {
         
         let sc = SensorDetailController()
-        let scVC = UINavigationController(rootViewController: sc)
+        let navSc = UINavigationController(rootViewController: sc)
         
-        present(scVC, animated: true, completion: nil)
+        present(navSc, animated: true, completion: nil)
     }
     
+    
+    // add event
     
     func eventButton() {
         add(event: EventModel(time: "12:04", text: .TemperaturMax))
     }
     
     
-    
+    // add events manually to collectionView
     
     func add(event: EventModel) {
         
@@ -112,6 +125,8 @@ class HomeController: UICollectionViewController, UICollectionViewDelegateFlowLa
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) as! SensorCell
         
         let sensor = incomingData[indexPath.item]
+        
+        // gradient color for cells
         
         let layer = CAGradientLayer()
         layer.startPoint = CGPoint(x: 0.5, y: 0)
@@ -147,7 +162,6 @@ class HomeController: UICollectionViewController, UICollectionViewDelegateFlowLa
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         
-
         return CGSize(width: view.frame.width, height: 180)
         
     }
@@ -165,16 +179,21 @@ class HomeController: UICollectionViewController, UICollectionViewDelegateFlowLa
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
-        let data = incomingData[indexPath.item]
-        
-        show(sensorData: data)
+        // falls man mit der geklicken cell was anstellen will
+        if let cell = collectionView.cellForItem(at: indexPath) as? SensorCell {
+            
+            
+            let data = incomingData[indexPath.item]
+            
+            show(sensorData: data)
+            
+            
+            
+        }
         
     }
-    
-
 
 }
-
 
 
 

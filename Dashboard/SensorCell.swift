@@ -22,6 +22,8 @@ class SensorCell: UICollectionViewCell {
     }
     
     
+    // Variables
+    
     var colorView: UIView = {
         let v = UIView()
         v.translatesAutoresizingMaskIntoConstraints = false
@@ -58,6 +60,8 @@ class SensorCell: UICollectionViewCell {
         return lv
     }()
     
+    
+    // setup views
     
     func setupViews() {
         

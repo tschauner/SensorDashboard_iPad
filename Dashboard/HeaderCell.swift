@@ -20,6 +20,8 @@ class HeaderView: UICollectionViewCell {
         fatalError("init(coder:) has not been implemented")
     }
     
+    // init eventBar
+    
     lazy var eventBar: EventBar = {
         let eb = EventBar()
         eb.translatesAutoresizingMaskIntoConstraints = false
@@ -27,6 +29,8 @@ class HeaderView: UICollectionViewCell {
         return eb
     }()
     
+    
+    // variables
     
     var eventView: UIView = {
         let v = UIView()
@@ -55,6 +59,7 @@ class HeaderView: UICollectionViewCell {
     }()
     
     
+    // setup views
 
     func setupViews() {
         
@@ -62,7 +67,6 @@ class HeaderView: UICollectionViewCell {
         addSubview(sectionLabel)
         eventView.addSubview(headlineLabel)
         eventView.addSubview(eventBar)
-        
         
         eventView.topAnchor.constraint(equalTo: self.topAnchor, constant: 10).isActive = true
         eventView.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 10).isActive = true

@@ -13,9 +13,12 @@ class EventModel {
     var time: String
     var text: Events
     
+    
+    // possible events
+    
     enum Events: String {
-        case TemperaturMax = "Ein Teperaturgrenwert wurde überschritten"
-        case TemperaturMin = "Ein Teperaturgrenwert wurde unterschritten"
+        case TemperaturMax = "Ein Teperaturgrenzwert wurde überschritten"
+        case TemperaturMin = "Ein Teperaturgrenzwert wurde unterschritten"
     }
     
     init(time: String, text: Events) {

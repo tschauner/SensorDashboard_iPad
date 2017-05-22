@@ -8,7 +8,7 @@
 
 import UIKit
 
-class SensorDetailController: UIViewController {
+class SensorDetailController: UIViewController, UIViewControllerTransitioningDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -21,7 +21,13 @@ class SensorDetailController: UIViewController {
         navigationItem.title = "Statistik"
         
         setupViews()
+        
+        initGestures()
+        
     }
+    
+    
+    // dismiss viewcontroller
     
     func dismissViewController() {
         
@@ -29,6 +35,8 @@ class SensorDetailController: UIViewController {
     }
     
     override func viewDidLayoutSubviews() {
+        
+        // gradient color
         
         let layer = CAGradientLayer()
         layer.startPoint = CGPoint(x: 0.5, y: 0)
@@ -43,11 +51,53 @@ class SensorDetailController: UIViewController {
         colorView.layer.insertSublayer(layer, at: 0)
     }
     
+    // initializing gesture
+    
+    func initGestures() {
+        
+        let pan = UIPanGestureRecognizer(target: self, action: #selector(dissmissPan))
+        colorView.addGestureRecognizer(pan)
+    }
+    
+    
+    func dissmissPan(pan: UIPanGestureRecognizer) {
+        
+        var translation = pan.translation(in: colorView)
+        
+        translation = __CGPointApplyAffineTransform(translation, colorView.transform)
+        
+        colorView.center.y += translation.y
+        
+          print(self.colorView.frame.origin.y)
+        
+        pan.setTranslation(CGPoint.zero, in: colorView)
+        
+        if pan.state == UIGestureRecognizerState.ended {
+            
+            UIView.animate(withDuration: 0.5, delay: 0, usingSpringWithDamping: 5, initialSpringVelocity: 7, options: .curveEaseOut, animations: {
+                
+                // dismiss vc if y < 120
+                
+                switch(self.colorView.frame.origin.y) {
+                case (120...360):
+                    self.dismissViewController()
+                default:
+                    print("")
+                    self.colorView.frame.origin.y = 75
+                    
+                }
+              
+            }, completion: nil)
+        }
+    }
+
+    
+    
     func setupViews() {
         
         view.addSubview(colorView)
         
-        colorView.topAnchor.constraint(equalTo: topLayoutGuide.bottomAnchor, constant: 10).isActive = true
+        colorView.topAnchor.constraint(equalTo: view.topAnchor, constant: 75).isActive = true
         colorView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 10).isActive = true
         colorView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -10).isActive = true
         colorView.heightAnchor.constraint(equalToConstant: 350).isActive = true
@@ -106,5 +156,13 @@ class SensorDetailController: UIViewController {
         lv.textColor = .white
         lv.textAlignment = .right
         return lv
+    }()
+    
+    var closeButton: UIButton = {
+        let b = UIButton(type: .system)
+        b.translatesAutoresizingMaskIntoConstraints = false
+        b.titleLabel?.text = "Zurück"
+        b.tintColor = UIColor.black
+        return b
     }()
 }

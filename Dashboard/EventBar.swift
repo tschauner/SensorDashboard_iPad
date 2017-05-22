@@ -10,6 +10,8 @@ import UIKit
 
 class EventBar: UIView, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     
+    // init collectionView
+    
     lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
@@ -46,6 +48,7 @@ class EventBar: UIView, UICollectionViewDataSource, UICollectionViewDelegate, UI
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         return EventBar.events.count
     }
+
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) as! EventCell
@@ -58,9 +61,14 @@ class EventBar: UIView, UICollectionViewDataSource, UICollectionViewDelegate, UI
         return cell
     }
     
+    
+    // cell size
+    
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: frame.width, height: 10)
     }
+    
+    // cell spacing
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumInteritemSpacingForSectionAt section: Int) -> CGFloat {
         return 0
@@ -78,6 +86,8 @@ class EventCell: UICollectionViewCell {
         setupViews()
         
     }
+    
+    // variables
     
     var textLabel: UILabel = {
         let lv = UILabel()
@@ -105,6 +115,8 @@ class EventCell: UICollectionViewCell {
     }()
     
     
+    // setup views
+    
     func setupViews() {
         
         addSubview(textLabel)
@@ -124,8 +136,6 @@ class EventCell: UICollectionViewCell {
         seperatorLine.heightAnchor.constraint(equalToConstant: 0.5).isActive = true
         seperatorLine.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -20).isActive = true
 
-        
-        
     }
     
     required init?(coder aDecoder: NSCoder) {
