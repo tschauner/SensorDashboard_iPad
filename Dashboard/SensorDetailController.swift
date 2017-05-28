@@ -8,12 +8,21 @@
 
 import UIKit
 
-class SensorDetailController: UIViewController, UIViewControllerTransitioningDelegate {
+class SensorDetailController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
+    
+    let headerId = "headerId"
+    let resuableHeaderId = "resuableHeaderId"
+    let cellId = "cellId"
+    
+    let data = [SensorModel(id: "12345", type: .Lautstärke, entity: .Lautstärke, value: 39, minValue: 0, maxValue: 50, time: "12:25")]
+    
+    var minColor = UIColor(red: 98/250, green: 139/255, blue: 200/255, alpha: 1)
+    var maxColor = UIColor(red: 195/255, green: 14/255, blue: 26/255, alpha: 1)
+    
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        view.backgroundColor = .white
         
         let cancelButton = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(dismissViewController))
         
@@ -24,13 +33,29 @@ class SensorDetailController: UIViewController, UIViewControllerTransitioningDel
         
         initGestures()
         
+        setupCollectionView()
+    }
+    
+    func setupCollectionView() {
+        if let flowLayout = collectionView?.collectionViewLayout as? UICollectionViewFlowLayout {
+            flowLayout.scrollDirection = .vertical
+            flowLayout.minimumLineSpacing = 0
+        }
+        
+        collectionView?.backgroundColor = UIColor(white: 1, alpha: 1)
+        collectionView?.delegate = self
+        collectionView?.dataSource = self
+        
+        
+        
+        collectionView?.register(SensorDetailCell.self, forCellWithReuseIdentifier: cellId)
     }
     
     
     // dismiss viewcontroller
     
     func dismissViewController() {
-        
+    
         dismiss(animated: true, completion: nil)
     }
     
@@ -82,25 +107,77 @@ class SensorDetailController: UIViewController, UIViewControllerTransitioningDel
                 case (120...360):
                     self.dismissViewController()
                 default:
-                    print("")
-                    self.colorView.frame.origin.y = 75
+                    self.colorView.frame.origin.y = 50
                     
                 }
               
             }, completion: nil)
         }
     }
+    
+    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) as! SensorDetailCell
+        
+        let sensor = data[indexPath.item]
+        
+        
+        // still placeholder text
+        
+        cell.typeLabel.text = "Wärmster Tag"
+        cell.typeLabel2.text = "Kältester Tag"
+        
+        cell.valueLabel.text = "22° Celsius"
+        cell.valueLabel2.text = "8° Celsius"
+        
+        cell.timeLabel.text = "12.05.17, 8:05 Uhr"
+        cell.timeLabel2.text = "18.05.17, 14.30 Uhr"
+        
+        
+        return cell
+        
+    }
+    
+    override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        
+        return data.count
+    }
+    
+    override func numberOfSections(in collectionView: UICollectionView) -> Int {
+        return 1
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
+        
+        
+        return CGSize(width: view.frame.width, height: 200)
+        
+    }
+    
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
+        
+        return CGSize(width: view.frame.width, height: 140)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
+        
+        return 5
+    }
+
+    
 
     
     
     func setupViews() {
+
         
         view.addSubview(colorView)
         
-        colorView.topAnchor.constraint(equalTo: view.topAnchor, constant: 75).isActive = true
+        colorView.topAnchor.constraint(equalTo: topLayoutGuide.bottomAnchor, constant: 10).isActive = true
         colorView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 10).isActive = true
         colorView.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -10).isActive = true
-        colorView.heightAnchor.constraint(equalToConstant: 350).isActive = true
+        colorView.heightAnchor.constraint(equalToConstant: 180).isActive = true
         
         colorView.addSubview(typeLabel)
         
@@ -117,7 +194,28 @@ class SensorDetailController: UIViewController, UIViewControllerTransitioningDel
         timeLabel.topAnchor.constraint(equalTo: valueLabel.bottomAnchor).isActive = true
         timeLabel.rightAnchor.constraint(equalTo: valueLabel.rightAnchor).isActive = true
         
+        colorView.addSubview(seperatorLine)
+        
+        seperatorLine.bottomAnchor.constraint(equalTo: colorView.bottomAnchor, constant: -30).isActive = true
+        seperatorLine.leftAnchor.constraint(equalTo: typeLabel.leftAnchor).isActive = true
+        seperatorLine.heightAnchor.constraint(equalToConstant: 0.5).isActive = true
+        seperatorLine.rightAnchor.constraint(equalTo: timeLabel.rightAnchor).isActive = true
+        
+        colorView.addSubview(chartView)
+        
+        chartView.topAnchor.constraint(equalTo: timeLabel.bottomAnchor, constant: 20).isActive = true
+        chartView.leftAnchor.constraint(equalTo: colorView.leftAnchor).isActive = true
+        chartView.rightAnchor.constraint(equalTo: colorView.rightAnchor).isActive = true
+        chartView.heightAnchor.constraint(equalToConstant: 150).isActive = true
+        
+        
     }
+    
+    lazy var chartView: ChartView = {
+        let c = ChartView()
+        c.translatesAutoresizingMaskIntoConstraints = false
+        return c
+    }()
     
     var colorView: UIView = {
         let v = UIView()
@@ -158,11 +256,11 @@ class SensorDetailController: UIViewController, UIViewControllerTransitioningDel
         return lv
     }()
     
-    var closeButton: UIButton = {
-        let b = UIButton(type: .system)
-        b.translatesAutoresizingMaskIntoConstraints = false
-        b.titleLabel?.text = "Zurück"
-        b.tintColor = UIColor.black
-        return b
+    var seperatorLine: UIView = {
+        let l = UIView()
+        l.translatesAutoresizingMaskIntoConstraints = false
+        l.backgroundColor = UIColor(white: 1, alpha: 0.6)
+        return l
     }()
 }
+

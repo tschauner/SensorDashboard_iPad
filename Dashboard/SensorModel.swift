@@ -41,7 +41,7 @@ class SensorModel {
         self.entity = entity
         self.value = value
         self.minValue = minValue
-        self.minValue = maxValue
+        self.maxValue = maxValue
         self.time = time
     }
 

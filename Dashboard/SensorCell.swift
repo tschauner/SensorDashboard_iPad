@@ -17,10 +17,12 @@ class SensorCell: UICollectionViewCell {
     
     override var isHighlighted: Bool {
         didSet {
-            colorView.backgroundColor = isHighlighted ? UIColor.gray : UIColor(red: 153/255, green: 217/255, blue: 244/255, alpha: 1)
+            colorView.transform = isHighlighted ? CGAffineTransform(scaleX: 0.99, y: 0.95) : CGAffineTransform.identity
         }
     }
     
+    var niceBlue = UIColor(red: 153/255, green: 217/255, blue: 244/255, alpha: 1)
+    var niceGreen = UIColor(red: 185/255, green: 210/255, blue: 156/255, alpha: 1)
     
     // Variables
     
@@ -28,7 +30,7 @@ class SensorCell: UICollectionViewCell {
         let v = UIView()
         v.translatesAutoresizingMaskIntoConstraints = false
         v.layer.cornerRadius = 4
-        v.backgroundColor = UIColor(red: 153/255, green: 217/255, blue: 244/255, alpha: 1)
+        v.backgroundColor = UIColor(red: 185/255, green: 210/255, blue: 156/255, alpha: 1)
         return v
         
     }()
@@ -54,7 +56,16 @@ class SensorCell: UICollectionViewCell {
     var timeLabel: UILabel = {
         let lv = UILabel()
         lv.translatesAutoresizingMaskIntoConstraints = false
-        lv.font = UIFont.boldSystemFont(ofSize: 14)
+        lv.font = UIFont.systemFont(ofSize: 14)
+        lv.textColor = .white
+        lv.textAlignment = .right
+        return lv
+    }()
+    
+    var messageLabel: UILabel = {
+        let lv = UILabel()
+        lv.translatesAutoresizingMaskIntoConstraints = false
+        lv.font = UIFont.systemFont(ofSize: 14)
         lv.textColor = .white
         lv.textAlignment = .right
         return lv
@@ -87,7 +98,9 @@ class SensorCell: UICollectionViewCell {
         timeLabel.topAnchor.constraint(equalTo: valueLabel.bottomAnchor).isActive = true
         timeLabel.rightAnchor.constraint(equalTo: valueLabel.rightAnchor).isActive = true
         
-        
+        colorView.addSubview(messageLabel)
+        messageLabel.leftAnchor.constraint(equalTo: typeLabel.leftAnchor).isActive = true
+        messageLabel.topAnchor.constraint(equalTo: timeLabel.topAnchor).isActive = true
         
     }
     

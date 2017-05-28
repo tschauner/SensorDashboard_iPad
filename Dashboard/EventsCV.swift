@@ -8,12 +8,13 @@
 
 import UIKit
 
-class EventBar: UIView, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
+class EventsCV: UIView, UICollectionViewDataSource, UICollectionViewDelegate, UICollectionViewDelegateFlowLayout {
     
     // init collectionView
     
     lazy var collectionView: UICollectionView = {
         let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .vertical
         let cv = UICollectionView(frame: .zero, collectionViewLayout: layout)
         cv.translatesAutoresizingMaskIntoConstraints = false
         cv.backgroundColor = UIColor.clear
@@ -23,7 +24,7 @@ class EventBar: UIView, UICollectionViewDataSource, UICollectionViewDelegate, UI
     }()
     
     let cellId = "cellId"
-    static var events = [EventModel(time: "10:29", text: .TemperaturMax), EventModel(time: "11:40", text: .TemperaturMin)]
+    static var events = [EventModel]()
     
     var headerView: UICollectionReusableView?
     
@@ -40,20 +41,20 @@ class EventBar: UIView, UICollectionViewDataSource, UICollectionViewDelegate, UI
         collectionView.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
         collectionView.leftAnchor.constraint(equalTo: self.leftAnchor).isActive = true
         collectionView.widthAnchor.constraint(equalTo: self.widthAnchor).isActive = true
-        collectionView.heightAnchor.constraint(equalTo: self.heightAnchor).isActive = true
+        collectionView.heightAnchor.constraint(equalToConstant: 54).isActive = true
 
     }
     
   
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return EventBar.events.count
+        return EventsCV.events.count
     }
 
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) as! EventCell
         
-        let alarm = EventBar.events[indexPath.item]
+        let alarm = EventsCV.events[indexPath.item]
         
         cell.timeLabel.text = alarm.time
         cell.textLabel.text = alarm.text.rawValue
@@ -86,6 +87,7 @@ class EventCell: UICollectionViewCell {
         setupViews()
         
     }
+    
     
     // variables
     

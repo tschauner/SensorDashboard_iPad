@@ -22,8 +22,8 @@ class HeaderView: UICollectionViewCell {
     
     // init eventBar
     
-    lazy var eventBar: EventBar = {
-        let eb = EventBar()
+    lazy var eventBar: EventsCV = {
+        let eb = EventsCV()
         eb.translatesAutoresizingMaskIntoConstraints = false
         eb.headerView = self
         return eb
@@ -64,25 +64,22 @@ class HeaderView: UICollectionViewCell {
     func setupViews() {
         
         addSubview(eventView)
-        addSubview(sectionLabel)
-        eventView.addSubview(headlineLabel)
         eventView.addSubview(eventBar)
+        addSubview(sectionLabel)
         
-        eventView.topAnchor.constraint(equalTo: self.topAnchor, constant: 10).isActive = true
-        eventView.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 10).isActive = true
-        eventView.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -10).isActive = true
-        eventView.heightAnchor.constraint(equalToConstant: 120).isActive = true
+        eventView.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
+        eventView.leftAnchor.constraint(equalTo: self.leftAnchor).isActive = true
+        eventView.rightAnchor.constraint(equalTo: self.rightAnchor).isActive = true
+
+
         
-        headlineLabel.topAnchor.constraint(equalTo: eventView.topAnchor, constant: 10).isActive = true
-        headlineLabel.leftAnchor.constraint(equalTo: eventView.leftAnchor, constant: 10).isActive = true
-        
-        eventBar.topAnchor.constraint(equalTo: headlineLabel.bottomAnchor, constant: 10).isActive = true
+        eventBar.topAnchor.constraint(equalTo: eventView.topAnchor, constant: 50).isActive = true
         eventBar.leftAnchor.constraint(equalTo: eventView.leftAnchor).isActive = true
         eventBar.rightAnchor.constraint(equalTo: eventView.rightAnchor).isActive = true
-        eventBar.bottomAnchor.constraint(equalTo: eventView.bottomAnchor, constant: -10).isActive = true
         
-        sectionLabel.bottomAnchor.constraint(equalTo: eventView.bottomAnchor, constant: 40).isActive = true
-        sectionLabel.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 12).isActive = true
+        
+        sectionLabel.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: 40).isActive = true
+        sectionLabel.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 10).isActive = true
         
     }
     
