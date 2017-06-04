@@ -8,15 +8,26 @@
 
 import UIKit
 import CoreData
+import UserNotifications
+import CoreLocation
+
+func delay(seconds: Double, completion: @escaping ()-> Void) {
+    DispatchQueue.main.asyncAfter(deadline: .now() + seconds, execute: completion)
+}
+
 
 @UIApplicationMain
 class AppDelegate: UIResponder, UIApplicationDelegate {
 
     var window: UIWindow?
 
-
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        // Override point for customization after application launch.
+
+        
+        // Request permission to send notifications
+        let center = UNUserNotificationCenter.current()
+        center.requestAuthorization(options:[.alert, .sound]) { (granted, error) in }
         
         window = UIWindow(frame: UIScreen.main.bounds)
         window?.makeKeyAndVisible()
@@ -97,4 +108,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
 }
+
+// MARK: CLLocationManagerDelegate
+extension AppDelegate: CLLocationManagerDelegate {
+    
+    
+}
+
 

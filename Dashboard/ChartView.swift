@@ -43,7 +43,7 @@ class ChartView: UICollectionViewCell {
         lv.translatesAutoresizingMaskIntoConstraints = false
         lv.font = UIFont.boldSystemFont(ofSize: 16)
         lv.text = "Temperatur"
-        lv.textColor = .white
+        lv.textColor = .black
         lv.textAlignment = .left
         return lv
     }()
@@ -53,7 +53,7 @@ class ChartView: UICollectionViewCell {
         lv.translatesAutoresizingMaskIntoConstraints = false
         lv.font = UIFont.systemFont(ofSize: 22)
         lv.text = "22° Celsius"
-        lv.textColor = .white
+        lv.textColor = .black
         lv.textAlignment = .right
         return lv
     }()
@@ -63,7 +63,7 @@ class ChartView: UICollectionViewCell {
         lv.translatesAutoresizingMaskIntoConstraints = false
         lv.font = UIFont.boldSystemFont(ofSize: 14)
         lv.text = "12:24"
-        lv.textColor = .white
+        lv.textColor = .black
         lv.textAlignment = .right
         return lv
     }()

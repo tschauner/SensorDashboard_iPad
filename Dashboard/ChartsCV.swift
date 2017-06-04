@@ -28,8 +28,9 @@ class ChartsCV: UIView, UICollectionViewDataSource, UICollectionViewDelegate, UI
     let cellId = "cellId"
     
     let time = [0, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 22, 0]
+    let week = ["M", "D", "M", "D", "F", "S", "S"]
     
-    static var data = [SensorModel(id: "12345", type: .Temperatur, entity: .Temperatur, value: 8, minValue: 0, maxValue: 50, time: "0"), SensorModel(id: "12345", type: .Temperatur, entity: .Temperatur, value: 10, minValue: 0, maxValue: 50, time: "1"), SensorModel(id: "12345", type: .Temperatur, entity: .Temperatur, value: 12, minValue: 0, maxValue: 50, time: "2"), SensorModel(id: "12345", type: .Temperatur, entity: .Temperatur, value: 16, minValue: 0, maxValue: 50, time: "3"), SensorModel(id: "12345", type: .Temperatur, entity: .Temperatur, value: 19, minValue: 0, maxValue: 50, time: "4"), SensorModel(id: "12345", type: .Temperatur, entity: .Temperatur, value: 22, minValue: 0, maxValue: 50, time: "0"), SensorModel(id: "12345", type: .Temperatur, entity: .Temperatur, value: 22, minValue: 0, maxValue: 50, time: "1"), SensorModel(id: "12345", type: .Temperatur, entity: .Temperatur, value: 23, minValue: 0, maxValue: 50, time: "2"), SensorModel(id: "12345", type: .Temperatur, entity: .Temperatur, value: 18, minValue: 0, maxValue: 50, time: "3"), SensorModel(id: "12345", type: .Temperatur, entity: .Temperatur, value: 14, minValue: 0, maxValue: 50, time: "4"), SensorModel(id: "12345", type: .Temperatur, entity: .Temperatur, value: 10, minValue: 0, maxValue: 50, time: "4"), SensorModel(id: "12345", type: .Temperatur, entity: .Temperatur, value: 8, minValue: 0, maxValue: 50, time: "4")]
+    static var data = [SensorModel(id: "12345", type: .Temperatur, entity: .Temperatur, value: 8, minValue: 0, maxValue: 50, time: "0"), SensorModel(id: "12345", type: .Temperatur, entity: .Temperatur, value: 10, minValue: 0, maxValue: 50, time: "1"), SensorModel(id: "12345", type: .Temperatur, entity: .Temperatur, value: 12, minValue: 0, maxValue: 50, time: "2"), SensorModel(id: "12345", type: .Temperatur, entity: .Temperatur, value: 16, minValue: 0, maxValue: 50, time: "3"), SensorModel(id: "12345", type: .Temperatur, entity: .Temperatur, value: 19, minValue: 0, maxValue: 50, time: "4"), SensorModel(id: "12345", type: .Temperatur, entity: .Temperatur, value: 22, minValue: 0, maxValue: 50, time: "0"), SensorModel(id: "12345", type: .Temperatur, entity: .Temperatur, value: 22, minValue: 0, maxValue: 50, time: "1")]
 
     
     override init(frame: CGRect) {
@@ -59,9 +60,9 @@ class ChartsCV: UIView, UICollectionViewDataSource, UICollectionViewDelegate, UI
         
         let data = ChartsCV.data[indexPath.item]
         
-        cell.timeLabel.text = String(time[indexPath.item])
+        cell.weekLabel.text = week[indexPath.item]
         
-        cell.menuHeightConstraint.constant = CGFloat(data.value!*2)
+        cell.menuHeightConstraint.constant = CGFloat(data.value!*3)
         
         return cell
     }
@@ -70,7 +71,7 @@ class ChartsCV: UIView, UICollectionViewDataSource, UICollectionViewDelegate, UI
     // cell size
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: frame.width/12, height: 100)
+        return CGSize(width: frame.width/7, height: 100)
     }
     
     // cell spacing
@@ -101,7 +102,16 @@ class ChartBarCell: UICollectionViewCell {
         let tl = UILabel()
         tl.translatesAutoresizingMaskIntoConstraints = false
         tl.font = UIFont.systemFont(ofSize: 8)
-        tl.textColor = .white
+        tl.textColor = .black
+        tl.textAlignment = .left
+        return tl
+    }()
+    
+    var weekLabel: UILabel = {
+        let tl = UILabel()
+        tl.translatesAutoresizingMaskIntoConstraints = false
+        tl.font = UIFont.boldSystemFont(ofSize: 12)
+        tl.textColor = .black
         tl.textAlignment = .left
         return tl
     }()
@@ -110,15 +120,15 @@ class ChartBarCell: UICollectionViewCell {
     var seperatorLine: UIView = {
         let l = UIView()
         l.translatesAutoresizingMaskIntoConstraints = false
-        l.backgroundColor = UIColor(white: 1, alpha: 0.3)
+        l.backgroundColor = UIColor(white: 0.5, alpha: 0.3)
         return l
     }()
     
     var bar: UIView = {
         let l = UIView()
         l.translatesAutoresizingMaskIntoConstraints = false
-        l.backgroundColor = UIColor(white: 1, alpha: 0.5)
-        l.layer.cornerRadius = 4
+        l.backgroundColor = UIColor(red: 185/255, green: 210/255, blue: 156/255, alpha: 1)
+        l.layer.cornerRadius = 10
         return l
     }()
     
@@ -130,17 +140,17 @@ class ChartBarCell: UICollectionViewCell {
     func setupViews() {
         
         addSubview(bar)
-        addSubview(timeLabel)
+        addSubview(weekLabel)
         
         menuHeightConstraint = bar.heightAnchor.constraint(equalToConstant: 0)
         menuHeightConstraint.isActive = true
 
         bar.centerXAnchor.constraint(equalTo: self.centerXAnchor).isActive = true
         bar.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: -30).isActive = true
-        bar.widthAnchor.constraint(equalToConstant: 10).isActive = true
+        bar.widthAnchor.constraint(equalToConstant: 20).isActive = true
         
-        timeLabel.topAnchor.constraint(equalTo: bar.bottomAnchor, constant: 20).isActive = true
-        timeLabel.centerXAnchor.constraint(equalTo: bar.centerXAnchor).isActive = true
+        weekLabel.topAnchor.constraint(equalTo: bar.bottomAnchor, constant: 10).isActive = true
+        weekLabel.centerXAnchor.constraint(equalTo: bar.centerXAnchor).isActive = true
         
     }
     

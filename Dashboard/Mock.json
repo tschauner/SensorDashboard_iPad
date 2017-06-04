@@ -1,0 +1,174 @@
+
+ 
+ [
+  {
+  "_id":"591848bfc16b0d01accaa1eb",
+  "sensorid":"fake01",
+  "value":13453,
+  "min":-30,
+  "max":50,
+  "timestamp":"17:47"
+  },
+  
+  
+  {
+  "_id":"591848cac16b0d01accaa1ec",
+  "sensorid":"fake01",
+  "value":76848,
+  "min":-30,
+  "max":50,
+  "timestamp":"17:47"
+  },
+  
+  {
+  "_id":"591848d4c16b0d01accaa1ed",
+  "sensorid":"fake02",
+  "value":54247,
+  "min":-30,
+  "max":50,
+  "timestamp":"17:47"
+  },
+  
+  {
+  "_id":"591848dac16b0d01accaa1ee",
+  "sensorid":"fake02",
+  "value":34418,
+  "min":-30,
+  "max":50,
+  "timestamp":"17:47"
+  },
+  
+  {
+  "_id":"59184af8992b7819c413264f",
+  "sensorid":"fake03",
+  "value":29385,
+  "min":-30,
+  "max":50,
+  "__v":0,
+  "timestamp":"17:47"
+  },
+  
+  {
+  "_id":"59185f7f3bb1e317fc2d13a4",
+  "sensorid":"28-01161575bfee",
+  "value":24625,
+  "min":-30,
+  "max":50,
+  "__v":0,
+  "timestamp":"17:47"
+  },
+  
+  {
+  "_id":"591870f5d7cc211cacce5d5f",
+  "sensorid":"28-01161575bfee",
+  "value":25000,
+  "min":-30,
+  "max":50,
+  "__v":0,
+  "timestamp":"17:47"
+  },
+  
+  {
+  "_id":"59187221d7cc211cacce5d60",
+  "sensorid":"28-01161575bfee",
+  "value":"24875",
+  "min":-30,
+  "max":50,
+  "__v":0,
+  "timestamp":"17:47"
+  },
+  
+  {
+  "_id":"5918734dd7cc211cacce5d61",
+  "sensorid":"28-01161575bfee",
+  "value":24812,
+  "min":-30,
+  "max":50,
+  "__v":0,
+  "timestamp":"17:47"
+  },
+  
+  {
+  "_id":"59187479d7cc211cacce5d62",
+  "sensorid":"28-01161575bfee",
+  "value":24812,
+  "min":-30,
+  "max":50,
+  "__v":0,
+  "timestamp":"17:47"
+  },
+  
+  {
+  "_id":"591875a6d7cc211cacce5d63",
+  "sensorid":"28-01161575bfee",
+  "value":24812,
+  "min":-30,
+  "max":50,
+  "timestamp":"17:47"
+  },
+  
+  {
+  "_id":"591876d1d7cc211cacce5d64",
+  "sensorid":"28-01161575bfee",
+  "value":24687,
+  "min":-30,
+  "max":50,
+  "timestamp":"17:47"
+  },
+  
+  {
+  "_id":"5923016eeb52701604fab78f",
+  "sensorid":"28-01161575bfee",
+  "value":25562,
+  "min":-30,
+  "max":50,
+  "timestamp":"17:47"
+  },
+  
+  {
+  "_id":"592301e6eb52701604fab790",
+  "sensorid":"28-01161575bfee",
+  "value":25625,
+  "min":-30,
+  "max":50,
+  "timestamp":"17:47"
+  },
+  
+  {
+  "_id":"5923025eeb52701604fab791",
+  "sensorid":"28-01161575bfee",
+  "value":25625,
+  "min":-30,
+  "max":50,
+  "timestamp":"17:47"
+  },
+  
+  {
+  "_id":"592302d6eb52701604fab792",
+  "sensorid":"28-01161575bfee",
+  "value":25625,
+  "min":-30,
+  "max":50,
+  "timestamp":"17:47"
+  },
+  
+  {
+  "_id":"5923034eeb52701604fab793",
+  "sensorid":"28-01161575bfee",
+  "value":25687,
+  "min":-30,
+  "max":50,
+  "timestamp":"17:47"
+  },
+  
+  {
+  "_id":"592303c6eb52701604fab794",
+  "sensorid":"28-01161575bfee"
+  ,"value":25625,
+  "min":-30,
+  "max":50,
+  "__v":0,
+  "timestamp":"17:47"
+  }
+  ]
+

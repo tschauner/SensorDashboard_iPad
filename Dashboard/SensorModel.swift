@@ -13,9 +13,9 @@ class SensorModel {
     var id: String?
     var type: SensorType
     var entity: SensorEntity
-    var value: Int?
-    var minValue: Int?
-    var maxValue: Int?
+    var value: Double?
+    var minValue: Double?
+    var maxValue: Double?
     var time: String
     
     
@@ -26,16 +26,20 @@ class SensorModel {
         case Luftfeuchtigkeit = "Luftfeuchtigkeit"
         case Lautstärke = "Lautstärke"
         case Helligkeit = "Helligkeit"
+        case Luftdruck = "Luftdruck"
+        case Kohlenmonoxid = "Kohlenmonoxid"
     }
     
     enum SensorEntity: String {
-        case Temperatur = "° Celsius"
+        case Temperatur = " °C"
         case Luftfeuchtigkeit = " %"
-        case Lautstärke = " Dezibel"
-        case Helligkeit = " Lumen"
+        case Lautstärke = " dB"
+        case Helligkeit = " lm"
+        case Luftdruck = " hPa"
+        case Kohlenmonoxid = " ppm"
     }
     
-    init(id: String, type: SensorType, entity: SensorEntity, value: Int, minValue: Int, maxValue: Int, time: String) {
+    init(id: String, type: SensorType, entity: SensorEntity, value: Double, minValue: Double, maxValue: Double, time: String) {
         self.id = id
         self.type = type
         self.entity = entity
