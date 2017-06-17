@@ -8,7 +8,7 @@
 
 import UIKit
 
-class ChartView: UICollectionViewCell {
+class ChartViewCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -21,21 +21,14 @@ class ChartView: UICollectionViewCell {
     
     // init eventBar
     
-    lazy var chartsCV: ChartsCV = {
-        let cv = ChartsCV()
-        cv.chartView = self
-        cv.translatesAutoresizingMaskIntoConstraints = false
-        return cv
-    }()
-    
-    
     // variables
     
     var colorView: UIView = {
-        let v = UIView()
-        v.translatesAutoresizingMaskIntoConstraints = false
-        return v
-        
+        let view = UIView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.backgroundColor = UIColor(white: 0.4, alpha: 1)
+        view.layer.cornerRadius = 2
+        return view
     }()
     
     var typeLabel: UILabel = {
@@ -87,27 +80,11 @@ class ChartView: UICollectionViewCell {
     
     func setupViews() {
         
-//
-//        colorView.addSubview(typeLabel)
-//        
-//        typeLabel.topAnchor.constraint(equalTo: colorView.topAnchor, constant: 10).isActive = true
-//        typeLabel.leftAnchor.constraint(equalTo: colorView.leftAnchor, constant: 10).isActive = true
-//        
-//        colorView.addSubview(valueLabel)
-//        
-//        valueLabel.topAnchor.constraint(equalTo: colorView.topAnchor, constant: 7).isActive = true
-//        valueLabel.rightAnchor.constraint(equalTo: colorView.rightAnchor, constant: -10).isActive = true
-//        
-//        colorView.addSubview(timeLabel)
-//        
-//        timeLabel.topAnchor.constraint(equalTo: valueLabel.bottomAnchor).isActive = true
-//        timeLabel.rightAnchor.constraint(equalTo: valueLabel.rightAnchor).isActive = true
-        
-        self.addSubview(chartsCV)
-        chartsCV.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
-        chartsCV.leftAnchor.constraint(equalTo: self.leftAnchor).isActive = true
-        chartsCV.rightAnchor.constraint(equalTo: self.rightAnchor).isActive = true
-        chartsCV.heightAnchor.constraint(equalTo: self.heightAnchor).isActive = true
+        self.addSubview(colorView)
+        colorView.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
+        colorView.leftAnchor.constraint(equalTo: self.leftAnchor).isActive = true
+        colorView.rightAnchor.constraint(equalTo: self.rightAnchor).isActive = true
+        colorView.heightAnchor.constraint(equalTo: self.heightAnchor).isActive = true
         
     }
 }

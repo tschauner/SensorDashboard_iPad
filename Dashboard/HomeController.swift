@@ -8,64 +8,22 @@
 
 import UIKit
 import CoreLocation
+import AVFoundation
 
-class HomeController: UICollectionViewController, UICollectionViewDelegateFlowLayout {
+class HomeController: UICollectionViewController {
     
     let headerId = "headerId"
     let resuableHeaderId = "resuableHeaderId"
     let cellId = "cellId"
     
-    
-    var tapped = false
     var eventsHeightConstraint: NSLayoutConstraint!
     var heightFromBottom: NSLayoutConstraint!
     var connectedDevice: SensorModel?
     
-    var beaconDistance = ""
+    static var nearestBeacon = 0
     let locationManager = CLLocationManager()
     
-    var beaconIsConnected = false {
-        didSet {
-            if beaconIsConnected {
-                openNewSensorView()
-                print("true")
-            } else {
-                
-                beaconIsConnected = false
-                
-                UIView.animate(withDuration: 0.2, delay: 0, options: .curveEaseOut, animations: {
-                    
-                    self.newSensorView.alpha = 0
-                    
-                }, completion: nil)
-            }
-        }
-    }
-    
-    var nearestBeacon = 0
-
-    
-    var device: DeviceModel? = nil {
-        didSet {
-            if let device = device {
-                
-                // shows data of every device in Sensorview
-                
-                deviceImage.image = UIImage(named: device.image)
-                sensorNameLabel.text = device.name
-                
-                let sensors = device.sensors
-                
-                let sensorStrings = sensors.map { $0.type.rawValue }
-                
-                sensorLabel.text = sensorStrings.joined(separator: ", ")
-                
-            }
-        }
-    }
-    
-    
-    
+    var closestBeacon: CLBeacon?
     
     var minColor = UIColor(red: 98/250, green: 139/255, blue: 200/255, alpha: 1)
     var maxColor = UIColor.orange
@@ -74,153 +32,21 @@ class HomeController: UICollectionViewController, UICollectionViewDelegateFlowLa
     let region = CLBeaconRegion(proximityUUID: UUID(uuidString: "f7826da6-4fa2-4e98-8024-bc5b71e0893e")!, identifier: "MyBeacon")
     
     
-    // every minor value has its own device
     
-    let myBeacons: [Int: DeviceModel] = [
-        14042: DeviceModel(name: "KR QUANTEC ultra", sensors: [
-            
-            SensorModel(id: "ss", type: .Luftdruck, entity: .Luftdruck, value: 1013.25, minValue: 0, maxValue: 1050, time: "Heute: 13:10"),
-            SensorModel(id: "ss", type: .Temperatur, entity: .Temperatur, value: -2, minValue: 0, maxValue: 50, time: "Heute: 13:10"),
-            SensorModel(id: "ss", type: .Lautstärke, entity: .Lautstärke, value: 60, minValue: 0, maxValue: 50, time: "Heute: 13:10")]
-            
-            ,image: "roboter1"),
-        
-        6333: DeviceModel(name: "ABB IRB 5400", sensors: [
-            
-            SensorModel(id: "ss", type: .Kohlenmonoxid, entity: .Kohlenmonoxid, value: 48.6, minValue: 0, maxValue: 150, time: "Heute: 13:10"),
-            SensorModel(id: "ss", type: .Luftfeuchtigkeit, entity: .Luftfeuchtigkeit, value: 20, minValue: 0, maxValue: 50, time: "Heute: 13:10"),
-            SensorModel(id: "ss", type: .Temperatur, entity: .Temperatur, value: 52, minValue: 0, maxValue: 50, time: "Heute: 13:10")]
-            
-            , image: "roboter2"),
-        
-        
-        6179: DeviceModel(name: "KR QUANTEC extra", sensors: [
-            
-            SensorModel(id: "ss", type: .Kohlenmonoxid, entity: .Kohlenmonoxid, value: 105.6, minValue: 0, maxValue: 250, time: "Heute: 13:10"),
-            SensorModel(id: "ss", type: .Temperatur, entity: .Temperatur, value: 52, minValue: 0, maxValue: 50, time: "Heute: 13:10"),
-            SensorModel(id: "ss", type: .Luftdruck, entity: .Luftdruck, value: 13.25, minValue: 20, maxValue: 2500, time: "Heute: 13:10")]
-            
-            , image: "roboter3")
-    ]
+    // variables
     
     
-    var incomingData = [SensorModel]() {
-        didSet {
-            
-            // name des Sensors
-            
-            headerView.sectionLabel.text = device?.name
-            
-            collectionView?.reloadData()
-            
-        }
-    }
+    var buttonView: UIView = {
+        let view = UIView()
+        view.backgroundColor = .clear
+        return view
+    }()
     
-    
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        navigationItem.title = "Dashboard"
-        
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "camera")?.withRenderingMode(.alwaysOriginal), style: .done, target: self, action: #selector(eventButton))
-        
-        
-        locationManager.delegate = self
-        if (CLLocationManager.authorizationStatus() != CLAuthorizationStatus.authorizedWhenInUse) {
-            locationManager.requestWhenInUseAuthorization()
-        }
-        locationManager.startRangingBeacons(in: region)
-        
-        setupCollectionView()
-
-        setupHeaderView()
-        
-        initTapGesture()
-        
-        if tapped {
-            collectionView?.contentOffset.y = -150
-        } else {
-            collectionView?.contentOffset.y = -70
-        }
-        
-        
-        
-//        getDataFromJsonFile()
-        
-    }
-    
-    
-    
-    func getDataFromJsonFile() {
-        
-        do {
-            if let file = Bundle.main.url(forResource: "Mock", withExtension: "json") {
-                let data = try Data(contentsOf: file)
-                let json = try JSONSerialization.jsonObject(with: data, options: [])
-                if let object = json as? [[String: Any]] {
-                    
-                    for obj in object {
-                        
-                        if let sensorId = obj["sensorid"] as? String,
-                            let value = obj["value"] as? Int,
-                            let min = obj["min"] as? Int,
-                            let max = obj["max"] as? Int,
-                            let time = obj["timestamp"] as? String {
-                            
-                            
-                            switch sensorId {
-                            case "28-01161575bfee":
-                                
-                                // section for every entity?
-                                
-                                print("")
-                                
-                            case "fake02":
-                                
-                                print("")
-                            case "fake01":
-                                
-                                print("")
-                                
-                            default:
-                                print("")
-                            }
-                            
-                            
-                        }
-                        
-                    }
-                }
-            }
-            
-        } catch {
-            print("Error deserializing JSON: \(error)")
-        }
-    }
-    
-    
-    func setupCollectionView() {
-        if let flowLayout = collectionView?.collectionViewLayout as? UICollectionViewFlowLayout {
-            flowLayout.scrollDirection = .vertical
-            flowLayout.itemSize = CGSize(width: 180, height: 150)
-            flowLayout.minimumInteritemSpacing = 0
-            flowLayout.sectionInset = UIEdgeInsets(top: 0, left: 17, bottom: 0, right: 17)
-        }
-        
-        collectionView?.backgroundColor = UIColor.white
-        collectionView?.delegate = self
-        collectionView?.dataSource = self
-        
-        collectionView?.register(SensorCellTile.self, forCellWithReuseIdentifier: cellId)
-    }
-    
-    // init headerView
     
     var backgroundView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .white
+        view.backgroundColor = .darkGray
         return view
     }()
     
@@ -231,6 +57,9 @@ class HomeController: UICollectionViewController, UICollectionViewDelegateFlowLa
         view.backgroundColor = .darkGray
         return view
     }()
+    
+    // init headerView
+    
     
     var headerView: HeaderView = {
         let view = HeaderView()
@@ -253,7 +82,7 @@ class HomeController: UICollectionViewController, UICollectionViewDelegateFlowLa
     static var countLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = UIFont.boldSystemFont(ofSize: 14)
+        label.font = UIFont.boldSystemFont(ofSize: 16)
         label.textColor = .white
         label.text = "Keine Events"
         return label
@@ -268,7 +97,7 @@ class HomeController: UICollectionViewController, UICollectionViewDelegateFlowLa
     var sensorNameLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Sensor XY"
+        label.text = "Keine Geräte in Reichweite"
         label.textColor = .white
         label.font = UIFont.boldSystemFont(ofSize: 16)
         return label
@@ -277,7 +106,7 @@ class HomeController: UICollectionViewController, UICollectionViewDelegateFlowLa
     var sensorLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Temperatur, Druck, Helligkeit"
+        label.text = "Keine"
         label.textColor = .black
         label.numberOfLines = 0
         label.font = UIFont.systemFont(ofSize: 14)
@@ -295,16 +124,7 @@ class HomeController: UICollectionViewController, UICollectionViewDelegateFlowLa
         return label
     }()
     
-    let plugView: UIImageView = {
-        let view = UIImageView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.tintColor = .white
-        view.image = UIImage(named: "plug")?.withRenderingMode(.alwaysTemplate)
-        view.contentMode = .scaleAspectFill
-        return view
-    }()
     
-
     let deviceImage: UIImageView = {
         let view = UIImageView()
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -313,87 +133,251 @@ class HomeController: UICollectionViewController, UICollectionViewDelegateFlowLa
         return view
     }()
     
+    var beaconIsConnected = false {
+        didSet {
+            
+        }
+    }
     
     
-    // setup headerView
+    var device: DeviceModel? = nil {
+        didSet {
+            if let device = device {
+                
+                // shows data of every device in Sensorview
+                
+                deviceImage.image = UIImage(named: device.image)
+                sensorNameLabel.text = device.name
+                
+                let sensors = device.sensors
+                
+                let sensorStrings = sensors.map { $0.type.rawValue }
+                
+                sensorLabel.text = sensorStrings.joined(separator: ", ")
+                
+            }
+        }
+    }
     
-    func initTapGesture() {
+    
+    
+    // every minor value has its own device
+    
+    // array with dummy data
+    
+//    let myBeacons: [Int: DeviceModel] = [
+//
+//        14042: DeviceModel(name: "KR QUANTEC ultra", sensors: [
+//
+//            SensorModel(id: "ss", type: .Luftdruck, entity: .Luftdruck, value: 1013.25, minValue: 0, maxValue: 1050, time: "Heute: 13:10"),
+//            SensorModel(id: "ss", type: .Temperatur, entity: .Temperatur, value: -2, minValue: 0, maxValue: 50, time: "Heute: 13:10"),
+//            SensorModel(id: "ss", type: .Lautstärke, entity: .Lautstärke, value: 60, minValue: 0, maxValue: 50, time: "Heute: 13:10")]
+//
+//            ,image: "roboter1", uuid: ),
+//
+//        6333: DeviceModel(name: "ABB IRB 5400", sensors: [
+//            
+//            SensorModel(id: "ss", type: .Kohlenmonoxid, entity: .Kohlenmonoxid, value: 48.6, minValue: 0, maxValue: 150, time: "Heute: 13:10"),
+//            SensorModel(id: "ss", type: .Luftfeuchtigkeit, entity: .Luftfeuchtigkeit, value: 20, minValue: 0, maxValue: 50, time: "Heute: 13:10"),
+//            SensorModel(id: "ss", type: .Temperatur, entity: .Temperatur, value: 52, minValue: 0, maxValue: 50, time: "Heute: 13:10")]
+//
+//            , image: "roboter2"),
+//
+//
+//        6179: DeviceModel(name: "KR QUANTEC extra", sensors: [
+//
+//            SensorModel(id: "ss", type: .Kohlenmonoxid, entity: .Kohlenmonoxid, value: 105.6, minValue: 0, maxValue: 250, time: "Heute: 13:10"),
+//            SensorModel(id: "ss", type: .Temperatur, entity: .Temperatur, value: 52, minValue: 0, maxValue: 50, time: "Heute: 13:10"),
+//            SensorModel(id: "ss", type: .Luftdruck, entity: .Luftdruck, value: 13.25, minValue: 20, maxValue: 2500, time: "Heute: 13:10")]
+//
+//            , image: "roboter3")
+//    ]
+    
+    
+    // array for collectionview
+    
+    var incomingData = [SensorModel]() {
+        didSet {
+            
+            headerView.sectionLabel.text = device?.name
+            collectionView?.reloadData()
+        }
+    }
+    
+    
+    // initial load
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
         
-        let pan = UITapGestureRecognizer(target: self, action: #selector(expandHeader))
-        touchView.addGestureRecognizer(pan)
+        addSensorsManuallyButton()
+        
+        
+        locationManager.delegate = self
+        if (CLLocationManager.authorizationStatus() != CLAuthorizationStatus.authorizedWhenInUse) {
+            locationManager.requestWhenInUseAuthorization()
+        }
+        
+        locationManager.startRangingBeacons(in: region)
+        
+        setupCollectionView()
+
+        setupHeaderView()
+        
+        setupNavBar()
         
     }
     
-    func expandHeader(tap: UITapGestureRecognizer) {
+    
+    
+    override func viewWillAppear(_ animated: Bool) {
         
-        tapped = !tapped
+        addSensorsManuallyButton()
         
-        eventAnimation()
-
+        if incomingData.isEmpty {
+            collectionView?.backgroundView = backGroundView()
+        }
+        
     }
     
-
+    
+    
+    // setup collection view
+    
+    func setupCollectionView() {
+        if let flowLayout = collectionView?.collectionViewLayout as? UICollectionViewFlowLayout {
+            flowLayout.scrollDirection = .vertical
+            flowLayout.itemSize = CGSize(width: 180, height: 150)
+            flowLayout.minimumInteritemSpacing = 0
+            flowLayout.sectionInset = UIEdgeInsets(top: 0, left: 17, bottom: 0, right: 17)
+        }
+        
+        collectionView?.backgroundColor = UIColor.darkGray
+        collectionView?.delegate = self
+        collectionView?.dataSource = self
+        
+        collectionView?.register(SensorTileCell.self, forCellWithReuseIdentifier: cellId)
+    }
+    
+    
+    // setup navbar
+    
+    func setupNavBar() {
+        
+        navigationController?.navigationBar.tintColor = UIColor(white: 0, alpha: 1)
+        navigationController?.navigationBar.barTintColor = UIColor(white: 1, alpha: 1)
+        
+        // remove the shadow
+        navigationController?.navigationBar.shadowImage = UIImage()
+        navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
+        
+        navigationController?.navigationBar.isTranslucent = false
+        
+        // camera button
+        let cameraButton = UIBarButtonItem(image: UIImage(named: "camera")?.withRenderingMode(.alwaysTemplate), style: UIBarButtonItemStyle.plain, target: self, action: #selector(showORScanner))
+        cameraButton.tintColor = .darkGray
+        navigationItem.leftBarButtonItem = cameraButton
+        
+        // profile Image in Nav
+        let nameLabel = UIBarButtonItem(title: "Admin", style: .done, target: self, action: nil)
+        nameLabel.tintColor = UIColor.darkGray
+        
+        let profileImageView = UIImageView()
+        profileImageView.image = UIImage(named: "admin")
+        profileImageView.clipsToBounds = true
+        profileImageView.contentMode = .scaleAspectFill
+        profileImageView.frame = CGRect(x: 0, y: 0, width: 35, height: 35)
+        profileImageView.layer.cornerRadius = 18
+        
+        let rightBarButtonItem = UIBarButtonItem(customView: profileImageView)
+        navigationItem.rightBarButtonItems = [rightBarButtonItem, nameLabel]
+        
+        
+        
+    }
+    
+    func saveSensor() {
+        
+    }
+    
+    
+    // setup button view
+    
+    func addSensorsManuallyButton() {
+        
+        
+        guard let frame = navigationController?.view.frame else { return }
+        let width: CGFloat = frame.width
+        let height: CGFloat = 90
+        
+        let okButton = UIButton(type: .system)
+        okButton.translatesAutoresizingMaskIntoConstraints = false
+        okButton.setTitleColor(UIColor.lightGray, for: .normal)
+        okButton.setTitle("Manuell hinzufügen", for: .normal)
+        okButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
+        okButton.addTarget(self, action: #selector(addSensorManually), for: .touchUpInside)
+        
+        buttonView.backgroundColor = UIColor(white: 0.3, alpha: 0.8)
+        
+        
+        // subview stack
+        self.navigationController?.view.addSubview(buttonView)
+        buttonView.addSubview(okButton)
+        
+        
+        // main frame
+        buttonView.frame = CGRect(x: 0, y: frame.height - 90, width: width, height: height)
+        
+        okButton.bottomAnchor.constraint(equalTo: buttonView.bottomAnchor, constant: -20).isActive = true
+        okButton.widthAnchor.constraint(equalTo: buttonView.widthAnchor, constant: -100).isActive = true
+        okButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        okButton.centerXAnchor.constraint(equalTo: buttonView.centerXAnchor).isActive = true
+        
+    }
+    
+    
+    
+    // setup header - event bar
     
     func setupHeaderView() {
         
-
-        let eventLabel = UILabel()
-        eventLabel.translatesAutoresizingMaskIntoConstraints = false
-        eventLabel.text = "Events"
-        eventLabel.font = UIFont.boldSystemFont(ofSize: 16)
-        eventLabel.textColor = .white
         
         view.addSubview(backgroundView)
         backgroundView.addSubview(headerView)
-        view.addSubview(touchView)
-        touchView.addSubview(eventLabel)
-        touchView.addSubview(HomeController.countLabel)
-        touchView.addSubview(alarmButton)
+
+        view.addSubview(HomeController.countLabel)
+        view.addSubview(alarmButton)
         
-        eventsHeightConstraint =  headerView.heightAnchor.constraint(equalToConstant: 50)
-        eventsHeightConstraint.isActive = true
         
         backgroundView.topAnchor.constraint(equalTo: topLayoutGuide.bottomAnchor).isActive = true
-        backgroundView.heightAnchor.constraint(equalToConstant: 115).isActive = true
+        backgroundView.heightAnchor.constraint(equalToConstant: 130).isActive = true
         backgroundView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
         backgroundView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
         
+        
         headerView.topAnchor.constraint(equalTo: backgroundView.topAnchor, constant: 10).isActive = true
         headerView.widthAnchor.constraint(equalTo: backgroundView.widthAnchor, constant: -20).isActive = true
+        headerView.heightAnchor.constraint(equalToConstant: 120).isActive = true
         headerView.leftAnchor.constraint(equalTo: backgroundView.leftAnchor, constant: 10).isActive = true
-        
-        touchView.topAnchor.constraint(equalTo: topLayoutGuide.bottomAnchor, constant: 10).isActive = true
-        touchView.heightAnchor.constraint(equalToConstant: 50).isActive = true
-        touchView.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -20).isActive = true
-        touchView.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 10).isActive = true
-        
-        eventLabel.topAnchor.constraint(equalTo: topLayoutGuide.bottomAnchor, constant: 25).isActive = true
-        eventLabel.leftAnchor.constraint(equalTo: headerView.leftAnchor, constant: 10).isActive = true
         
         alarmButton.topAnchor.constraint(equalTo: topLayoutGuide.bottomAnchor, constant: 22).isActive = true
         alarmButton.rightAnchor.constraint(equalTo: headerView.rightAnchor, constant: -5).isActive = true
         alarmButton.heightAnchor.constraint(equalToConstant: 27).isActive = true
         alarmButton.widthAnchor.constraint(equalToConstant: 27).isActive = true
         
-        HomeController.countLabel.leftAnchor.constraint(equalTo: eventLabel.rightAnchor, constant: 20).isActive = true
-        HomeController.countLabel.centerYAnchor.constraint(equalTo: eventLabel.centerYAnchor).isActive = true
+        HomeController.countLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
+        HomeController.countLabel.topAnchor.constraint(equalTo: topLayoutGuide.bottomAnchor, constant: 25).isActive = true
         
     }
     
     
-    override func viewWillAppear(_ animated: Bool) {
-        tapped = false
-        eventsHeightConstraint.constant = 50
-        self.view.layoutIfNeeded()
-
-    }
     
     // show viewcontroller with sensordata
     
     func show(sensorData: SensorModel) {
         
         let layout = UICollectionViewFlowLayout()
-        let navSc = UINavigationController(rootViewController: SensorDetailController(collectionViewLayout: layout))
+        let navSc = UINavigationController(rootViewController: ChartViewController(collectionViewLayout: layout))
         
         present(navSc, animated: true, completion: nil)
     }
@@ -401,31 +385,22 @@ class HomeController: UICollectionViewController, UICollectionViewDelegateFlowLa
     
     // add event
     
-    func eventButton() {
+    func showORScanner() {
         
-        beaconIsConnected = true
+        let qrcode = ScannerController()
         
-
-    
+        present(qrcode, animated: true, completion: nil)
     }
     
-    func eventAnimation() {
+    
+    func addSensorManually() {
         
-        eventsHeightConstraint.constant = tapped ? 130 : 50
+        let layout = UICollectionViewFlowLayout()
+        let nav = UINavigationController(rootViewController: SensorLibraryController(collectionViewLayout: layout))
         
-        UIView.animate(
-            withDuration: 0.33,
-            delay: 0.0,
-            options: .curveEaseIn,
-            animations: {
-                self.collectionView?.contentOffset.y = self.tapped ? -150 : -70
-                self.view.layoutIfNeeded()
-                self.headerView.layoutIfNeeded()
-        },
-            completion: nil
-        )
-        
+        present(nav, animated: true, completion: nil)
     }
+    
     
     
     // current time string (short)
@@ -440,198 +415,13 @@ class HomeController: UICollectionViewController, UICollectionViewDelegateFlowLa
         
         return timeStamp
     }
-    
-    
-    
-    override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) as! SensorCellTile
-        
-        cell.sensor = incomingData[indexPath.item]
-        
-        
-        let va = cell.sensor?.value ?? 0
-        let mi = cell.sensor?.minValue ?? 0
-        let ma = cell.sensor?.maxValue ?? 50
-        
-        let time = currentTimeString()
-        
-        
-        UIView.animate(withDuration: 0.8) {
-            
-            switch (va, mi, ma) {
-            case let (value, _, max) where value > max:
-                
-                self.tapped = false
-                cell.colorView.backgroundColor = self.maxColor
-                cell.errorLabel.isHidden = false
-                
-                EventsCV.events.insert(EventModel(type: cell.sensor!.type.rawValue, time: time, text: .Max), at: 0)
-
-                // wenn der wert größer als der max wert ist
-                
-            case let (value, min, _) where value < min:
-                
-                self.tapped = false
-                cell.colorView.backgroundColor = self.minColor
-                cell.errorLabel.isHidden = false
-                
-                EventsCV.events.insert(EventModel(type: cell.sensor!.type.rawValue, time: time, text: .Min), at: 0)
-                
-                // wenn der wert kleiner als der min wert ist
-                
-                
-            default:
-                cell.errorLabel.isHidden = true
-                
-            }
-        }
-        
-        headerView.eventBar.collectionView.reloadData()
-        return cell
-    }
-    
-    
-    override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        
-        if incomingData.count == 0 {
-            
-            collectionView.backgroundView = backGroundView()
-            
-            return 0
-        } else {
-            
-            collectionView.backgroundView = UIView()
-            return incomingData.count
-            
-        }
-    }
-
-    
-    override func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return 1
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-    
-        
-        return CGSize(width: view.frame.width, height: 115)
-        
-    }
-    
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        
-        let itemWidth = (collectionView.bounds.size.width  / 2)
-        
-        return CGSize(width: itemWidth-30, height: 150)
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
-        
-        return 10
-    }
-
-    
-    override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
-        
-        // falls man mit der geklicken cell was anstellen will
-        if let cell = collectionView.cellForItem(at: indexPath) as? SensorCellTile {
-            
-            
-            let data = incomingData[indexPath.item]
-
-            
-            show(sensorData: data)
-            
-            
-            
-        }
-        
-    }
 
 }
 
 
-extension HomeController {
+
     
-    func backGroundView() -> UIView {
-        
-        
-        let containerView = UIView()
-        containerView.frame = view.bounds
-        containerView.center = CGPoint(x: view.center.x - 30, y: view.center.y)
-        
-        containerView.backgroundColor = .white
-        
-        
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.numberOfLines = 0
-        label.textAlignment = .center
-        label.textColor = .black
-        label.font = UIFont.systemFont(ofSize: 15)
-        
-        label.text = "Keine Sensoren\nin Reichweite"
-        
 
-        
-        let size: CGFloat = 50
-        let scalefactor: CGFloat = 8
-        
-        let shapeView = UIView(frame: CGRect(x: containerView.center.x, y: containerView.center.y, width: size, height: size))
-        shapeView.layer.borderWidth = 0.3
-        shapeView.backgroundColor = UIColor(white: 0.6, alpha: 0.2)
-        shapeView.layer.borderColor = UIColor(white: 0.8, alpha: 1).cgColor
-        shapeView.layer.cornerRadius = 25
-        shapeView.isHidden = true
-        
-        containerView.addSubview(shapeView)
-        
-        
-        // first ring
-        
-        UIView.animate(withDuration: 1.8, delay: 0, options: [.curveEaseOut, .repeat], animations: {
-            
-            shapeView.isHidden = false
-            shapeView.transform = CGAffineTransform(scaleX: scalefactor, y: scalefactor)
-            shapeView.alpha = 0
-            
-        }, completion: nil)
-        
-        let shapeView2 = UIView(frame: CGRect(x: containerView.center.x, y: containerView.center.y, width: size, height: size))
-        shapeView2.layer.borderWidth = 0.3
-        shapeView2.layer.borderColor = UIColor(white: 0.8, alpha: 1).cgColor
-        shapeView2.backgroundColor = UIColor(white: 0.6, alpha: 0.2)
-        shapeView2.layer.cornerRadius = 25
-        shapeView2.isHidden = true
-        
-        containerView.addSubview(shapeView2)
-        
-        
-        // second ring
-        
-        UIView.animate(withDuration: 1.8, delay: 2.5, options: [.curveEaseOut, .repeat], animations: {
-            
-            shapeView2.isHidden = false
-            shapeView2.transform = CGAffineTransform(scaleX: scalefactor, y: scalefactor)
-            shapeView2.alpha = 0
-            
-        }, completion: nil)
-
-
-        containerView.addSubview(shapeView)
-        containerView.addSubview(label)
-        
-        label.centerYAnchor.constraint(equalTo: containerView.centerYAnchor, constant: 30).isActive = true
-        label.widthAnchor.constraint(equalTo: containerView.widthAnchor, constant: -100).isActive = true
-        label.centerXAnchor.constraint(equalTo: containerView.centerXAnchor).isActive = true
-        label.bottomAnchor.constraint(equalTo: containerView.bottomAnchor).isActive = true
-        
-        return containerView
-    }
-    
-}
 
 
 

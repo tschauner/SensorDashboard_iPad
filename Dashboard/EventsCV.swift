@@ -56,8 +56,7 @@ class EventsCV: UIView, UICollectionViewDataSource, UICollectionViewDelegate, UI
         collectionView.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
         collectionView.leftAnchor.constraint(equalTo: self.leftAnchor).isActive = true
         collectionView.widthAnchor.constraint(equalTo: self.widthAnchor).isActive = true
-        collectionView.heightAnchor.constraint(equalToConstant: 54).isActive = true
-
+        collectionView.heightAnchor.constraint(equalTo: self.heightAnchor, constant: -10).isActive = true
     }
     
   

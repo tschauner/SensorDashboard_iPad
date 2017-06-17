@@ -10,20 +10,25 @@ import UIKit
 import CoreLocation
 import UserNotifications
 
+    
+
 extension HomeController: CLLocationManagerDelegate {
     
     func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
         
-        if (beacons.count > 0) {
+        region.notifyEntryStateOnDisplay = true
+        
+        let knownBeacons = beacons.filter{ $0.proximity != CLProximity.unknown }
+        if (knownBeacons.count > 0) {
             let closestBeacon = beacons[0] as CLBeacon
-            device = myBeacons[closestBeacon.minor.intValue]
-            nearestBeacon = closestBeacon.minor.intValue
-    
+            
         } else {
             updateDistance(.unknown)
         }
     }
     
+    
+    // if user enters beacon range
     
     func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
         guard region is CLBeaconRegion else { return }
@@ -32,9 +37,11 @@ extension HomeController: CLLocationManagerDelegate {
         print("conected")
     }
     
+    
+    // if user exits beacon range
+    
     func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
         guard region is CLBeaconRegion else { return }
-        
         
         beaconIsConnected = false
         print("deconnected")
@@ -51,7 +58,7 @@ extension HomeController: CLLocationManagerDelegate {
         guard let name = device?.name else { return }
         
         let content = UNMutableNotificationContent()
-
+        
         content.title = name
         content.body = "Verbindung getrennt"
         content.sound = .default()
@@ -65,22 +72,23 @@ extension HomeController: CLLocationManagerDelegate {
     // for another use later
     func updateDistance(_ distance: CLProximity) {
         
-
+        
         switch distance {
         case .unknown:
             
             // disconntects the sensor when beacon is out of range
             self.beaconIsConnected = false
+            print("beacon disconnected")
             
         case .near:
-            self.newSensorView.backgroundColor = .white
+            print("near")
         case .immediate:
-            self.newSensorView.backgroundColor = .blue
+            print("immediate")
         case .far:
-            self.newSensorView.backgroundColor = .green
+            print("far")
             
             
         }
-
+        
     }
 }

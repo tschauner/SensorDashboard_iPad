@@ -70,10 +70,12 @@ class HeaderView: UICollectionViewCell {
         eventView.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
         eventView.leftAnchor.constraint(equalTo: self.leftAnchor).isActive = true
         eventView.rightAnchor.constraint(equalTo: self.rightAnchor).isActive = true
+        eventView.heightAnchor.constraint(equalToConstant: 120).isActive = true
         
         eventBar.topAnchor.constraint(equalTo: eventView.topAnchor, constant: 50).isActive = true
         eventBar.leftAnchor.constraint(equalTo: eventView.leftAnchor).isActive = true
         eventBar.rightAnchor.constraint(equalTo: eventView.rightAnchor).isActive = true
+        eventBar.bottomAnchor.constraint(equalTo: eventView.bottomAnchor).isActive = true
         
         
         sectionLabel.bottomAnchor.constraint(equalTo: self.bottomAnchor, constant: 40).isActive = true
