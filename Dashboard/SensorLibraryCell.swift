@@ -37,22 +37,23 @@ class SensorLibraryCell: UICollectionViewCell, CLLocationManagerDelegate {
     // Variables
     
     var nameLabel: UILabel = {
-        let lv = UILabel()
-        lv.translatesAutoresizingMaskIntoConstraints = false
-        lv.font = UIFont.boldSystemFont(ofSize: 18)
-        lv.textColor = .black
-        lv.text = "test"
-        lv.textAlignment = .left
-        return lv
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = UIFont.boldSystemFont(ofSize: 18)
+        label.textColor = .black
+        label.text = "test"
+        label.textAlignment = .left
+        return label
     }()
     
     var rangeLabel: UILabel = {
-        let lv = UILabel()
-        lv.translatesAutoresizingMaskIntoConstraints = false
-        lv.font = UIFont.systemFont(ofSize: 16)
-        lv.textColor = .gray
-        lv.textAlignment = .right
-        return lv
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = UIFont.systemFont(ofSize: 16)
+        label.text = "Location: Unbekannt"
+        label.textColor = .gray
+        label.textAlignment = .right
+        return label
     }()
     
 
@@ -91,6 +92,10 @@ class SensorLibraryCell: UICollectionViewCell, CLLocationManagerDelegate {
                 imageView.image = UIImage(named: device.image)
                 nameLabel.text = device.name
                 
+                
+                
+                
+                
             }
         }
     }
@@ -98,9 +103,15 @@ class SensorLibraryCell: UICollectionViewCell, CLLocationManagerDelegate {
     
     func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
         
+        guard let d = device?.minorValue else { return }
+        
         region.notifyEntryStateOnDisplay = true
+        
         if beacons.count > 0 {
-            updateDistance(beacons[0].proximity)
+            let closestBeacon = beacons[0] as CLBeacon
+            if d == closestBeacon.minor.intValue {
+                updateDistance(beacons[0].proximity)
+            }
         } else {
             updateDistance(.unknown)
         }

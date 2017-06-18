@@ -12,12 +12,13 @@ import AVFoundation
 
 class HomeController: UICollectionViewController {
     
+    
+    let detailView = SensorDetailViewController()
+    
     let headerId = "headerId"
     let resuableHeaderId = "resuableHeaderId"
     let cellId = "cellId"
     
-    var eventsHeightConstraint: NSLayoutConstraint!
-    var heightFromBottom: NSLayoutConstraint!
     var connectedDevice: SensorModel?
     
     static var nearestBeacon = 0
@@ -212,7 +213,6 @@ class HomeController: UICollectionViewController {
         
         addSensorsManuallyButton()
         
-        
         locationManager.delegate = self
         if (CLLocationManager.authorizationStatus() != CLAuthorizationStatus.authorizedWhenInUse) {
             locationManager.requestWhenInUseAuthorization()
@@ -238,6 +238,11 @@ class HomeController: UICollectionViewController {
             collectionView?.backgroundView = backGroundView()
         }
         
+        UIView.animate(withDuration: 0.2) {
+            self.buttonView.alpha = 1
+        }
+        
+        
     }
     
     
@@ -247,9 +252,8 @@ class HomeController: UICollectionViewController {
     func setupCollectionView() {
         if let flowLayout = collectionView?.collectionViewLayout as? UICollectionViewFlowLayout {
             flowLayout.scrollDirection = .vertical
-            flowLayout.itemSize = CGSize(width: 180, height: 150)
-            flowLayout.minimumInteritemSpacing = 0
-            flowLayout.sectionInset = UIEdgeInsets(top: 0, left: 17, bottom: 0, right: 17)
+            flowLayout.minimumInteritemSpacing = 10
+            flowLayout.sectionInset = UIEdgeInsets(top: 0, left: 10, bottom: 0, right: 10)
         }
         
         collectionView?.backgroundColor = UIColor.darkGray
@@ -263,6 +267,7 @@ class HomeController: UICollectionViewController {
     // setup navbar
     
     func setupNavBar() {
+        
         
         navigationController?.navigationBar.tintColor = UIColor(white: 0, alpha: 1)
         navigationController?.navigationBar.barTintColor = UIColor(white: 1, alpha: 1)
@@ -376,10 +381,13 @@ class HomeController: UICollectionViewController {
     
     func show(sensorData: SensorModel) {
         
-        let layout = UICollectionViewFlowLayout()
-        let navSc = UINavigationController(rootViewController: ChartViewController(collectionViewLayout: layout))
+        let chart = ChartView()
         
-        present(navSc, animated: true, completion: nil)
+        UIView.animate(withDuration: 0.2) {
+            self.buttonView.alpha = 0
+        }
+        
+        navigationController?.pushViewController(chart, animated: true)
     }
     
     
@@ -401,7 +409,12 @@ class HomeController: UICollectionViewController {
         present(nav, animated: true, completion: nil)
     }
     
-    
+    func showAlert(with event: EventModel) {
+        
+        let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+        
+        showAlert(title: "Achtung", contentText: "\(event.type)swert \(event.text.rawValue)", actions: [okAction])
+    }
     
     // current time string (short)
     

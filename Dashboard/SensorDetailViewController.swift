@@ -9,11 +9,13 @@
 import UIKit
 
 protocol DataSendDelegate {
-    var incomingData: [SensorModel] { get set }
+    
+    func sendData(sensor: [SensorModel])
 }
 
 class SensorDetailViewController: UIViewController {
     
+    var delegate: DataSendDelegate?
     
     var device: DeviceModel? = nil {
         didSet {
@@ -59,14 +61,13 @@ class SensorDetailViewController: UIViewController {
         
         dismiss(animated: true, completion: nil)
     }
-
+    
     
     
     func saveSensor() {
         
         guard let data = device?.sensors else { return }
         
-        //dummy
         let layout = UICollectionViewFlowLayout()
         let la = HomeController(collectionViewLayout: layout)
         la.incomingData = data
@@ -100,7 +101,7 @@ class SensorDetailViewController: UIViewController {
 
         
         headlineLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        headlineLabel.topAnchor.constraint(equalTo: header.topAnchor, constant: 40).isActive = true
+        headlineLabel.topAnchor.constraint(equalTo: header.topAnchor, constant: 30).isActive = true
         headlineLabel.widthAnchor.constraint(equalToConstant: 250).isActive = true
         
         deviceImage.topAnchor.constraint(equalTo: headlineLabel.bottomAnchor, constant: 30).isActive = true

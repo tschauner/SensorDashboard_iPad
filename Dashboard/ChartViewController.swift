@@ -46,6 +46,7 @@ class ChartViewController: UICollectionViewController, UICollectionViewDelegateF
         let cancelButton = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(dismissViewController))
         
         navigationItem.leftBarButtonItem = cancelButton
+    
         
         setupViews()
 

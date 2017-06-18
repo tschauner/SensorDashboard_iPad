@@ -35,7 +35,7 @@ extension HomeController: UICollectionViewDelegateFlowLayout {
                 cell.errorLabel.isHidden = false
                 
                 EventsCV.events.insert(EventModel(type: cell.sensor!.type.rawValue, time: time, text: .Max), at: 0)
-                
+                self.showAlert(with: EventModel(type: cell.sensor!.type.rawValue, time: time, text: .Max))
                 // wenn der wert größer als der max wert ist
                 
             case let (value, min, _) where value < min:
@@ -44,6 +44,7 @@ extension HomeController: UICollectionViewDelegateFlowLayout {
                 cell.errorLabel.isHidden = false
                 
                 EventsCV.events.insert(EventModel(type: cell.sensor!.type.rawValue, time: time, text: .Min), at: 0)
+                self.showAlert(with: EventModel(type: cell.sensor!.type.rawValue, time: time, text: .Min))
                 
                 // wenn der wert kleiner als der min wert ist
                 
@@ -91,7 +92,7 @@ extension HomeController: UICollectionViewDelegateFlowLayout {
         
         let itemWidth = (collectionView.bounds.size.width  / 2)
         
-        return CGSize(width: itemWidth-30, height: 150)
+        return CGSize(width: itemWidth - 16, height: 150)
     }
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
@@ -146,6 +147,7 @@ extension HomeController {
         
         let size: CGFloat = 50
         let scalefactor: CGFloat = 8
+
         
         let shapeView = UIView(frame: CGRect(x: containerView.center.x, y: containerView.center.y, width: size, height: size))
         shapeView.layer.borderWidth = 0.4
@@ -153,8 +155,6 @@ extension HomeController {
         shapeView.layer.borderColor = UIColor(white: 1, alpha: 1).cgColor
         shapeView.layer.cornerRadius = 25
         shapeView.isHidden = true
-        
-        containerView.addSubview(shapeView)
         
         
         // first ring
@@ -164,6 +164,7 @@ extension HomeController {
             shapeView.isHidden = false
             shapeView.transform = CGAffineTransform(scaleX: scalefactor, y: scalefactor)
             shapeView.alpha = 0
+            
             
         }, completion: nil)
         
@@ -179,7 +180,7 @@ extension HomeController {
         
         // second ring
         
-        UIView.animate(withDuration: 1.8, delay: 2.5, options: [.curveEaseOut, .repeat], animations: {
+        UIView.animate(withDuration: 1.8, delay: 1, options: [.curveEaseOut, .repeat], animations: {
             
             shapeView2.isHidden = false
             shapeView2.transform = CGAffineTransform(scaleX: scalefactor, y: scalefactor)

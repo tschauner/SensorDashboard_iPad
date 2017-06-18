@@ -13,6 +13,11 @@
 		A206D73A1ED7579A0054E3AE /* SensorDetailCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A206D7391ED7579A0054E3AE /* SensorDetailCell.swift */; };
 		A264CC0A1EF2E34D00686713 /* ScannerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A264CC091EF2E34D00686713 /* ScannerController.swift */; };
 		A27C61591EF52E6E001A45D9 /* HomeControllerExtensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A27C61581EF52E6D001A45D9 /* HomeControllerExtensions.swift */; };
+		A289A18C1EF5583400D909D4 /* ChartSeries.swift in Sources */ = {isa = PBXBuildFile; fileRef = A289A1891EF5583300D909D4 /* ChartSeries.swift */; };
+		A289A18D1EF5583400D909D4 /* ChartColors.swift in Sources */ = {isa = PBXBuildFile; fileRef = A289A18A1EF5583400D909D4 /* ChartColors.swift */; };
+		A289A18E1EF5583400D909D4 /* Chart.swift in Sources */ = {isa = PBXBuildFile; fileRef = A289A18B1EF5583400D909D4 /* Chart.swift */; };
+		A289A1901EF5585300D909D4 /* ChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A289A18F1EF5585300D909D4 /* ChartView.swift */; };
+		A28CACDB1EF6E3A4001C298B /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A28CACDA1EF6E3A4001C298B /* Extensions.swift */; };
 		A2A658F71EED86FC0066FC9D /* AddSensorController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2A658F61EED86FC0066FC9D /* AddSensorController.swift */; };
 		A2A658F91EEDA5590066FC9D /* SensorLibraryController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2A658F81EEDA5590066FC9D /* SensorLibraryController.swift */; };
 		A2A658FB1EEDBDE10066FC9D /* SensorLibraryCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2A658FA1EEDBDE10066FC9D /* SensorLibraryCell.swift */; };
@@ -41,6 +46,11 @@
 		A206D7391ED7579A0054E3AE /* SensorDetailCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SensorDetailCell.swift; sourceTree = "<group>"; };
 		A264CC091EF2E34D00686713 /* ScannerController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScannerController.swift; sourceTree = "<group>"; };
 		A27C61581EF52E6D001A45D9 /* HomeControllerExtensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeControllerExtensions.swift; sourceTree = "<group>"; };
+		A289A1891EF5583300D909D4 /* ChartSeries.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ChartSeries.swift; path = "../../../../../../Downloads/SwiftChart-0.5.0/Source/ChartSeries.swift"; sourceTree = "<group>"; };
+		A289A18A1EF5583400D909D4 /* ChartColors.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = ChartColors.swift; path = "../../../../../../Downloads/SwiftChart-0.5.0/Source/ChartColors.swift"; sourceTree = "<group>"; };
+		A289A18B1EF5583400D909D4 /* Chart.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Chart.swift; path = "../../../../../../Downloads/SwiftChart-0.5.0/Source/Chart.swift"; sourceTree = "<group>"; };
+		A289A18F1EF5585300D909D4 /* ChartView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartView.swift; sourceTree = "<group>"; };
+		A28CACDA1EF6E3A4001C298B /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		A2A658F61EED86FC0066FC9D /* AddSensorController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddSensorController.swift; sourceTree = "<group>"; };
 		A2A658F81EEDA5590066FC9D /* SensorLibraryController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SensorLibraryController.swift; sourceTree = "<group>"; };
 		A2A658FA1EEDBDE10066FC9D /* SensorLibraryCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SensorLibraryCell.swift; sourceTree = "<group>"; };
@@ -81,12 +91,14 @@
 				A2C94A301ECF70B7006BFFA6 /* HomeController.swift */,
 				A27C61581EF52E6D001A45D9 /* HomeControllerExtensions.swift */,
 				A2DECF8B1ED095F60054C2A5 /* ChartViewController.swift */,
+				A289A18F1EF5585300D909D4 /* ChartView.swift */,
 				A2A658F61EED86FC0066FC9D /* AddSensorController.swift */,
 				A2A658F81EEDA5590066FC9D /* SensorLibraryController.swift */,
 				A264CC091EF2E34D00686713 /* ScannerController.swift */,
 				A2E59F271EF29572001066AE /* SensorDetailViewController.swift */,
 				A2EE4A0C1EE088760005B953 /* iBeacon.swift */,
 				A2F894481EDC6DE100A96446 /* Mock.json */,
+				A28CACDA1EF6E3A4001C298B /* Extensions.swift */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -110,6 +122,9 @@
 		A2C94A2D1ECF70B7006BFFA6 /* Dashboard */ = {
 			isa = PBXGroup;
 			children = (
+				A289A18B1EF5583400D909D4 /* Chart.swift */,
+				A289A18A1EF5583400D909D4 /* ChartColors.swift */,
+				A289A1891EF5583300D909D4 /* ChartSeries.swift */,
 				A206D7381ED391420054E3AE /* Controller */,
 				A2DECF8A1ED0920F0054C2A5 /* Models */,
 				A2DECF891ED091F30054C2A5 /* Views */,
@@ -223,11 +238,14 @@
 			buildActionMask = 2147483647;
 			files = (
 				A2C94A311ECF70B7006BFFA6 /* HomeController.swift in Sources */,
+				A289A18D1EF5583400D909D4 /* ChartColors.swift in Sources */,
 				A2EE4A0F1EE1A54A0005B953 /* DeviceModel.swift in Sources */,
 				A2C94A471ECFBA1F006BFFA6 /* EventsCV.swift in Sources */,
+				A289A18C1EF5583400D909D4 /* ChartSeries.swift in Sources */,
 				A206D7351ED366D90054E3AE /* ChartViewCell.swift in Sources */,
 				A2A658FB1EEDBDE10066FC9D /* SensorLibraryCell.swift in Sources */,
 				A2E59F281EF29572001066AE /* SensorDetailViewController.swift in Sources */,
+				A289A18E1EF5583400D909D4 /* Chart.swift in Sources */,
 				A2C94A2F1ECF70B7006BFFA6 /* AppDelegate.swift in Sources */,
 				A264CC0A1EF2E34D00686713 /* ScannerController.swift in Sources */,
 				A2DECF881ED0919B0054C2A5 /* HeaderView.swift in Sources */,
@@ -242,6 +260,8 @@
 				A2052F071EE2AAD600768692 /* EventCell.swift in Sources */,
 				A2DECF861ED091450054C2A5 /* SensorCell.swift in Sources */,
 				A2DECF8C1ED095F60054C2A5 /* ChartViewController.swift in Sources */,
+				A28CACDB1EF6E3A4001C298B /* Extensions.swift in Sources */,
+				A289A1901EF5585300D909D4 /* ChartView.swift in Sources */,
 				A2EE4A0D1EE088760005B953 /* iBeacon.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

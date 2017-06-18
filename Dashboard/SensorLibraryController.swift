@@ -24,13 +24,19 @@ class SensorLibraryController: UICollectionViewController {
             
             SensorModel(id: "ss", type: .Temperatur, entity: .Temperatur, value: -2, minValue: 0, maxValue: 50, time: "Heute: 13:10"),
             SensorModel(id: "ss", type: .Lautstärke, entity: .Lautstärke, value: 60, minValue: 0, maxValue: 50, time: "Heute: 13:10"),
-            SensorModel(id: "ss", type: .Kohlenmonoxid, entity: .Kohlenmonoxid, value: 48.6, minValue: 0, maxValue: 150, time: "Heute: 13:10")], image: "roboter2", minorValue: 6179),
+            SensorModel(id: "ss", type: .Kohlenmonoxid, entity: .Kohlenmonoxid, value: 48.6, minValue: 0, maxValue: 150, time: "Heute: 13:10")], image: "roboter2", minorValue: 6333),
         
         DeviceModel(name: "ABB IRB 5400", sensors: [
             
             SensorModel(id: "ss", type: .Temperatur, entity: .Temperatur, value: -2, minValue: 0, maxValue: 50, time: "Heute: 13:10"),
             SensorModel(id: "ss", type: .Lautstärke, entity: .Lautstärke, value: 60, minValue: 0, maxValue: 50, time: "Heute: 13:10"),
             SensorModel(id: "ss", type: .Kohlenmonoxid, entity: .Kohlenmonoxid, value: 48.6, minValue: 0, maxValue: 150, time: "Heute: 13:10")], image: "roboter3", minorValue: 6179),
+        
+        DeviceModel(name: "ABB IRB 5400", sensors: [
+            
+            SensorModel(id: "ss", type: .Temperatur, entity: .Temperatur, value: -2, minValue: 0, maxValue: 50, time: "Heute: 13:10"),
+            SensorModel(id: "ss", type: .Lautstärke, entity: .Lautstärke, value: 60, minValue: 0, maxValue: 50, time: "Heute: 13:10"),
+            SensorModel(id: "ss", type: .Kohlenmonoxid, entity: .Kohlenmonoxid, value: 48.6, minValue: 0, maxValue: 150, time: "Heute: 13:10")], image: "roboter", minorValue: 5555)
     ]
 
     let cellId = "cellId"
@@ -39,13 +45,13 @@ class SensorLibraryController: UICollectionViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(dismissView))
         
         setupCollectionView()
         
         setupHeaderView()
-        
-        
+    
         navigationController?.navigationBar.tintColor = UIColor(white: 0, alpha: 1)
         navigationController?.navigationBar.barTintColor = UIColor(white: 1, alpha: 1)
         
@@ -83,7 +89,7 @@ class SensorLibraryController: UICollectionViewController {
     
     
     
-    func showAlert() {
+    func showOptions() {
         
         let noAction = UIAlertAction(title: "Abbrechen", style: .cancel, handler: nil)
         let qrAction = UIAlertAction(title: "QR Code scannen", style: .default) { (action) in
@@ -97,18 +103,6 @@ class SensorLibraryController: UICollectionViewController {
         }
         
         showAlertSheet(title: "", contentText: "Sie haben die Möglichkeit den Sensor über einen \nQR Code oder per iBeacon hinzufügen.", actions: [qrAction, beaconAction, noAction])
-    }
-    
-    func showAlertSheet(title: String, contentText: String, actions: [UIAlertAction]) {
-        DispatchQueue.main.async {
-            let alertController = UIAlertController(title: title, message: contentText, preferredStyle: .actionSheet)
-            for action in actions {
-                alertController.addAction(action)
-            }
-            let generator = UIImpactFeedbackGenerator(style: .heavy)
-            generator.impactOccurred()
-            self.present(alertController, animated: true, completion: nil)
-        }
     }
     
     
@@ -132,7 +126,7 @@ class SensorLibraryController: UICollectionViewController {
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
         button.layer.cornerRadius = 4
         button.backgroundColor = UIColor(white: 0, alpha: 0.06)
-        button.addTarget(self, action: #selector(showAlert), for: .touchUpInside)
+        button.addTarget(self, action: #selector(showOptions), for: .touchUpInside)
         return button
     }()
     
@@ -225,7 +219,7 @@ extension SensorLibraryController: UICollectionViewDelegateFlowLayout {
         
         let itemWidth = (collectionView.bounds.size.width)
         
-        return CGSize(width: itemWidth, height: 100)
+        return CGSize(width: itemWidth, height: 90)
     }
     
     
