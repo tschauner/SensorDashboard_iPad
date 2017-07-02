@@ -11,6 +11,10 @@ import UIKit
 class SensorTileCell: UICollectionViewCell {
     
     
+    let minColor = UIColor(red: 98/250, green: 139/255, blue: 200/255, alpha: 1)
+    let maxColor = UIColor.orange
+    let newGreen = UIColor(red: 185/255, green: 210/255, blue: 156/255, alpha: 0.2)
+    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupViews()
@@ -33,8 +37,10 @@ class SensorTileCell: UICollectionViewCell {
                 guard let value = sensor.value else { return }
                 
                 typeLabel.text = "\(sensor.type)"
-                timeLabel.text = "KR QUANTEC extra"
+                timeLabel.text = sensor.device
                 valueLabel.text = "\(value)\(sensor.entity.rawValue)"
+                
+                refreshColor(value: value, min: sensor.minValue!, max: sensor.maxValue!)
                 
             } else {
                 typeLabel.text = ""
@@ -44,7 +50,51 @@ class SensorTileCell: UICollectionViewCell {
         }
     }
     
+    func refreshColor(value: Double, min: Double, max: Double) {
+        
+        guard let value = sensor?.value else { return }
+        guard let min = sensor?.minValue else { return }
+        guard let max = sensor?.maxValue else { return }
+        
+        
+        UIView.animate(withDuration: 0.8) {
+            
+            switch (value, min, max) {
+            case let (value, _, max) where value > max:
+                
+                self.colorView.backgroundColor = self.maxColor
+                self.errorLabel.isHidden = false
+                
+                // wenn der wert größer als der max wert ist
+                
+            case let (value, min, _) where value < min:
+                
+                self.colorView.backgroundColor = self.minColor
+                self.errorLabel.isHidden = false
+
+                // wenn der wert kleiner als der min wert ist
+                
+                
+            default:
+                self.errorLabel.isHidden = true
+                self.colorView.backgroundColor = UIColor(white: 0.4, alpha: 1)
+                
+            }
+        }
+    }
     
+    
+    func currentTimeString() -> String {
+        
+        let date = Date()
+        let dateFormatter = DateFormatter()
+        
+        dateFormatter.timeStyle = .short
+        dateFormatter.dateStyle = .short
+        let timeStamp = dateFormatter.string(from: date)
+        
+        return timeStamp
+    }
     
     // Variables
     

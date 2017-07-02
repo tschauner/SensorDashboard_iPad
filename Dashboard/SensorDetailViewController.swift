@@ -8,29 +8,24 @@
 
 import UIKit
 
-protocol DataSendDelegate {
-    
-    func sendData(sensor: [SensorModel])
-}
 
 class SensorDetailViewController: UIViewController {
     
-    var delegate: DataSendDelegate?
+    var sensors = [SensorModel]()
+    var sensorStrings = [String]()
     
     var device: DeviceModel? = nil {
         didSet {
             if let device = device {
-                
-                
                 
                 // shows data of every device in Sensorview
                 
                 deviceImage.image = UIImage(named: device.image)
                 sensorNameLabel.text = device.name
                 
-                let sensors = device.sensors
+                sensors = device.sensors
                 
-                let sensorStrings = sensors.map { $0.type.rawValue }
+                sensorStrings = sensors.map { $0.type.rawValue }
                 
                 sensorLabel.text = sensorStrings.joined(separator: ", ")
             }
@@ -44,16 +39,7 @@ class SensorDetailViewController: UIViewController {
         
         setupViews()
         
-//        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(dismissView))
-        
-        navigationController?.navigationBar.tintColor = UIColor(white: 0, alpha: 1)
-        navigationController?.navigationBar.barTintColor = UIColor(white: 1, alpha: 1)
-        
-        // remove the shadow
-        navigationController?.navigationBar.shadowImage = UIImage()
-        navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
-        
-        navigationController?.navigationBar.isTranslucent = false
+        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(dismissView))
         
     }
     
@@ -63,21 +49,19 @@ class SensorDetailViewController: UIViewController {
     }
     
     
-    
+    // saves selected sensors
     func saveSensor() {
         
-        guard let data = device?.sensors else { return }
+        for sensor in sensors {
+           Constants.sensorData.append(sensor)
+        }
         
-        let layout = UICollectionViewFlowLayout()
-        let la = HomeController(collectionViewLayout: layout)
-        la.incomingData = data
-        let navSc = UINavigationController(rootViewController: la)
+        dismissView()
         
-        present(navSc, animated: true, completion: nil)
     }
     
     
-    
+    // ------- SETUP VIEWS ---------
 
     func setupViews() {
         
@@ -93,6 +77,9 @@ class SensorDetailViewController: UIViewController {
         view.addSubview(sensorLabel)
         view.addSubview(okButton)
         
+        guard let deviceString = device?.name else { return }
+        
+        headlineLabel.text = "\(deviceString) enthält \(sensorStrings.count) Sensoren.\nMöchten Sie diese hinzufügen?"
         
         header.topAnchor.constraint(equalTo: topLayoutGuide.bottomAnchor).isActive = true
         header.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
@@ -102,12 +89,12 @@ class SensorDetailViewController: UIViewController {
         
         headlineLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         headlineLabel.topAnchor.constraint(equalTo: header.topAnchor, constant: 30).isActive = true
-        headlineLabel.widthAnchor.constraint(equalToConstant: 250).isActive = true
+        headlineLabel.widthAnchor.constraint(equalToConstant: 500).isActive = true
         
         deviceImage.topAnchor.constraint(equalTo: headlineLabel.bottomAnchor, constant: 30).isActive = true
         deviceImage.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
         deviceImage.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        deviceImage.heightAnchor.constraint(equalToConstant: 330).isActive = true
+        deviceImage.heightAnchor.constraint(equalToConstant: 630).isActive = true
         
         line.topAnchor.constraint(equalTo: deviceImage.bottomAnchor).isActive = true
         line.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
@@ -134,6 +121,9 @@ class SensorDetailViewController: UIViewController {
         okButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         
     }
+    
+    
+    // ---------- VIEWS ---------
     
     var okButton: UIButton = {
         let button = UIButton(type: .system)
@@ -165,7 +155,7 @@ class SensorDetailViewController: UIViewController {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "Keine Geräte in Reichweite"
         label.textColor = .white
-        label.font = UIFont.boldSystemFont(ofSize: 16)
+        label.font = UIFont.boldSystemFont(ofSize: 20)
         return label
     }()
     
@@ -175,18 +165,18 @@ class SensorDetailViewController: UIViewController {
         label.text = "Keine"
         label.textColor = .black
         label.numberOfLines = 0
-        label.font = UIFont.systemFont(ofSize: 14)
+        label.font = UIFont.systemFont(ofSize: 18)
         return label
     }()
     
     var headlineLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Neues Gerät erkannt. Möchten Sie die Sensoren hinzufügen?"
+        
         label.textColor = .gray
         label.numberOfLines = 0
         label.textAlignment = .center
-        label.font = UIFont.systemFont(ofSize: 14)
+        label.font = UIFont.systemFont(ofSize: 18)
         return label
     }()
     

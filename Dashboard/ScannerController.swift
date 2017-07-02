@@ -14,6 +14,7 @@ import UIKit
 
 class ScannerController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
     
+    //available devices
     
     var captureSession:AVCaptureSession?
     var videoPreviewLayer:AVCaptureVideoPreviewLayer?
@@ -91,23 +92,70 @@ class ScannerController: UIViewController, AVCaptureMetadataOutputObjectsDelegat
         }
     }
     
+    // starts qr scanner again
+    override func viewWillAppear(_ animated: Bool) {
+        captureSession?.startRunning()
+    }
+    
+    // shows detailed view of scanned device
+    func showDetailView(with device: DeviceModel) {
+        
+        let sensorDetail = SensorDetailViewController()
+        sensorDetail.device = device
+        navigationController?.pushViewController(sensorDetail, animated: true)
+//        let nav = UINavigationController(rootViewController: sensorDetail)
+//        present(nav, animated: true, completion: nil)
+    }
+    
+    
+    // checks if scanned id == id of device
+    func scannerAction(with id: String) {
+        
+        for device in Constants.devices {
+            
+            if device.id == id {
+                showDetailView(with: device)
+                //stops scanner
+                captureSession?.stopRunning()
+                
+            } else {
+                
+                let action = UIAlertAction(title: "OK", style: .default, handler: nil)
+                showAlert(title: "UUPS", contentText: "Dieses Gerät ist in der Datenbank nicht vorhanden.", actions: [action])
+            }
+        }
+        
+    }
+    
+    //setup views
     func setupViews() {
         
         view.addSubview(contentView)
         contentView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
         contentView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
         contentView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        contentView.heightAnchor.constraint(equalToConstant: 140).isActive = true
+        contentView.heightAnchor.constraint(equalToConstant: 250).isActive = true
+        
+        contentView.addSubview(imageView)
+        
+        imageView.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20).isActive = true
+        imageView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        imageView.widthAnchor.constraint(equalToConstant: 40).isActive = true
+        imageView.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        
+        contentView.addSubview(headlineLabel)
+        
+        headlineLabel.topAnchor.constraint(equalTo: imageView.bottomAnchor, constant: 20).isActive = true
+        headlineLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         
         contentView.addSubview(messageLabel)
         
-        messageLabel.topAnchor.constraint(equalTo: contentView.topAnchor, constant: 20).isActive = true
-        messageLabel.widthAnchor.constraint(equalTo: contentView.widthAnchor, constant: -80).isActive = true
-        messageLabel.centerXAnchor.constraint(equalTo: contentView.centerXAnchor).isActive = true
+        messageLabel.topAnchor.constraint(equalTo: headlineLabel.bottomAnchor, constant: 20).isActive = true
+        messageLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
         
         contentView.addSubview(cancelButton)
         
-        cancelButton.topAnchor.constraint(equalTo: messageLabel.bottomAnchor, constant: 20).isActive = true
+        cancelButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -20).isActive = true
         cancelButton.centerXAnchor.constraint(equalTo: messageLabel.centerXAnchor).isActive = true
         
     }
@@ -119,27 +167,62 @@ class ScannerController: UIViewController, AVCaptureMetadataOutputObjectsDelegat
     let contentView: UIView = {
         let view = UIView()
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = UIColor(white: 0.2, alpha: 0.5)
+        view.backgroundColor = UIColor(white: 1, alpha: 1)
         return view
+    }()
+    
+    //qr code image
+    let imageView: UIImageView = {
+        let view = UIImageView()
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.image = UIImage(named: "qr")
+        view.layer.cornerRadius = 4
+        view.layer.borderColor = UIColor.black.cgColor
+        view.layer.borderWidth = 2
+        view.clipsToBounds = true
+        view.contentMode = .scaleAspectFit
+        return view
+    }()
+    
+    let headlineLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = "Mit Sensor Code koppeln"
+        label.numberOfLines = 0
+        label.textColor = .black
+        label.font = UIFont.boldSystemFont(ofSize: 18)
+        label.textAlignment = .left
+        return label
     }()
     
     let messageLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Bitte halten Sie das Gerät an \nden QR Code des Sensors."
+        label.text = "Positionieren Sie den Sensor Code im Rahmen.\nDer Sensor Code befindet sich auf dem Gerät."
         label.numberOfLines = 0
-        label.textColor = .white
-        label.textAlignment = .center
+        label.textColor = .gray
+        label.font = UIFont.systemFont(ofSize: 14)
+        label.textAlignment = .left
         return label
     }()
     
     let cancelButton: UIButton = {
         let button = UIButton()
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitleColor(UIColor.white, for: .normal)
+        button.setTitleColor(UIColor.gray, for: .normal)
         button.setTitle("Abbrechen", for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
         button.addTarget(self, action: #selector(dismissView), for: .touchUpInside)
+        return button
+    }()
+    
+    let addButton: UIButton = {
+        let button = UIButton()
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.backgroundColor = .gray
+        button.layer.cornerRadius = 4
+        button.alpha = 0
+        button.titleLabel?.text = "Sensor hinzufügen"
         return button
     }()
     
@@ -165,6 +248,7 @@ class ScannerController: UIViewController, AVCaptureMetadataOutputObjectsDelegat
             
             if metadataObj.stringValue != nil {
                 print(metadataObj.stringValue)
+                scannerAction(with: metadataObj.stringValue)
             }
         }
     }

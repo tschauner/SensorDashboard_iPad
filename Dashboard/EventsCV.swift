@@ -78,7 +78,7 @@ class EventsCV: UIView, UICollectionViewDataSource, UICollectionViewDelegate, UI
     // cell size
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
-        return CGSize(width: frame.width, height: 10)
+        return CGSize(width: frame.width, height: 15)
     }
     
     // cell spacing

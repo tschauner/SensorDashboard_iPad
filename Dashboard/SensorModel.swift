@@ -8,9 +8,10 @@
 
 import UIKit
 
-class SensorModel {
+struct SensorModel {
     
     var id: String?
+    var device: String?
     var type: SensorType
     var entity: SensorEntity
     var value: Double?
@@ -39,15 +40,16 @@ class SensorModel {
         case Kohlenmonoxid = " ppm"
     }
     
-    init(id: String, type: SensorType, entity: SensorEntity, value: Double, minValue: Double, maxValue: Double, time: String) {
-        self.id = id
-        self.type = type
-        self.entity = entity
-        self.value = value
-        self.minValue = minValue
-        self.maxValue = maxValue
-        self.time = time
-    }
-
+//    init(id: String, device: String, type: SensorType, entity: SensorEntity, value: Double, minValue: Double, maxValue: Double, time: String) {
+//        self.id = id
+//        self.device = device
+//        self.type = type
+//        self.entity = entity
+//        self.value = value
+//        self.minValue = minValue
+//        self.maxValue = maxValue
+//        self.time = time
+//    }
+    
     
 }

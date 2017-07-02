@@ -19,8 +19,8 @@ class EventCell: UICollectionViewCell {
         didSet {
             if let event = event {
                 
-                textLabel.text = "\(event.type)swert \(event.text.rawValue)"
-                timeLabel.text = event.time
+                textLabel.text = "\(event.type)wert \(event.text.rawValue)"
+                timeLabel.text = event.time + " Uhr"
                 
             } else {
                 textLabel.text = ""
@@ -55,7 +55,7 @@ class EventCell: UICollectionViewCell {
     var seperatorLine: UIView = {
         let l = UIView()
         l.translatesAutoresizingMaskIntoConstraints = false
-        l.backgroundColor = UIColor(white: 1, alpha: 0.3)
+        l.backgroundColor = UIColor(white: 1, alpha: 0.1)
         return l
     }()
     
@@ -70,13 +70,13 @@ class EventCell: UICollectionViewCell {
         
         timeLabel.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
         timeLabel.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 10).isActive = true
-        timeLabel.widthAnchor.constraint(equalToConstant: 40).isActive = true
+        timeLabel.widthAnchor.constraint(equalToConstant: 120).isActive = true
         
         textLabel.topAnchor.constraint(equalTo: timeLabel.topAnchor).isActive = true
         textLabel.leftAnchor.constraint(equalTo: timeLabel.rightAnchor, constant: 10).isActive = true
         textLabel.rightAnchor.constraint(equalTo: self.rightAnchor).isActive = true
         
-        seperatorLine.topAnchor.constraint(equalTo: timeLabel.bottomAnchor, constant: 3).isActive = true
+        seperatorLine.topAnchor.constraint(equalTo: timeLabel.bottomAnchor, constant: 6).isActive = true
         seperatorLine.leftAnchor.constraint(equalTo: timeLabel.leftAnchor).isActive = true
         seperatorLine.heightAnchor.constraint(equalToConstant: 0.5).isActive = true
         seperatorLine.rightAnchor.constraint(equalTo: self.rightAnchor, constant: -20).isActive = true

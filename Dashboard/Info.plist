@@ -2,12 +2,6 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>NSCameraUsageDescription</key>
-	<string>We need to access your camera for scanning QR code.</string>
-	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Diese App möchte den Ort im Hintergrund abfragen</string>
-	<key>NSLocationAlwaysUsageDescription</key>
-	<string>Ich möchte wissen ob Beacons in der Nähe sind</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
 	<key>CFBundleExecutable</key>
@@ -26,6 +20,12 @@
 	<string>1</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSCameraUsageDescription</key>
+	<string>We need to access your camera for scanning QR code.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Ich möchte wissen ob Beacons in der Nähe sind</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Diese App möchte den Ort im Hintergrund abfragen</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>
@@ -39,9 +39,6 @@
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationPortraitUpsideDown</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 </dict>
 </plist>

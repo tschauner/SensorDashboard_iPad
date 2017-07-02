@@ -8,6 +8,7 @@
 
 import UIKit
 import CoreLocation
+import CoreData
 
 class SensorLibraryCell: UICollectionViewCell, CLLocationManagerDelegate {
     override init(frame: CGRect) {
@@ -69,8 +70,9 @@ class SensorLibraryCell: UICollectionViewCell, CLLocationManagerDelegate {
     var imageView: UIImageView = {
         let image = UIImageView()
         image.translatesAutoresizingMaskIntoConstraints = false
-        image.image = UIImage(named: "bulb")?.withRenderingMode(.alwaysTemplate)
-        image.backgroundColor = .gray
+        image.image = UIImage(named: "noImage")
+        image.layer.borderColor = UIColor(white: 0.9, alpha: 1).cgColor
+        image.layer.borderWidth = 1
         image.layer.cornerRadius = 4
         image.clipsToBounds = true
         image.contentMode = .scaleAspectFill
@@ -88,13 +90,14 @@ class SensorLibraryCell: UICollectionViewCell, CLLocationManagerDelegate {
         didSet {
             if let device = device {
                 
+                if device.image.isEmpty {
+                    imageView.image = UIImage(named: "noImage")
+                } else {
+                    imageView.image = UIImage(named: device.image)
+                }
                 
-                imageView.image = UIImage(named: device.image)
+                
                 nameLabel.text = device.name
-                
-                
-                
-                
                 
             }
         }
@@ -147,8 +150,8 @@ class SensorLibraryCell: UICollectionViewCell, CLLocationManagerDelegate {
         
         imageView.leftAnchor.constraint(equalTo: self.leftAnchor, constant: 20).isActive = true
         imageView.centerYAnchor.constraint(equalTo: self.centerYAnchor).isActive = true
-        imageView.heightAnchor.constraint(equalToConstant: 80).isActive = true
-        imageView.widthAnchor.constraint(equalToConstant: 80).isActive = true
+        imageView.heightAnchor.constraint(equalToConstant: 120).isActive = true
+        imageView.widthAnchor.constraint(equalToConstant: 120).isActive = true
         
         nameLabel.leftAnchor.constraint(equalTo: imageView.rightAnchor, constant: 20).isActive = true
         nameLabel.centerYAnchor.constraint(equalTo: imageView.centerYAnchor, constant: -10).isActive = true

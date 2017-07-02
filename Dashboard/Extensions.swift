@@ -27,16 +27,6 @@ extension UIViewController {
     
     // allert sheet
     
-    func showAlertSheet(title: String, contentText: String, actions: [UIAlertAction]) {
-        DispatchQueue.main.async {
-            let alertController = UIAlertController(title: title, message: contentText, preferredStyle: .actionSheet)
-            for action in actions {
-                alertController.addAction(action)
-            }
-            let generator = UIImpactFeedbackGenerator(style: .heavy)
-            generator.impactOccurred()
-            self.present(alertController, animated: true, completion: nil)
-        }
-}
+    
 
 }

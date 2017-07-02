@@ -16,14 +16,13 @@ class ChartView: UIViewController, ChartDelegate {
         self.labelView.alpha = 0
     }
     
-    var labelConstraint: NSLayoutConstraint!
-    var labelConstant: CGFloat!
-    
+    // hier min max values übergeben
+    var minValue: Int = 0
+    var maxValue: Int = 0
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        labelConstant = 0
         labelView.alpha = 0
         
         setupViews()
@@ -34,14 +33,15 @@ class ChartView: UIViewController, ChartDelegate {
         
     }
     
+    // init chart view
     func initializeChart() {
         
-        let chart = Chart(frame: CGRect(x: 10, y: view.frame.height - 410, width: view.frame.width - 20, height: 320))
+        let chart = Chart(frame: CGRect(x: 15, y: view.frame.height - 720, width: view.frame.width - 30, height: 600))
         view.addSubview(chart)
         
         chart.delegate = self
         
-        let data: [Float] = [0, -8, 10, 20, 29, 49, 30, 32, 26, 26, 22, 19, 16]
+        let data: [Float] = [0, -2, -1, -0, 0, 2, 4, 6, 8, 10, 20, 22, 22, 24, 25, 26, 29, 25, 19, 16, 10, 10, 9, 8, 8, 7, 3]
         
         let series = ChartSeries(data)
         series.area = true
@@ -50,7 +50,7 @@ class ChartView: UIViewController, ChartDelegate {
         
         // Set minimum and maximum values for y-axis
         chart.minY = -10
-        chart.maxY = 60
+        chart.maxY = 50
         chart.labelColor = .white
         chart.lineWidth = 2
         
@@ -60,9 +60,8 @@ class ChartView: UIViewController, ChartDelegate {
         
         
     }
-    // Chart delegate
     
-    
+    // property observer for sensors / geths 
     var device: DeviceModel? = nil {
         didSet {
             if let device = device {
@@ -158,18 +157,18 @@ class ChartView: UIViewController, ChartDelegate {
         
         deviceImage.topAnchor.constraint(equalTo: topLayoutGuide.bottomAnchor, constant: 20).isActive = true
         deviceImage.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 15).isActive = true
-        deviceImage.widthAnchor.constraint(equalToConstant: 110).isActive = true
-        deviceImage.heightAnchor.constraint(equalToConstant: 90).isActive = true
+        deviceImage.widthAnchor.constraint(equalToConstant: 200).isActive = true
+        deviceImage.heightAnchor.constraint(equalToConstant: 150).isActive = true
         
         deviceLabel.topAnchor.constraint(equalTo: deviceImage.topAnchor, constant: 20).isActive = true
-        deviceLabel.leftAnchor.constraint(equalTo: deviceImage.rightAnchor, constant: 10).isActive = true
+        deviceLabel.leftAnchor.constraint(equalTo: deviceImage.rightAnchor, constant: 20).isActive = true
         
         typeLabel.topAnchor.constraint(equalTo: deviceLabel.bottomAnchor, constant: 5).isActive = true
         typeLabel.leftAnchor.constraint(equalTo: deviceLabel.leftAnchor).isActive = true
         typeLabel.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
         
-        descriptionLabel.topAnchor.constraint(equalTo: deviceImage.bottomAnchor, constant: 20).isActive = true
-        descriptionLabel.leftAnchor.constraint(equalTo: deviceImage.leftAnchor).isActive = true
+        descriptionLabel.topAnchor.constraint(equalTo: typeLabel.bottomAnchor, constant: 20).isActive = true
+        descriptionLabel.leftAnchor.constraint(equalTo: typeLabel.leftAnchor).isActive = true
         descriptionLabel.rightAnchor.constraint(equalTo: view.rightAnchor, constant: -20).isActive = true
         
         valueLabel.heightAnchor.constraint(equalToConstant: 30).isActive = true

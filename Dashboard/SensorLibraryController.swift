@@ -11,33 +11,6 @@ import CoreLocation
 
 class SensorLibraryController: UICollectionViewController {
     
-    
-    let sensors: [DeviceModel] = [
-        
-        DeviceModel(name: "KR QUANTEC ultra", sensors: [
-            
-            SensorModel(id: "ss", type: .Temperatur, entity: .Temperatur, value: -2, minValue: 0, maxValue: 50, time: "Heute: 13:10"),
-           SensorModel(id: "ss", type: .Lautstärke, entity: .Lautstärke, value: 60, minValue: 0, maxValue: 50, time: "Heute: 13:10"),
-           SensorModel(id: "ss", type: .Kohlenmonoxid, entity: .Kohlenmonoxid, value: 48.6, minValue: 0, maxValue: 150, time: "Heute: 13:10")], image: "roboter1", minorValue: 14042),
-        
-        DeviceModel(name: "ABB IRB 5400", sensors: [
-            
-            SensorModel(id: "ss", type: .Temperatur, entity: .Temperatur, value: -2, minValue: 0, maxValue: 50, time: "Heute: 13:10"),
-            SensorModel(id: "ss", type: .Lautstärke, entity: .Lautstärke, value: 60, minValue: 0, maxValue: 50, time: "Heute: 13:10"),
-            SensorModel(id: "ss", type: .Kohlenmonoxid, entity: .Kohlenmonoxid, value: 48.6, minValue: 0, maxValue: 150, time: "Heute: 13:10")], image: "roboter2", minorValue: 6333),
-        
-        DeviceModel(name: "ABB IRB 5400", sensors: [
-            
-            SensorModel(id: "ss", type: .Temperatur, entity: .Temperatur, value: -2, minValue: 0, maxValue: 50, time: "Heute: 13:10"),
-            SensorModel(id: "ss", type: .Lautstärke, entity: .Lautstärke, value: 60, minValue: 0, maxValue: 50, time: "Heute: 13:10"),
-            SensorModel(id: "ss", type: .Kohlenmonoxid, entity: .Kohlenmonoxid, value: 48.6, minValue: 0, maxValue: 150, time: "Heute: 13:10")], image: "roboter3", minorValue: 6179),
-        
-        DeviceModel(name: "ABB IRB 5400", sensors: [
-            
-            SensorModel(id: "ss", type: .Temperatur, entity: .Temperatur, value: -2, minValue: 0, maxValue: 50, time: "Heute: 13:10"),
-            SensorModel(id: "ss", type: .Lautstärke, entity: .Lautstärke, value: 60, minValue: 0, maxValue: 50, time: "Heute: 13:10"),
-            SensorModel(id: "ss", type: .Kohlenmonoxid, entity: .Kohlenmonoxid, value: 48.6, minValue: 0, maxValue: 150, time: "Heute: 13:10")], image: "roboter", minorValue: 5555)
-    ]
 
     let cellId = "cellId"
     
@@ -51,15 +24,7 @@ class SensorLibraryController: UICollectionViewController {
         setupCollectionView()
         
         setupHeaderView()
-    
-        navigationController?.navigationBar.tintColor = UIColor(white: 0, alpha: 1)
-        navigationController?.navigationBar.barTintColor = UIColor(white: 1, alpha: 1)
         
-        // remove the shadow
-        navigationController?.navigationBar.shadowImage = UIImage()
-        navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
-        
-        navigationController?.navigationBar.isTranslucent = false
     }
     
     
@@ -102,7 +67,25 @@ class SensorLibraryController: UICollectionViewController {
             self.showAddSensorController()
         }
         
-        showAlertSheet(title: "", contentText: "Sie haben die Möglichkeit den Sensor über einen \nQR Code oder per iBeacon hinzufügen.", actions: [qrAction, beaconAction, noAction])
+        showAlertSheet(title: "", contentText: "Sie haben die Möglichkeit den Sensor über einen QR Code oder per iBeacon hinzufügen.", actions: [qrAction, beaconAction, noAction])
+    }
+    
+    func showAlertSheet(title: String, contentText: String, actions: [UIAlertAction]) {
+        DispatchQueue.main.async {
+            let alertController = UIAlertController(title: title, message: contentText, preferredStyle: .actionSheet)
+            for action in actions {
+                alertController.addAction(action)
+            }
+            let generator = UIImpactFeedbackGenerator(style: .heavy)
+            generator.impactOccurred()
+            
+            if let presenter = alertController.popoverPresentationController {
+                presenter.sourceView = self.addButton
+                presenter.sourceRect = self.addButton.bounds
+            }
+            
+            self.present(alertController, animated: true, completion: nil)
+        }
     }
     
     
@@ -113,12 +96,12 @@ class SensorLibraryController: UICollectionViewController {
         label.textColor = .gray
         label.numberOfLines = 0
         label.textAlignment = .center
-        label.font = UIFont.systemFont(ofSize: 14)
+        label.font = UIFont.systemFont(ofSize: 18)
         return label
     }()
     
     
-    var okButton: UIButton = {
+    var addButton: UIButton = {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitleColor(UIColor.black, for: .normal)
@@ -159,27 +142,27 @@ class SensorLibraryController: UICollectionViewController {
         
         view.backgroundColor = UIColor(white: 1, alpha: 1)
         
-        let line = UIView()
-        line.translatesAutoresizingMaskIntoConstraints = false
-        line.backgroundColor = UIColor(white: 0, alpha: 0)
+        let header = UIView()
+        header.translatesAutoresizingMaskIntoConstraints = false
+        header.backgroundColor = UIColor(white: 1, alpha: 1)
         
-        view.addSubview(headlineLabel)
-        view.addSubview(okButton)
-        view.addSubview(line)
+        view.addSubview(header)
+        header.addSubview(addButton)
+        header.addSubview(headlineLabel)
         
-        headlineLabel.topAnchor.constraint(equalTo: view.topAnchor, constant: 20).isActive = true
-        headlineLabel.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -80).isActive = true
-        headlineLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        header.topAnchor.constraint(equalTo: topLayoutGuide.bottomAnchor).isActive = true
+        header.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
+        header.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
+        header.heightAnchor.constraint(equalToConstant: 140).isActive = true
         
-        okButton.topAnchor.constraint(equalTo: headlineLabel.bottomAnchor, constant: 20).isActive = true
-        okButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        okButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
-        okButton.widthAnchor.constraint(equalToConstant: 300).isActive = true
+        headlineLabel.topAnchor.constraint(equalTo: header.topAnchor, constant: 20).isActive = true
+        headlineLabel.widthAnchor.constraint(equalTo: header.widthAnchor, constant: -80).isActive = true
+        headlineLabel.centerXAnchor.constraint(equalTo: header.centerXAnchor).isActive = true
         
-        line.topAnchor.constraint(equalTo: okButton.bottomAnchor, constant: 15).isActive = true
-        line.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
-        line.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
-        line.heightAnchor.constraint(equalToConstant: 0.5).isActive = true
+        addButton.topAnchor.constraint(equalTo: headlineLabel.bottomAnchor, constant: 20).isActive = true
+        addButton.centerXAnchor.constraint(equalTo: header.centerXAnchor).isActive = true
+        addButton.heightAnchor.constraint(equalToConstant: 40).isActive = true
+        addButton.widthAnchor.constraint(equalToConstant: 500).isActive = true
         
         
     }
@@ -192,14 +175,14 @@ extension SensorLibraryController: UICollectionViewDelegateFlowLayout {
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) as! SensorLibraryCell
         
-        cell.device = sensors[indexPath.item]
+        cell.device = Constants.devices[indexPath.item]
         
         return cell
     }
     
     
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return sensors.count
+        return Constants.devices.count
     }
 
     
@@ -219,13 +202,13 @@ extension SensorLibraryController: UICollectionViewDelegateFlowLayout {
         
         let itemWidth = (collectionView.bounds.size.width)
         
-        return CGSize(width: itemWidth, height: 90)
+        return CGSize(width: itemWidth, height: 130)
     }
     
     
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
-        let selected = sensors[indexPath.item]
+        let selected = Constants.devices[indexPath.item]
         
         showSensorDetailViewController(with: selected)
         
