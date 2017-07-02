@@ -35,11 +35,10 @@ class SensorDetailViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = UIColor(white: 0.8, alpha: 1)
+        view.backgroundColor = UIColor(white: 1, alpha: 1)
         
         setupViews()
         
-        navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(dismissView))
         
     }
     
@@ -68,51 +67,60 @@ class SensorDetailViewController: UIViewController {
         
         // subview stack
         
-        view.addSubview(header)
-        header.addSubview(headlineLabel)
+//        view.addSubview(header)
+//        header.addSubview(headlineLabel)
         view.addSubview(deviceImage)
         view.addSubview(line)
-        view.addSubview(sensorNameLabel)
+        view.addSubview(headlineLabel)
+//        view.addSubview(sensorNameLabel)
         view.addSubview(sensorIcon)
         view.addSubview(sensorLabel)
+        view.addSubview(describtionLabel)
         view.addSubview(okButton)
         
         guard let deviceString = device?.name else { return }
         
-        headlineLabel.text = "\(deviceString) enthält \(sensorStrings.count) Sensoren.\nMöchten Sie diese hinzufügen?"
+        headlineLabel.text = "\(deviceString) enthält \(sensorStrings.count) Sensoren."
         
-        header.topAnchor.constraint(equalTo: topLayoutGuide.bottomAnchor).isActive = true
-        header.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
-        header.bottomAnchor.constraint(equalTo: deviceImage.bottomAnchor).isActive = true
-        header.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
-
+//        header.topAnchor.constraint(equalTo: topLayoutGuide.bottomAnchor).isActive = true
+//        header.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
+//        header.bottomAnchor.constraint(equalTo: deviceImage.bottomAnchor).isActive = true
+//        header.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
         
-        headlineLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        headlineLabel.topAnchor.constraint(equalTo: header.topAnchor, constant: 30).isActive = true
-        headlineLabel.widthAnchor.constraint(equalToConstant: 500).isActive = true
         
-        deviceImage.topAnchor.constraint(equalTo: headlineLabel.bottomAnchor, constant: 30).isActive = true
+//        headlineLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+//        headlineLabel.topAnchor.constraint(equalTo: header.topAnchor, constant: 30).isActive = true
+//        headlineLabel.widthAnchor.constraint(equalToConstant: 500).isActive = true
+        
+        deviceImage.topAnchor.constraint(equalTo: topLayoutGuide.bottomAnchor).isActive = true
         deviceImage.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
         deviceImage.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        deviceImage.heightAnchor.constraint(equalToConstant: 630).isActive = true
+        deviceImage.heightAnchor.constraint(equalToConstant: 600).isActive = true
         
         line.topAnchor.constraint(equalTo: deviceImage.bottomAnchor).isActive = true
         line.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
         line.heightAnchor.constraint(equalToConstant: 0.5).isActive = true
         line.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
         
-        sensorNameLabel.topAnchor.constraint(equalTo: line.bottomAnchor, constant: 20).isActive = true
-        sensorNameLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 40).isActive = true
-        sensorNameLabel.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -40).isActive = true
+        headlineLabel.topAnchor.constraint(equalTo: line.bottomAnchor, constant: 30).isActive = true
+        headlineLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 40).isActive = true
+        headlineLabel.widthAnchor.constraint(equalToConstant: 500).isActive = true
         
-        sensorIcon.topAnchor.constraint(equalTo: sensorNameLabel.bottomAnchor, constant: 10).isActive = true
-        sensorIcon.leftAnchor.constraint(equalTo: sensorNameLabel.leftAnchor, constant: -4).isActive = true
-        sensorIcon.widthAnchor.constraint(equalToConstant: 20).isActive = true
-        sensorIcon.heightAnchor.constraint(equalToConstant: 20).isActive = true
+//        sensorNameLabel.topAnchor.constraint(equalTo: headlineLabel.bottomAnchor, constant: 20).isActive = true
+//        sensorNameLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 40).isActive = true
+//        sensorNameLabel.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -40).isActive = true
         
+        sensorIcon.topAnchor.constraint(equalTo: headlineLabel.bottomAnchor, constant: 20).isActive = true
+        sensorIcon.leftAnchor.constraint(equalTo: headlineLabel.leftAnchor, constant: -10).isActive = true
+        sensorIcon.widthAnchor.constraint(equalToConstant: 40).isActive = true
+        sensorIcon.heightAnchor.constraint(equalToConstant: 40).isActive = true
         
         sensorLabel.centerYAnchor.constraint(equalTo: sensorIcon.centerYAnchor).isActive = true
         sensorLabel.leftAnchor.constraint(equalTo: sensorIcon.rightAnchor, constant: 10).isActive = true
+        
+        describtionLabel.topAnchor.constraint(equalTo: sensorLabel.bottomAnchor, constant: 30).isActive = true
+        describtionLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 40).isActive = true
+        describtionLabel.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -100).isActive = true
         
         
         okButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -20).isActive = true
@@ -128,7 +136,7 @@ class SensorDetailViewController: UIViewController {
     var okButton: UIButton = {
         let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
-        button.setTitleColor(UIColor.black, for: .normal)
+        button.setTitleColor(UIColor.gray, for: .normal)
         button.setTitle("Hinzufügen", for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
         button.addTarget(self, action: #selector(saveSensor), for: .touchUpInside)
@@ -165,7 +173,17 @@ class SensorDetailViewController: UIViewController {
         label.text = "Keine"
         label.textColor = .black
         label.numberOfLines = 0
-        label.font = UIFont.systemFont(ofSize: 18)
+        label.font = UIFont.systemFont(ofSize: 20)
+        return label
+    }()
+    
+    var describtionLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet."
+        label.textColor = .gray
+        label.numberOfLines = 0
+        label.font = UIFont.systemFont(ofSize: 16)
         return label
     }()
     
@@ -173,10 +191,10 @@ class SensorDetailViewController: UIViewController {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         
-        label.textColor = .gray
+        label.textColor = .black
         label.numberOfLines = 0
-        label.textAlignment = .center
-        label.font = UIFont.systemFont(ofSize: 18)
+        label.textAlignment = .left
+        label.font = UIFont.boldSystemFont(ofSize: 22)
         return label
     }()
     
@@ -193,8 +211,8 @@ class SensorDetailViewController: UIViewController {
     let sensorIcon: UIImageView = {
         let image = UIImageView()
         image.translatesAutoresizingMaskIntoConstraints = false
-        image.tintColor = .white
-        image.image = UIImage(named: "sensorIcon")?.withRenderingMode(.alwaysTemplate)
+        image.tintColor = .cyan
+        image.image = UIImage(named: "sensorIcon")?.withRenderingMode(.alwaysOriginal)
         return image
     }()
 }

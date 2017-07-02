@@ -26,6 +26,8 @@ class HomeController: UICollectionViewController {
     static var nearestBeacon = 0
     let locationManager = CLLocationManager()
     
+    var alarmIsActivated = true
+    
     var closestBeacon: CLBeacon?
     var beaconIsConnected = false
     
@@ -94,8 +96,8 @@ class HomeController: UICollectionViewController {
     override func viewWillAppear(_ animated: Bool) {
         
         addSensorsManuallyButton()
-        
-        collectionView?.reloadData()
+        EventsCV.events.removeAll()
+    
         
         if Constants.sensorData.isEmpty {
             collectionView?.backgroundView = backGroundView()
@@ -112,6 +114,27 @@ class HomeController: UICollectionViewController {
     
     
     // ----------- FUNCTIONS -----------
+    
+    func showAlarmFor(sensor: SensorModel, value: Double, min: Double, max: Double, time: String, isActive: Bool) {
+        
+        
+        switch (value, min, max) {
+        case let (value, _, max) where value > max:
+            
+            // wenn der wert größer als der max wert ist
+            EventsCV.events.insert(EventModel(type: sensor.type.rawValue, time: time, text: .Max), at: 0)
+            self.showAlert(with: EventModel(type: sensor.type.rawValue, time: time, text: .Max), activated: alarmIsActivated)
+            
+        case let (value, min, _) where value < min:
+            
+            // wenn der wert kleiner als der min wert ist
+            EventsCV.events.insert(EventModel(type: sensor.type.rawValue, time: time, text: .Min), at: 0)
+            self.showAlert(with: EventModel(type: sensor.type.rawValue, time: time, text: .Min), activated: alarmIsActivated)
+            
+        default:
+            print("nothing happened")
+        }
+    }
     
     func update() {
         
@@ -140,6 +163,7 @@ class HomeController: UICollectionViewController {
                 let cell = collectionView?.cellForItem(at: item) as! SensorTileCell
                 cell.sensor?.value = sensor.value
                 cell.refreshColor(value: value, min: min, max: max)
+                showAlarmFor(sensor: cell.sensor!, value: value, min: min, max: max, time: currentTimeString(), isActive: alarmIsActivated)
             }
         }
                 
@@ -188,11 +212,12 @@ class HomeController: UICollectionViewController {
     }
     
     // shows alert if event appears
-    func showAlert(with event: EventModel) {
+    func showAlert(with event: EventModel, activated: Bool) {
         
-        let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
-        
-        showAlert(title: "ACHTUNG", contentText: "\(event.type)wert \(event.text.rawValue)", actions: [okAction])
+        if activated {
+            let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+            showAlert(title: "ACHTUNG", contentText: "\(event.type)wert \(event.text.rawValue)", actions: [okAction])
+        }
     }
     
     // current time string (short)
@@ -208,7 +233,16 @@ class HomeController: UICollectionViewController {
         return timeStamp
     }
     
-    
+    func alarmButtonPressed() {
+        
+        if alarmIsActivated {
+            alarmButton.setBackgroundImage(UIImage(named:"alarm_pressed")?.withRenderingMode(.alwaysTemplate), for: .normal)
+            alarmIsActivated = false
+        } else {
+            alarmButton.setBackgroundImage(UIImage(named:"alarm")?.withRenderingMode(.alwaysTemplate), for: .normal)
+            alarmIsActivated = true
+        }
+    }
     
     
     
@@ -231,6 +265,14 @@ class HomeController: UICollectionViewController {
         
     }
     
+    // if someone presses die Admin button
+    func adminAlert() {
+        
+        let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+        
+        showAlert(title: "Zugang verweigert", contentText: "Leider fehlen in ihnen hierfür die Berechtigungen. Sprechen Sie mit ihrem Administrator.", actions: [okAction])
+    }
+    
     
     // setup navbar
     func setupNavBar() {
@@ -242,7 +284,7 @@ class HomeController: UICollectionViewController {
         navigationItem.leftBarButtonItem = cameraButton
         
         // profile Image in Nav
-        let nameLabel = UIBarButtonItem(title: "Admin", style: .done, target: self, action: nil)
+        let nameLabel = UIBarButtonItem(title: "Admin", style: .done, target: self, action: #selector(adminAlert))
         nameLabel.tintColor = UIColor.darkGray
         
         let profileImageView = UIImageView()
@@ -255,28 +297,8 @@ class HomeController: UICollectionViewController {
         profileImageView.widthAnchor.constraint(equalToConstant: 35).isActive = true
         profileImageView.heightAnchor.constraint(equalToConstant: 35).isActive = true
         
-        let background = UIView()
-        background.backgroundColor = .gray
-        background.frame = CGRect(x: 0, y: 0, width: 120, height: 35)
-        background.layer.cornerRadius = 18
-        
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "verbunden"
-        label.textColor = .white
-        label.font = UIFont.boldSystemFont(ofSize: 14)
-        
-        background.addSubview(label)
-        
-        label.centerXAnchor.constraint(equalTo: background.centerXAnchor).isActive = true
-        label.centerYAnchor.constraint(equalTo: background.centerYAnchor).isActive = true
-        
-        let button = UIBarButtonItem(customView: background)
-        
-        
         let rightBarButtonItem = UIBarButtonItem(customView: profileImageView)
         navigationItem.rightBarButtonItems = [rightBarButtonItem, nameLabel]
-        
         
     }
     
@@ -328,20 +350,20 @@ class HomeController: UICollectionViewController {
         
         
         backgroundView.topAnchor.constraint(equalTo: topLayoutGuide.bottomAnchor).isActive = true
-        backgroundView.heightAnchor.constraint(equalToConstant: 130).isActive = true
+        backgroundView.heightAnchor.constraint(equalToConstant: 135).isActive = true
         backgroundView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
         backgroundView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
         
         
         headerView.topAnchor.constraint(equalTo: backgroundView.topAnchor, constant: 10).isActive = true
         headerView.widthAnchor.constraint(equalTo: backgroundView.widthAnchor, constant: -20).isActive = true
-        headerView.heightAnchor.constraint(equalToConstant: 120).isActive = true
+        headerView.heightAnchor.constraint(equalToConstant: 125).isActive = true
         headerView.leftAnchor.constraint(equalTo: backgroundView.leftAnchor, constant: 10).isActive = true
         
         alarmButton.topAnchor.constraint(equalTo: topLayoutGuide.bottomAnchor, constant: 22).isActive = true
         alarmButton.rightAnchor.constraint(equalTo: headerView.rightAnchor, constant: -5).isActive = true
-        alarmButton.heightAnchor.constraint(equalToConstant: 27).isActive = true
-        alarmButton.widthAnchor.constraint(equalToConstant: 27).isActive = true
+        alarmButton.heightAnchor.constraint(equalToConstant: 35).isActive = true
+        alarmButton.widthAnchor.constraint(equalToConstant: 35).isActive = true
         
         HomeController.countLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
         HomeController.countLabel.topAnchor.constraint(equalTo: topLayoutGuide.bottomAnchor, constant: 25).isActive = true
@@ -391,7 +413,7 @@ class HomeController: UICollectionViewController {
         button.translatesAutoresizingMaskIntoConstraints = false
         button.tintColor = .white
         button.setBackgroundImage(UIImage(named: "alarm")?.withRenderingMode(.alwaysTemplate), for: .normal)
-        button.setImage(UIImage(named: "alarm_pressed")?.withRenderingMode(.alwaysTemplate), for: UIControlState.highlighted)
+        button.addTarget(self, action: #selector(alarmButtonPressed), for: UIControlEvents.touchUpInside)
         return button
     }()
     

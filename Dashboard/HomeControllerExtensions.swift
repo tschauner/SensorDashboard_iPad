@@ -19,17 +19,17 @@ extension HomeController: UICollectionViewDelegateFlowLayout {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) as! SensorTileCell
         cell.sensor = Constants.sensorData[indexPath.item]
         
-//                EventsCV.events.insert(EventModel(type: cell.sensor!.type.rawValue, time: time, text: .Max), at: 0)
-//                self.showAlert(with: EventModel(type: cell.sensor!.type.rawValue, time: time, text: .Max))
-//                // wenn der wert größer als der max wert ist
+        let value = cell.sensor?.value ?? 0
+        let min = cell.sensor?.minValue ?? 0
+        let max = cell.sensor?.maxValue ?? 0
         
-//
-//                EventsCV.events.insert(EventModel(type: cell.sensor!.type.rawValue, time: time, text: .Min), at: 0)
-//                self.showAlert(with: EventModel(type: cell.sensor!.type.rawValue, time: time, text: .Min))
+        let time = currentTimeString()
         
-//        headerView.eventBar.collectionView.reloadData()
+        // shows alarm if value is higher or less
+        showAlarmFor(sensor: cell.sensor!, value: value, min: min, max: max, time: time, isActive: alarmIsActivated)
         
-        
+        headerView.eventBar.collectionView.reloadData()
+            
         return cell
     }
     
@@ -57,7 +57,7 @@ extension HomeController: UICollectionViewDelegateFlowLayout {
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
         
         
-        return CGSize(width: view.frame.width, height: 140)
+        return CGSize(width: view.frame.width, height: 145)
         
     }
     

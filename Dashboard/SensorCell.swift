@@ -64,6 +64,7 @@ class SensorTileCell: UICollectionViewCell {
                 
                 self.colorView.backgroundColor = self.maxColor
                 self.errorLabel.isHidden = false
+                self.valueLabel.text = "\(value)\(self.sensor!.entity.rawValue)"
                 
                 // wenn der wert größer als der max wert ist
                 
@@ -71,11 +72,14 @@ class SensorTileCell: UICollectionViewCell {
                 
                 self.colorView.backgroundColor = self.minColor
                 self.errorLabel.isHidden = false
+                self.valueLabel.text = "\(value)\(self.sensor!.entity.rawValue)"
+                
 
                 // wenn der wert kleiner als der min wert ist
                 
                 
             default:
+                self.valueLabel.text = "\(value)\(self.sensor!.entity.rawValue)"
                 self.errorLabel.isHidden = true
                 self.colorView.backgroundColor = UIColor(white: 0.4, alpha: 1)
                 

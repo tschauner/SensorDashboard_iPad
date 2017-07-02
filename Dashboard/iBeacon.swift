@@ -48,7 +48,6 @@ extension HomeController: CLLocationManagerDelegate {
         
         // removes data when beacon is out of range
         
-        incomingData.removeAll()
         collectionView?.reloadData()
         
         EventsCV.events.removeAll()
