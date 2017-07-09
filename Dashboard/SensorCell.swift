@@ -11,16 +11,13 @@ import UIKit
 class SensorTileCell: UICollectionViewCell {
     
     
-    let minColor = UIColor(red: 98/250, green: 139/255, blue: 200/255, alpha: 1)
-    let maxColor = UIColor.orange
-    let newGreen = UIColor(red: 185/255, green: 210/255, blue: 156/255, alpha: 0.2)
-    
     override init(frame: CGRect) {
         super.init(frame: frame)
         setupViews()
         
     }
     
+    // transforms cell when pressed
     override var isHighlighted: Bool {
         didSet {
             colorView.transform = isHighlighted ? CGAffineTransform(scaleX: 0.99, y: 0.95) : CGAffineTransform.identity
@@ -28,8 +25,7 @@ class SensorTileCell: UICollectionViewCell {
     }
     
     
-    // init text
-    
+    // init values in cell
     var sensor: SensorModel? = nil {
         didSet {
             if let sensor = sensor {
@@ -40,7 +36,7 @@ class SensorTileCell: UICollectionViewCell {
                 timeLabel.text = sensor.device
                 valueLabel.text = "\(value)\(sensor.entity.rawValue)"
                 
-                refreshColor(value: value, min: sensor.minValue!, max: sensor.maxValue!)
+                refreshColor(from: sensor)
                 
             } else {
                 typeLabel.text = ""
@@ -50,11 +46,12 @@ class SensorTileCell: UICollectionViewCell {
         }
     }
     
-    func refreshColor(value: Double, min: Double, max: Double) {
+    // refresh backgroundColor depending on value
+    func refreshColor(from sensor: SensorModel) {
         
-        guard let value = sensor?.value else { return }
-        guard let min = sensor?.minValue else { return }
-        guard let max = sensor?.maxValue else { return }
+        guard let value = sensor.value else { return }
+        guard let min = sensor.minValue else { return }
+        guard let max = sensor.maxValue else { return }
         
         
         UIView.animate(withDuration: 0.8) {
@@ -62,7 +59,7 @@ class SensorTileCell: UICollectionViewCell {
             switch (value, min, max) {
             case let (value, _, max) where value > max:
                 
-                self.colorView.backgroundColor = self.maxColor
+                self.colorView.backgroundColor = Constants.maxColor
                 self.errorLabel.isHidden = false
                 self.valueLabel.text = "\(value)\(self.sensor!.entity.rawValue)"
                 
@@ -70,7 +67,7 @@ class SensorTileCell: UICollectionViewCell {
                 
             case let (value, min, _) where value < min:
                 
-                self.colorView.backgroundColor = self.minColor
+                self.colorView.backgroundColor = Constants.minColor
                 self.errorLabel.isHidden = false
                 self.valueLabel.text = "\(value)\(self.sensor!.entity.rawValue)"
                 
@@ -79,7 +76,6 @@ class SensorTileCell: UICollectionViewCell {
                 
                 
             default:
-                self.valueLabel.text = "\(value)\(self.sensor!.entity.rawValue)"
                 self.errorLabel.isHidden = true
                 self.colorView.backgroundColor = UIColor(white: 0.4, alpha: 1)
                 
@@ -87,7 +83,7 @@ class SensorTileCell: UICollectionViewCell {
         }
     }
     
-    
+    // get current time as string
     func currentTimeString() -> String {
         
         let date = Date()
@@ -100,7 +96,7 @@ class SensorTileCell: UICollectionViewCell {
         return timeStamp
     }
     
-    // Variables
+    // ------- VIEWS ---------
     
     var colorView: UIView = {
         let v = UIView()
@@ -172,7 +168,7 @@ class SensorTileCell: UICollectionViewCell {
     }()
     
     
-    // setup views
+    // --------- setup views ----------
     
     func setupViews() {
         

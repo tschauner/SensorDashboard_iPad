@@ -18,9 +18,10 @@ extension HomeController: CLLocationManagerDelegate {
         
         region.notifyEntryStateOnDisplay = true
         
-        let knownBeacons = beacons.filter{ $0.proximity != CLProximity.unknown }
-        if (knownBeacons.count > 0) {
-            let closestBeacon = beacons[0] as CLBeacon
+        if beacons.count > 0 {
+            closestBeacon = beacons[0].minor.uint16Value
+            updateDistance(beacons[0].proximity)
+            
             
         } else {
             updateDistance(.unknown)
@@ -29,7 +30,6 @@ extension HomeController: CLLocationManagerDelegate {
     
     
     // if user enters beacon range
-    
     func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
         guard region is CLBeaconRegion else { return }
         
@@ -39,7 +39,6 @@ extension HomeController: CLLocationManagerDelegate {
     
     
     // if user exits beacon range
-    
     func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
         guard region is CLBeaconRegion else { return }
         
@@ -54,11 +53,10 @@ extension HomeController: CLLocationManagerDelegate {
         headerView.eventBar.collectionView.reloadData()
         
         // device name
-        guard let name = device?.name else { return }
         
         let content = UNMutableNotificationContent()
         
-        content.title = name
+        content.title = "name"
         content.body = "Verbindung getrennt"
         content.sound = .default()
         
@@ -75,16 +73,15 @@ extension HomeController: CLLocationManagerDelegate {
         switch distance {
         case .unknown:
             
-            // disconntects the sensor when beacon is out of range
-            self.beaconIsConnected = false
-            print("beacon disconnected")
+            beaconIsConnected = false
             
         case .near:
-            print("near")
+            beaconIsConnected = checkIfSensorIsInUse()
         case .immediate:
-            print("immediate")
+            beaconIsConnected = checkIfSensorIsInUse()
         case .far:
-            print("far")
+            beaconIsConnected = checkIfSensorIsInUse()
+            
             
             
         }

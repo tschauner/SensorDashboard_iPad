@@ -103,8 +103,6 @@ class ScannerController: UIViewController, AVCaptureMetadataOutputObjectsDelegat
         let sensorDetail = SensorDetailViewController()
         sensorDetail.device = device
         navigationController?.pushViewController(sensorDetail, animated: true)
-//        let nav = UINavigationController(rootViewController: sensorDetail)
-//        present(nav, animated: true, completion: nil)
     }
     
     
@@ -121,7 +119,7 @@ class ScannerController: UIViewController, AVCaptureMetadataOutputObjectsDelegat
             } else {
                 
                 let action = UIAlertAction(title: "OK", style: .default, handler: nil)
-                showAlert(title: "UUPS", contentText: "Dieses Gerät ist in der Datenbank nicht vorhanden.", actions: [action])
+                showAlert(title: "UUPS", contentText: Constants.scannerLesefehler, actions: [action])
             }
         }
         

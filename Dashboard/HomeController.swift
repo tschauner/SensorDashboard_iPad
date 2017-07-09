@@ -14,82 +14,64 @@ import SwiftSocket
 class HomeController: UICollectionViewController {
     
     //141.45.208.222
-//    let id = "/141.45.208.222"
-//    let port = 8080
-//    var client: TCPClient?
+    // my ip eduroam 141.45.201.228
+    var client: TCPClient?
+    let host = "192.168.1.77"
+    let port = 8080
     
+    // cells & header id
     let headerId = "headerId"
     let cellId = "cellId"
     
-    var connectedDevice: SensorModel?
+    // timer
+    var timer: Timer?
     
-    static var nearestBeacon = 0
+    // beacons
+    var closestBeacon: CLBeaconMinorValue?
     let locationManager = CLLocationManager()
-    
-    var alarmIsActivated = true
-    
-    var closestBeacon: CLBeacon?
-    var beaconIsConnected = false
-    
-    var minColor = UIColor(red: 98/250, green: 139/255, blue: 200/255, alpha: 1)
-    var maxColor = UIColor.orange
-    let newGreen = UIColor(red: 185/255, green: 210/255, blue: 156/255, alpha: 0.2)
-    
+    static var allBeacons = [CLBeacon]()
+    var beaconsFound = [CLBeaconMinorValue]()
     let region = CLBeaconRegion(proximityUUID: UUID(uuidString: "f7826da6-4fa2-4e98-8024-bc5b71e0893e")!, identifier: "MyBeacon")
+    
+    var beaconIsConnected = false {
+        didSet {
+            
+            if beaconIsConnected {
+                promptUser()
+            }
+        }
+        
+    }
+    
+    // alarm
+    var alarmIsActivated = true
     
     
     //setup every device for detailed view
-    var device: DeviceModel? = nil {
+    var devices = [DeviceModel]() {
         didSet {
-            if let device = device {
-                
-                // shows data of every device in Sensorview
-                
-                
-                deviceImage.image = UIImage(named: device.image)
-                sensorNameLabel.text = device.name
-                
-                let sensors = device.sensors
-                
-                let sensorStrings = sensors.map { $0.type.rawValue }
-                
-                sensorLabel.text = sensorStrings.joined(separator: ", ")
-                
+            for device in devices {
+                for sensor in device.sensors {
+                    
+                    Constants.sensorData.append(sensor)
+                    collectionView?.reloadData()
+                }
             }
         }
     }
     
     
     // initial load
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = .darkGray
+        setupViews()
+    
+        initLocationServices()
         
+        initGestureRecognizer()
         
-        addSensorsManuallyButton()
-        
-        locationManager.delegate = self
-        if (CLLocationManager.authorizationStatus() != CLAuthorizationStatus.authorizedWhenInUse) {
-            locationManager.requestWhenInUseAuthorization()
-        }
-        
-        locationManager.startRangingBeacons(in: region)
-        
-        setupCollectionView()
-
-        setupHeaderView()
-        
-        setupNavBar()
-        
-        DispatchQueue.main.async {
-
-        }
-        
-        Timer.scheduledTimer(timeInterval: 10, target: self, selector: #selector(update), userInfo: nil, repeats: true)
-        
-        
+        conntectToServer()
     }
     
     // starts background view again & makes buttonview visible
@@ -109,91 +91,57 @@ class HomeController: UICollectionViewController {
             self.buttonView.alpha = 1
         }
         
-        
     }
+    
+    
     
     
     // ----------- FUNCTIONS -----------
     
-    func showAlarmFor(sensor: SensorModel, value: Double, min: Double, max: Double, time: String, isActive: Bool) {
+    
+    // setup views
+    func setupViews() {
         
+        view.backgroundColor = .darkGray
         
-        switch (value, min, max) {
-        case let (value, _, max) where value > max:
+        addSensorsManuallyButton()
+        
+        setupCollectionView()
+        
+        setupHeaderView()
+        
+        setupNavBar()
+        
+    }
+    
+    
+    // init gestures
+    func initGestureRecognizer() {
+        let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(handleLongGesture(_:)))
+        self.collectionView?.addGestureRecognizer(longPressGesture)
+    }
+    
+    // gesture states to move item in collection view
+    func handleLongGesture(_ gesture: UILongPressGestureRecognizer) {
+        
+        switch(gesture.state) {
             
-            // wenn der wert größer als der max wert ist
-            EventsCV.events.insert(EventModel(type: sensor.type.rawValue, time: time, text: .Max), at: 0)
-            self.showAlert(with: EventModel(type: sensor.type.rawValue, time: time, text: .Max), activated: alarmIsActivated)
-            
-        case let (value, min, _) where value < min:
-            
-            // wenn der wert kleiner als der min wert ist
-            EventsCV.events.insert(EventModel(type: sensor.type.rawValue, time: time, text: .Min), at: 0)
-            self.showAlert(with: EventModel(type: sensor.type.rawValue, time: time, text: .Min), activated: alarmIsActivated)
-            
+        case UIGestureRecognizerState.began:
+            guard let selectedIndexPath = self.collectionView?.indexPathForItem(at: gesture.location(in: self.collectionView)) else {
+                break
+            }
+            collectionView?.beginInteractiveMovementForItem(at: selectedIndexPath)
+        case UIGestureRecognizerState.changed:
+            collectionView?.updateInteractiveMovementTargetPosition(gesture.location(in: gesture.view!))
+        case UIGestureRecognizerState.ended:
+            collectionView?.endInteractiveMovement()
         default:
-            print("nothing happened")
+            collectionView?.cancelInteractiveMovement()
         }
     }
     
-    func update() {
-        
-        updateCell(with: "sensor co2", sensor: SensorModel(id: "sensor co2", device: "ABC", type: .Temperatur, entity: .Temperatur, value: 152, minValue: 0, maxValue: 150, time: "12:55"))
-    }
     
-    
-    func updateCell(with id: String, sensor: SensorModel) {
-        
-        guard let value = sensor.value else { return }
-        guard let min = sensor.minValue else { return }
-        guard let max = sensor.maxValue else { return }
-        
-        // Find the same beacons in the table.
-        var indexPaths = [IndexPath]()
-            for row in 0..<Constants.sensorData.count {
-                if Constants.sensorData[row].id == id {
-                    indexPaths += [IndexPath(row: row, section: 0)]
-            }
-        }
-        
-        // Update beacon locations of visible rows.
-        if let visibleRows = collectionView?.indexPathsForVisibleItems {
-            let rowsToUpdate = visibleRows.filter { indexPaths.contains($0) }
-            for item in rowsToUpdate {
-                let cell = collectionView?.cellForItem(at: item) as! SensorTileCell
-                cell.sensor?.value = sensor.value
-                cell.refreshColor(value: value, min: min, max: max)
-                showAlarmFor(sensor: cell.sensor!, value: value, min: min, max: max, time: currentTimeString(), isActive: alarmIsActivated)
-            }
-        }
-                
-    }
-    
-
-    @objc func askSocketForData() {
-        
-        let sensorIds = Constants.sensorData.map { $0.id }
-        
-        Socket.sharedInstance.sendData(with: "GET / HTTP/1.0\n\n")
-        
-        
-        
-    }
-    
-    // show viewcontroller with sensordata
-    func show(sensorData: SensorModel) {
-        
-        let chart = ChartView()
-        
-        UIView.animate(withDuration: 0.2) {
-            self.buttonView.alpha = 0
-        }
-        
-        navigationController?.pushViewController(chart, animated: true)
-    }
-    
-    
-    // add event
+    // shows qr code scanner vc
     func showORScanner() {
         
         let qrcode = ScannerController()
@@ -202,7 +150,7 @@ class HomeController: UICollectionViewController {
         present(nav, animated: true, completion: nil)
     }
     
-    // button add sensor manually
+    // button - add sensor manually
     func addSensorManually() {
         
         let layout = UICollectionViewFlowLayout()
@@ -233,6 +181,8 @@ class HomeController: UICollectionViewController {
         return timeStamp
     }
     
+    
+    // change alarm button icon if pressed and de/activates it
     func alarmButtonPressed() {
         
         if alarmIsActivated {
@@ -243,6 +193,16 @@ class HomeController: UICollectionViewController {
             alarmIsActivated = true
         }
     }
+    
+    // init locations services for ibeacon
+    func initLocationServices() {
+        locationManager.delegate = self
+        if (CLLocationManager.authorizationStatus() != CLAuthorizationStatus.authorizedWhenInUse) {
+            locationManager.requestWhenInUseAuthorization()
+        }
+        locationManager.startRangingBeacons(in: region)
+    }
+    
     
     
     
@@ -265,16 +225,20 @@ class HomeController: UICollectionViewController {
         
     }
     
+    
     // if someone presses die Admin button
     func adminAlert() {
         
-        let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+        checkDataFromServer()
         
-        showAlert(title: "Zugang verweigert", contentText: "Leider fehlen in ihnen hierfür die Berechtigungen. Sprechen Sie mit ihrem Administrator.", actions: [okAction])
+        //let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+        
+        //showAlert(title: "Zugang verweigert", contentText: Constants.adminAlarmText, actions: [okAction])
     }
     
     
     // setup navbar
+    
     func setupNavBar() {
         
         
@@ -288,20 +252,16 @@ class HomeController: UICollectionViewController {
         nameLabel.tintColor = UIColor.darkGray
         
         let profileImageView = UIImageView()
-        profileImageView.translatesAutoresizingMaskIntoConstraints = false
+        profileImageView.frame = CGRect(x: 0, y: 0, width: 35, height: 35)
         profileImageView.image = UIImage(named: "admin")
         profileImageView.clipsToBounds = true
         profileImageView.contentMode = .scaleAspectFill
         profileImageView.layer.cornerRadius = 18
         
-        profileImageView.widthAnchor.constraint(equalToConstant: 35).isActive = true
-        profileImageView.heightAnchor.constraint(equalToConstant: 35).isActive = true
-        
         let rightBarButtonItem = UIBarButtonItem(customView: profileImageView)
         navigationItem.rightBarButtonItems = [rightBarButtonItem, nameLabel]
         
     }
-    
     
     
     // setup button view
@@ -334,9 +294,7 @@ class HomeController: UICollectionViewController {
         okButton.widthAnchor.constraint(equalTo: buttonView.widthAnchor, constant: -100).isActive = true
         okButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
         okButton.centerXAnchor.constraint(equalTo: buttonView.centerXAnchor).isActive = true
-        
     }
-    
     
     
     // setup header - event bar
@@ -391,13 +349,6 @@ class HomeController: UICollectionViewController {
         return view
     }()
     
-    var touchView: UIView = {
-        let view = UIView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.layer.cornerRadius = 4
-        view.backgroundColor = .darkGray
-        return view
-    }()
     
     // init headerView
     var headerView: HeaderView = {
@@ -427,50 +378,8 @@ class HomeController: UICollectionViewController {
         return label
     }()
     
-    let newSensorView: UIView = {
-        let view = UIView()
-        view.backgroundColor = UIColor(white: 0.8, alpha: 1)
-        return view
-    }()
-    
-    var sensorNameLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Keine Geräte in Reichweite"
-        label.textColor = .white
-        label.font = UIFont.boldSystemFont(ofSize: 16)
-        return label
-    }()
-    
-    var sensorLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Keine"
-        label.textColor = .black
-        label.numberOfLines = 0
-        label.font = UIFont.systemFont(ofSize: 14)
-        return label
-    }()
-    
-    var headlineLabel: UILabel = {
-        let label = UILabel()
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Neues Gerät erkannt. Möchten Sie die Sensoren hinzufügen?"
-        label.textColor = .gray
-        label.numberOfLines = 0
-        label.textAlignment = .center
-        label.font = UIFont.systemFont(ofSize: 14)
-        return label
-    }()
     
     
-    let deviceImage: UIImageView = {
-        let view = UIImageView()
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = .white
-        view.contentMode = .scaleToFill
-        return view
-    }()
     
 
 }

@@ -13,15 +13,10 @@ import CoreData
 class SensorLibraryCell: UICollectionViewCell, CLLocationManagerDelegate {
     override init(frame: CGRect) {
         super.init(frame: frame)
+        
         setupViews()
+        initLocationService()
         
-        
-        locationManager.delegate = self
-        if (CLLocationManager.authorizationStatus() != CLAuthorizationStatus.authorizedWhenInUse) {
-            locationManager.requestWhenInUseAuthorization()
-        }
-        
-        locationManager.startRangingBeacons(in: region)
     }
     
     override var isHighlighted: Bool {
@@ -32,10 +27,10 @@ class SensorLibraryCell: UICollectionViewCell, CLLocationManagerDelegate {
     
     let locationManager = CLLocationManager()
     let region = CLBeaconRegion(proximityUUID: UUID(uuidString: "f7826da6-4fa2-4e98-8024-bc5b71e0893e")!, identifier: "MyBeacon")
-    var closestBeacon: CLBeacon?
     var location: String?
     
-    // Variables
+    
+    // -----  VIEWS ------
     
     var nameLabel: UILabel = {
         let label = UILabel()
@@ -86,6 +81,7 @@ class SensorLibraryCell: UICollectionViewCell, CLLocationManagerDelegate {
         return view
     }()
     
+    // setting up device
     var device: DeviceModel? = nil {
         didSet {
             if let device = device {
@@ -96,13 +92,23 @@ class SensorLibraryCell: UICollectionViewCell, CLLocationManagerDelegate {
                     imageView.image = UIImage(named: device.image)
                 }
                 
-                
                 nameLabel.text = device.name
                 
             }
         }
     }
     
+    // ------- FUNCTIONS ---------
+    
+    func initLocationService() {
+        
+        locationManager.delegate = self
+        if (CLLocationManager.authorizationStatus() != CLAuthorizationStatus.authorizedWhenInUse) {
+            locationManager.requestWhenInUseAuthorization()
+        }
+        
+        locationManager.startRangingBeacons(in: region)
+    }
     
     func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
         
@@ -113,33 +119,44 @@ class SensorLibraryCell: UICollectionViewCell, CLLocationManagerDelegate {
         if beacons.count > 0 {
             let closestBeacon = beacons[0] as CLBeacon
             if d == closestBeacon.minor.intValue {
-                updateDistance(beacons[0].proximity)
+                makeStringOutOf(beacons[0].proximity, beacon: closestBeacon)
             }
         } else {
-            updateDistance(.unknown)
+            
+            makeStringOutOf(beacons[0].proximity, beacon: beacons[0])
         }
     }
     
-    func updateDistance(_ distance: CLProximity) {
+    func makeStringOutOf(_ distance: CLProximity, beacon: CLBeacon) {
         UIView.animate(withDuration: 0.8) {
+            
+            let accuracy = String(format: "%.2f", beacon.accuracy)
+            
             switch distance {
             case .unknown:
-                self.rangeLabel.text  = "Location: Unbekannt"
+                self.rangeLabel.text  = "Location Unbekannt"
+                print("location: unbekannt")
                 
             case .far:
-                self.rangeLabel.text  = "Location: Weit"
+                self.rangeLabel.text  = "Ca \(accuracy) Meter entfernt"
+                print("location: weit")
                 
             case .near:
-                self.rangeLabel.text = "Location: In der Nähe"
+                self.rangeLabel.text  = "Ca \(accuracy) Meter entfernt"
+                print("location: nähe")
                 
             case .immediate:
-                self.rangeLabel.text  = "Location: Unmittelbar"
+                self.rangeLabel.text  = "Ca \(accuracy) Meter entfernt"
+                print("location: unmittelbar")
             }
         }
     }
     
     
-    // setup views
+    
+    
+    
+    // ----- SETUP VIEWS ------
     
     func setupViews() {
         
@@ -163,7 +180,6 @@ class SensorLibraryCell: UICollectionViewCell, CLLocationManagerDelegate {
         seperatorLine.leftAnchor.constraint(equalTo: rangeLabel.leftAnchor).isActive = true
         seperatorLine.rightAnchor.constraint(equalTo: self.rightAnchor).isActive = true
         seperatorLine.heightAnchor.constraint(equalToConstant: 0.5).isActive = true
-
         
     }
     

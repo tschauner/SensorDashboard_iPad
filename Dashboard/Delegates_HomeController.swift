@@ -13,20 +13,19 @@ import UIKit
 
 extension HomeController: UICollectionViewDelegateFlowLayout {
     
+    override func collectionView(_ collectionView: UICollectionView, moveItemAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
+        
+        let temp = Constants.sensorData.remove(at: sourceIndexPath.item)
+        Constants.sensorData.insert(temp, at: destinationIndexPath.item)
+    }
     
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) as! SensorTileCell
         cell.sensor = Constants.sensorData[indexPath.item]
         
-        let value = cell.sensor?.value ?? 0
-        let min = cell.sensor?.minValue ?? 0
-        let max = cell.sensor?.maxValue ?? 0
-        
-        let time = currentTimeString()
-        
         // shows alarm if value is higher or less
-        showAlarmFor(sensor: cell.sensor!, value: value, min: min, max: max, time: time, isActive: alarmIsActivated)
+        showAlarmFor(sensor: cell.sensor!, isActive: alarmIsActivated)
         
         headerView.eventBar.collectionView.reloadData()
             

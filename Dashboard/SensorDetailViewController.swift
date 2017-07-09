@@ -14,12 +14,12 @@ class SensorDetailViewController: UIViewController {
     var sensors = [SensorModel]()
     var sensorStrings = [String]()
     
+    // set up all views
     var device: DeviceModel? = nil {
         didSet {
             if let device = device {
                 
                 // shows data of every device in Sensorview
-                
                 deviceImage.image = UIImage(named: device.image)
                 sensorNameLabel.text = device.name
                 
@@ -35,10 +35,7 @@ class SensorDetailViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = UIColor(white: 1, alpha: 1)
-        
         setupViews()
-        
         
     }
     
@@ -51,11 +48,15 @@ class SensorDetailViewController: UIViewController {
     // saves selected sensors
     func saveSensor() {
         
-        for sensor in sensors {
-           Constants.sensorData.append(sensor)
-        }
+        let layout = UICollectionViewFlowLayout()
+        let home = HomeController(collectionViewLayout: layout)
+        home.devices.append(device!)
+        home.beaconsFound.append(device!.minorValue)
         
-        dismissView()
+        let nav = UINavigationController(rootViewController: home)
+        
+        present(nav, animated: true, completion: nil)
+        
         
     }
     
@@ -64,15 +65,12 @@ class SensorDetailViewController: UIViewController {
 
     func setupViews() {
         
+        view.backgroundColor = .white
         
         // subview stack
-        
-//        view.addSubview(header)
-//        header.addSubview(headlineLabel)
         view.addSubview(deviceImage)
         view.addSubview(line)
         view.addSubview(headlineLabel)
-//        view.addSubview(sensorNameLabel)
         view.addSubview(sensorIcon)
         view.addSubview(sensorLabel)
         view.addSubview(describtionLabel)
@@ -82,16 +80,7 @@ class SensorDetailViewController: UIViewController {
         
         headlineLabel.text = "\(deviceString) enthält \(sensorStrings.count) Sensoren."
         
-//        header.topAnchor.constraint(equalTo: topLayoutGuide.bottomAnchor).isActive = true
-//        header.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
-//        header.bottomAnchor.constraint(equalTo: deviceImage.bottomAnchor).isActive = true
-//        header.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
-        
-        
-//        headlineLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-//        headlineLabel.topAnchor.constraint(equalTo: header.topAnchor, constant: 30).isActive = true
-//        headlineLabel.widthAnchor.constraint(equalToConstant: 500).isActive = true
-        
+        // setup constraints for views
         deviceImage.topAnchor.constraint(equalTo: topLayoutGuide.bottomAnchor).isActive = true
         deviceImage.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
         deviceImage.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
@@ -105,10 +94,6 @@ class SensorDetailViewController: UIViewController {
         headlineLabel.topAnchor.constraint(equalTo: line.bottomAnchor, constant: 30).isActive = true
         headlineLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 40).isActive = true
         headlineLabel.widthAnchor.constraint(equalToConstant: 500).isActive = true
-        
-//        sensorNameLabel.topAnchor.constraint(equalTo: headlineLabel.bottomAnchor, constant: 20).isActive = true
-//        sensorNameLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 40).isActive = true
-//        sensorNameLabel.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -40).isActive = true
         
         sensorIcon.topAnchor.constraint(equalTo: headlineLabel.bottomAnchor, constant: 20).isActive = true
         sensorIcon.leftAnchor.constraint(equalTo: headlineLabel.leftAnchor, constant: -10).isActive = true

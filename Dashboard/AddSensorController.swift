@@ -19,17 +19,7 @@ class AddSensorController: UIViewController, UIPickerViewDelegate, UIPickerViewD
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        navigationController?.navigationBar.tintColor = UIColor(white: 0, alpha: 1)
-        navigationController?.navigationBar.barTintColor = UIColor(white: 1, alpha: 1)
-        
-        // remove the shadow
-        navigationController?.navigationBar.shadowImage = UIImage()
-        navigationController?.navigationBar.setBackgroundImage(UIImage(), for: .default)
-        
-        navigationController?.navigationBar.isTranslucent = false
-        
         view.backgroundColor = UIColor(white: 1, alpha: 1)
-        
         
         pickerView.delegate = self
         pickerView.dataSource = self
@@ -45,6 +35,110 @@ class AddSensorController: UIViewController, UIPickerViewDelegate, UIPickerViewD
         self.view.endEditing(true)
     }
     
+
+    
+    func saveSensor() {
+        
+    }
+    
+    func dismissView() {
+        
+        dismiss(animated: true, completion: nil)
+    }
+    
+    
+    func initTapGesture() {
+        
+        let pan = UITapGestureRecognizer(target: self, action: #selector(showPickerView))
+        touchView.addGestureRecognizer(pan)
+        
+    }
+    
+    func showPickerView() {
+        
+        print("tapped")
+        
+        UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseOut, animations: { 
+            
+            self.pickerView.alpha = 1
+            self.addButton.alpha = 0
+            
+        }, completion: nil)
+    }
+    
+    // -------- SETUP VIEWS --------
+    
+    func setupViews() {
+        
+        view.addSubview(pickerView)
+        
+        view.addSubview(addButton)
+        view.addSubview(headlineLabel)
+        view.addSubview(uuidTextField)
+        view.addSubview(minorTextField)
+        view.addSubview(touchView)
+        view.addSubview(typeTextField)
+        
+        pickerView.translatesAutoresizingMaskIntoConstraints = false
+        pickerView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
+        pickerView.heightAnchor.constraint(equalToConstant: 200).isActive = true
+        pickerView.bottomAnchor.constraint(equalTo: addButton.topAnchor).isActive = true
+        pickerView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
+        pickerView.alpha = 0
+        
+        headlineLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        headlineLabel.topAnchor.constraint(equalTo: topLayoutGuide.bottomAnchor, constant: 40).isActive = true
+        headlineLabel.widthAnchor.constraint(equalToConstant: 350).isActive = true
+        headlineLabel.heightAnchor.constraint(lessThanOrEqualToConstant: 50).isActive = true
+        
+        uuidTextField.topAnchor.constraint(equalTo: headlineLabel.bottomAnchor, constant: 50).isActive = true
+        uuidTextField.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -250).isActive = true
+        uuidTextField.heightAnchor.constraint(equalToConstant: 60).isActive = true
+        uuidTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        
+        minorTextField.topAnchor.constraint(equalTo: uuidTextField.bottomAnchor, constant: 20).isActive = true
+        minorTextField.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -250).isActive = true
+        minorTextField.heightAnchor.constraint(equalToConstant: 60).isActive = true
+        minorTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        
+        touchView.topAnchor.constraint(equalTo: minorTextField.bottomAnchor, constant: 20).isActive = true
+        touchView.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -250).isActive = true
+        touchView.heightAnchor.constraint(equalToConstant: 60).isActive = true
+        touchView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        
+        typeTextField.leftAnchor.constraint(equalTo: touchView.leftAnchor, constant: 20).isActive = true
+        typeTextField.centerYAnchor.constraint(equalTo: touchView.centerYAnchor).isActive = true
+        
+        addButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -20).isActive = true
+        addButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
+        addButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+    }
+    
+    // ----- delegate methods -----
+    
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        return sensorTypes[row]
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        
+        typeTextField.text = sensorTypes[row]
+        pickerView.alpha = 0
+        self.addButton.alpha = 1
+    }
+    
+    
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return sensorTypes.count
+    }
+    
+    
+    
+    // ------- VIEWS --------
     
     var headlineLabel: UILabel = {
         let label = UILabel()
@@ -128,7 +222,7 @@ class AddSensorController: UIViewController, UIPickerViewDelegate, UIPickerViewD
         return button
     }()
     
-
+    
     
     enum SensorType: String {
         case Temperatur = "Temperatur"
@@ -138,110 +232,6 @@ class AddSensorController: UIViewController, UIPickerViewDelegate, UIPickerViewD
         case Helligkeit = "Helligkeit"
         case Infrarot = "Infrarot"
         case Luftdruck = "Luftdruck"
-    }
-    
-    func saveSensor() {
-        
-    }
-    
-    func dismissView() {
-        
-        dismiss(animated: true, completion: nil)
-    }
-    
-    
-    func initTapGesture() {
-        
-        let pan = UITapGestureRecognizer(target: self, action: #selector(showPickerView))
-        touchView.addGestureRecognizer(pan)
-        
-    }
-    
-    func showPickerView() {
-        
-        print("tapped")
-        
-        UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseOut, animations: { 
-            
-            self.pickerView.alpha = 1
-            self.addButton.alpha = 0
-            
-        }, completion: nil)
-    }
-    
-    
-    func setupViews() {
-        
-        
-        view.addSubview(pickerView)
-        
-        view.addSubview(addButton)
-        view.addSubview(headlineLabel)
-        view.addSubview(uuidTextField)
-        view.addSubview(minorTextField)
-        view.addSubview(touchView)
-        view.addSubview(typeTextField)
-        
-        
-        pickerView.translatesAutoresizingMaskIntoConstraints = false
-        pickerView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
-        pickerView.heightAnchor.constraint(equalToConstant: 200).isActive = true
-        pickerView.bottomAnchor.constraint(equalTo: addButton.topAnchor).isActive = true
-        pickerView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
-        pickerView.alpha = 0
-        
-        
-        headlineLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        headlineLabel.topAnchor.constraint(equalTo: topLayoutGuide.bottomAnchor, constant: 40).isActive = true
-        headlineLabel.widthAnchor.constraint(equalToConstant: 350).isActive = true
-        headlineLabel.heightAnchor.constraint(lessThanOrEqualToConstant: 50).isActive = true
-        
-        uuidTextField.topAnchor.constraint(equalTo: headlineLabel.bottomAnchor, constant: 50).isActive = true
-        uuidTextField.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -250).isActive = true
-        uuidTextField.heightAnchor.constraint(equalToConstant: 60).isActive = true
-        uuidTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        
-        minorTextField.topAnchor.constraint(equalTo: uuidTextField.bottomAnchor, constant: 20).isActive = true
-        minorTextField.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -250).isActive = true
-        minorTextField.heightAnchor.constraint(equalToConstant: 60).isActive = true
-        minorTextField.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        
-        touchView.topAnchor.constraint(equalTo: minorTextField.bottomAnchor, constant: 20).isActive = true
-        touchView.widthAnchor.constraint(equalTo: view.widthAnchor, constant: -250).isActive = true
-        touchView.heightAnchor.constraint(equalToConstant: 60).isActive = true
-        touchView.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-        
-        typeTextField.leftAnchor.constraint(equalTo: touchView.leftAnchor, constant: 20).isActive = true
-        typeTextField.centerYAnchor.constraint(equalTo: touchView.centerYAnchor).isActive = true
-        
-        addButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -20).isActive = true
-        addButton.heightAnchor.constraint(equalToConstant: 50).isActive = true
-        addButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
-    }
-    
-    
-    
-    
-    
-    
-    func numberOfComponents(in pickerView: UIPickerView) -> Int {
-        return 1
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        return sensorTypes[row]
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        
-        typeTextField.text = sensorTypes[row]
-        pickerView.alpha = 0
-        self.addButton.alpha = 1
-    }
-    
-    
-    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return sensorTypes.count
     }
     
     

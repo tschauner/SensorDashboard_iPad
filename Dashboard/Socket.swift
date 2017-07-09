@@ -13,50 +13,62 @@ import SwiftSocket
 
 class Socket {
     
-    let client: TCPClient?
-    let host = "141.45.208.222"
-    let port = 8080
-    
+
     //Singleton
-    static var sharedInstance = Socket()
+    public static let sharedInstance = Socket()
     
-    init() {
-        client = TCPClient(address: host, port: Int32(port))
+    fileprivate var tcpClient: TCPClient?
+    
+    public var connected: Bool = false
+    
+    public init() {
+        
     }
     
-    func sendData(with request: String) {
-        guard let client = client else { return }
-        
-        switch client.connect(timeout: 10) {
+    @discardableResult
+    public func connect(address: String, port: Int32) -> Result {
+        tcpClient = TCPClient(address: address, port: port)
+        let result = tcpClient!.connect(timeout: 10)
+        switch result {
         case .success:
-            printStatus(string: "Connected to host \(client.address)")
-            if let response = sendRequest(string: "\(request)\n", using: client) {
-                printStatus(string: "Response: \(response)")
+            connected = true
+            print("Successfully connected to \(address)")
+        case .failure(let error):
+            print("\(error)")
+        }
+        
+        return result
+        
+    }
+    
+    public func disconnect() {
+        if (connected) {
+            print("Disconnected")
+            tcpClient?.close()
+            connected = false
+        }
+    }
+}
+
+extension Socket {
+    
+    @discardableResult
+    public func send(command: String) -> (result: Result?, data: String) {
+        let res = tcpClient?.send(string: command)
+        
+        if (res?.isSuccess)! {
+            guard let data = tcpClient?.read(1024*10) else { return (nil, "nil")}
+            
+            if (!data.isEmpty) {
+                guard let response = String(bytes: data, encoding: .utf8) else { return (nil, "")}
+                return (res, response)
             }
-        case .failure(let error):
-            printStatus(string: String(describing: error))
+            return (res, "")
+        }
+        else {
+            guard let error = res?.error?.localizedDescription else { return (nil, "")}
+            return (res, error)
         }
     }
     
-    private func sendRequest(string: String, using client: TCPClient) -> String? {
-        printStatus(string: "Sending data ... ")
-        
-        switch client.send(string: string) {
-        case .success:
-            return readResponse(from: client)
-        case .failure(let error):
-            printStatus(string: String(describing: error))
-            return nil
-        }
-    }
-    
-    private func readResponse(from client: TCPClient) -> String? {
-        guard let response = client.read(1024*10) else { return nil }
-        
-        return String(bytes: response, encoding: .utf8)
-    }
-    
-    private func printStatus(string: String) {
-        print(string)
-    }
 }

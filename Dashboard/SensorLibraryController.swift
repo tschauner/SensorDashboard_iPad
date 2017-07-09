@@ -25,7 +25,11 @@ class SensorLibraryController: UICollectionViewController {
         
         setupHeaderView()
         
+        //Timer.scheduledTimer(timeInterval: 2, target: self, selector: #selector(findBeaconInCell), userInfo: nil, repeats: true)
+        
     }
+    
+    
     
     
     // setup collection view
@@ -45,6 +49,51 @@ class SensorLibraryController: UICollectionViewController {
         collectionView?.register(SensorLibraryCell.self, forCellWithReuseIdentifier: cellId)
     }
     
+    
+    
+     // Find the same beacons in the table. - works only for one, but displays all available at the same time
+//    @objc func findBeaconInCell() {
+//
+//        var b: CLBeacon?
+//
+//        var indexPaths = [IndexPath]()
+//        for beacon in HomeController.allBeacons {
+//            b = beacon
+//            for row in 0..<Constants.devices.count {
+//                if Constants.devices[row].minorValue == beacon.minor.intValue {
+//                    indexPaths += [IndexPath(row: row, section: 0)]
+//                }
+//            }
+//        }
+//
+//        // Update beacon locations of visible rows.
+//        if let visibleRows = collectionView?.indexPathsForVisibleItems {
+//            let rowsToUpdate = visibleRows.filter { indexPaths.contains($0) }
+//            for row in rowsToUpdate {
+//                let cell = collectionView?.cellForItem(at: row) as! SensorLibraryCell
+//                guard let beacon = b else { return }
+//                cell.updateDistance(HomeController.allBeacons[0].proximity, beacon: beacon)
+//            }
+//        }
+//    }
+    
+    func showAddSensorController() {
+        
+        let addSensor = AddSensorController()
+        
+        navigationController?.pushViewController(addSensor, animated: true)
+        //        present(nav, animated: true, completion: nil)
+    }
+    
+    func showSensorDetailViewController(with device: DeviceModel) {
+        
+        let sensorDetail = SensorDetailViewController()
+        sensorDetail.device = device
+        
+        navigationController?.pushViewController(sensorDetail, animated: true)
+        
+    }
+    
     func showORScanner() {
         
         let qrcode = ScannerController()
@@ -53,7 +102,14 @@ class SensorLibraryController: UICollectionViewController {
     }
     
     
+    func dismissView() {
+        
+        dismiss(animated: true, completion: nil)
+    }
     
+    
+    
+    // prompts alert sheet with options
     func showOptions() {
         
         let noAction = UIAlertAction(title: "Abbrechen", style: .cancel, handler: nil)
@@ -67,9 +123,10 @@ class SensorLibraryController: UICollectionViewController {
             self.showAddSensorController()
         }
         
-        showAlertSheet(title: "", contentText: "Sie haben die Möglichkeit den Sensor über einen QR Code oder per iBeacon hinzufügen.", actions: [qrAction, beaconAction, noAction])
+        showAlertSheet(title: "", contentText: Constants.libraryOptionText, actions: [qrAction, beaconAction, noAction])
     }
     
+    // alert sheet
     func showAlertSheet(title: String, contentText: String, actions: [UIAlertAction]) {
         DispatchQueue.main.async {
             let alertController = UIAlertController(title: title, message: contentText, preferredStyle: .actionSheet)
@@ -87,6 +144,8 @@ class SensorLibraryController: UICollectionViewController {
             self.present(alertController, animated: true, completion: nil)
         }
     }
+    
+    // ------ VIEWS -----
     
     
     var headlineLabel: UILabel = {
@@ -114,29 +173,7 @@ class SensorLibraryController: UICollectionViewController {
     }()
     
     
-    func dismissView() {
-        
-        dismiss(animated: true, completion: nil)
-    }
-    
-    
-    func showAddSensorController() {
-        
-        let addSensor = AddSensorController()
-        
-        navigationController?.pushViewController(addSensor, animated: true)
-//        present(nav, animated: true, completion: nil)
-    }
-    
-    func showSensorDetailViewController(with device: DeviceModel) {
-        
-        let sensorDetail = SensorDetailViewController()
-        sensorDetail.device = device
-        
-        navigationController?.pushViewController(sensorDetail, animated: true)
-        
-    }
-    
+    // ----- SETUP VIEWS ------
     
     func setupHeaderView() {
         
@@ -176,6 +213,7 @@ extension SensorLibraryController: UICollectionViewDelegateFlowLayout {
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) as! SensorLibraryCell
         
         cell.device = Constants.devices[indexPath.item]
+        
         
         return cell
     }
