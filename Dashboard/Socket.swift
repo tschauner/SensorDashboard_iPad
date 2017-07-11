@@ -53,7 +53,7 @@ class Socket {
 extension Socket {
     
     @discardableResult
-    public func send(command: String) -> (result: Result?, data: String) {
+    public func send(command: String) -> (result: Result?, data: String?) {
         let res = tcpClient?.send(string: command)
         
         if (res?.isSuccess)! {

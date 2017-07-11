@@ -69,7 +69,16 @@ class ChartViewController: UIViewController, ChartDelegate {
     
     // ------ SETUP VIEWS -------
     
+    
     func makeFancyGraphChart(with frame: CGRect) {
+        /**
+         This is a description.
+         
+         - Road: For streets or trails.
+         - Touring: For long journeys.
+         - Cruiser: For casual trips around town.
+         - Hybrid: For general-purpose transportation.
+         */
         
         let graphView = ScrollableGraphView(frame: frame)
         graphView.backgroundFillColor = .darkGray
@@ -77,15 +86,15 @@ class ChartViewController: UIViewController, ChartDelegate {
         graphView.shouldAdaptRange = true
         
         graphView.lineWidth = 2
-        graphView.lineColor = UIColor(red:0.29, green:0.56, blue:0.89, alpha:1)
+        graphView.lineColor = UIColor(red:0.29, green:0.56, blue:0.89, alpha:0.5)
         graphView.lineStyle = .smooth
         
         graphView.shouldFill = true
         graphView.fillType = .gradient
         graphView.fillColor = UIColor(red:0.33, green:0.33, blue:0.33, alpha:1.0)
         graphView.fillGradientType = .linear
-        graphView.fillGradientStartColor = UIColor(red:0.25, green:0.84, blue:1.00, alpha:0.3)
-        graphView.fillGradientEndColor = UIColor(red:0.15, green:0.64, blue:1.00, alpha:0.3)
+        graphView.fillGradientStartColor = UIColor(red:0.25, green:0.84, blue:1.00, alpha:0.2)
+        graphView.fillGradientEndColor = UIColor(red:0.15, green:0.64, blue:1.00, alpha:0.2)
         
         graphView.dataPointSpacing = 80
         graphView.dataPointSize = 4
@@ -275,7 +284,7 @@ class ChartViewController: UIViewController, ChartDelegate {
         button.translatesAutoresizingMaskIntoConstraints = false
         button.setTitleColor(UIColor.gray, for: .normal)
         button.setTitle("Techniker", for: .normal)
-        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
+        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
         button.addTarget(self, action: #selector(emergencyCall), for: .touchUpInside)
         button.layer.cornerRadius = 4
         return button
@@ -288,7 +297,7 @@ class ChartViewController: UIViewController, ChartDelegate {
         button.setTitleColor(UIColor.gray, for: .normal)
         button.setTitle("Wiki", for: .normal)
         button.setImage(UIImage(named: "wiki"), for: .normal)
-        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 18)
+        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
         button.addTarget(self, action: #selector(emergencyCall), for: .touchUpInside)
         button.layer.cornerRadius = 4
         return button

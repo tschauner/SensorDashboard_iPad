@@ -52,6 +52,7 @@ class SensorDetailViewController: UIViewController {
         let home = HomeController(collectionViewLayout: layout)
         home.devices.append(device!)
         home.beaconsFound.append(device!.minorValue)
+        home.conntectToServer()
         
         let nav = UINavigationController(rootViewController: home)
         

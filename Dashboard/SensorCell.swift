@@ -53,6 +53,7 @@ class SensorTileCell: UICollectionViewCell {
         guard let min = sensor.minValue else { return }
         guard let max = sensor.maxValue else { return }
         
+        print("max: ", max)
         
         UIView.animate(withDuration: 0.8) {
             

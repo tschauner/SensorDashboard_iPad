@@ -51,32 +51,6 @@ class SensorLibraryController: UICollectionViewController {
     
     
     
-     // Find the same beacons in the table. - works only for one, but displays all available at the same time
-//    @objc func findBeaconInCell() {
-//
-//        var b: CLBeacon?
-//
-//        var indexPaths = [IndexPath]()
-//        for beacon in HomeController.allBeacons {
-//            b = beacon
-//            for row in 0..<Constants.devices.count {
-//                if Constants.devices[row].minorValue == beacon.minor.intValue {
-//                    indexPaths += [IndexPath(row: row, section: 0)]
-//                }
-//            }
-//        }
-//
-//        // Update beacon locations of visible rows.
-//        if let visibleRows = collectionView?.indexPathsForVisibleItems {
-//            let rowsToUpdate = visibleRows.filter { indexPaths.contains($0) }
-//            for row in rowsToUpdate {
-//                let cell = collectionView?.cellForItem(at: row) as! SensorLibraryCell
-//                guard let beacon = b else { return }
-//                cell.updateDistance(HomeController.allBeacons[0].proximity, beacon: beacon)
-//            }
-//        }
-//    }
-    
     func showAddSensorController() {
         
         let addSensor = AddSensorController()

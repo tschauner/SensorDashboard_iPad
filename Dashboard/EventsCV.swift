@@ -28,16 +28,14 @@ class EventsCV: UIView, UICollectionViewDataSource, UICollectionViewDelegate, UI
     let cellId = "cellId"
     static var events = [EventModel]() {
         didSet {
-            
             switch EventsCV.events.count {
             case 0:
-                HomeController.countLabel.text = "Keine Events"
-            case 1:
-                HomeController.countLabel.text = "\(EventsCV.events.count) Event"
+                print("nix")
             default:
-                HomeController.countLabel.text = "\(EventsCV.events.count) Events"
+                print("default")
+                //HomeController.countLabelButton.isHidden = false
+                //HomeController.countLabelButton.setTitle("\(EventsCV.events.count)", for: .normal)
             }
-            
         }
     }
     

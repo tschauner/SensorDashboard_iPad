@@ -14,9 +14,9 @@ import SwiftSocket
 class HomeController: UICollectionViewController {
     
     //141.45.208.222
-    // my ip eduroam 141.45.201.228
+    let host = "141.45.212.79"
     var client: TCPClient?
-    let host = "192.168.1.77"
+    //let host = "192.168.1.77"
     let port = 8080
     
     // cells & header id
@@ -25,6 +25,24 @@ class HomeController: UICollectionViewController {
     
     // timer
     var timer: Timer?
+    
+    var events: [EventModel]? = nil {
+        didSet {
+            if let events = events {
+                
+                guard let event = events.last else { return }
+                
+                if events.isEmpty {
+                    eventLabel.text = ""
+                    countLabelButton.isHidden = false
+                } else {
+                    eventLabel.text = "\(event.type)wert \(event.text.rawValue)"
+                    countLabelButton.isHidden = true
+                    
+                }
+            }
+        }
+    }
     
     // beacons
     var closestBeacon: CLBeaconMinorValue?
@@ -60,6 +78,18 @@ class HomeController: UICollectionViewController {
         }
     }
     
+    var event: EventModel? = nil {
+        didSet {
+            if let event = event {
+                
+                eventLabel.text = "\(event.type)wert \(event.text.rawValue)"
+                
+            } else {
+                eventLabel.text = ""
+            }
+        }
+    }
+    
     
     // initial load
     override func viewDidLoad() {
@@ -71,7 +101,9 @@ class HomeController: UICollectionViewController {
         
         initGestureRecognizer()
         
-        conntectToServer()
+        //conntectToServer()
+        
+        
     }
     
     // starts background view again & makes buttonview visible
@@ -141,7 +173,7 @@ class HomeController: UICollectionViewController {
     }
     
     
-    // shows qr code scanner vc
+    /// presents qr code scanner vc
     func showORScanner() {
         
         let qrcode = ScannerController()
@@ -150,7 +182,7 @@ class HomeController: UICollectionViewController {
         present(nav, animated: true, completion: nil)
     }
     
-    // button - add sensor manually
+    /// presents sensor library vc
     func addSensorManually() {
         
         let layout = UICollectionViewFlowLayout()
@@ -159,7 +191,7 @@ class HomeController: UICollectionViewController {
         present(nav, animated: true, completion: nil)
     }
     
-    // shows alert if event appears
+    /// shows alert if event appears and activated
     func showAlert(with event: EventModel, activated: Bool) {
         
         if activated {
@@ -168,7 +200,24 @@ class HomeController: UICollectionViewController {
         }
     }
     
-    // current time string (short)
+    func eventButtonPressed() {
+        
+        print("event button pressed")
+        let tableViewController = UITableViewController()
+        tableViewController.modalPresentationStyle = UIModalPresentationStyle.popover
+        
+        present(tableViewController, animated: true, completion: nil)
+        
+        let presenter = tableViewController.popoverPresentationController
+        presenter?.sourceView = countLabelButton
+        presenter?.sourceRect = countLabelButton.bounds
+        presenter?.permittedArrowDirections = .left
+    }
+    
+    
+    
+    
+    /// current time string (short)
     func currentTimeString() -> String {
         
         let date = Date()
@@ -229,18 +278,13 @@ class HomeController: UICollectionViewController {
     // if someone presses die Admin button
     func adminAlert() {
         
-        checkDataFromServer()
-        
-        //let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
-        
-        //showAlert(title: "Zugang verweigert", contentText: Constants.adminAlarmText, actions: [okAction])
+        let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+        showAlert(title: "Zugang verweigert", contentText: Constants.adminAlarmText, actions: [okAction])
     }
     
     
     // setup navbar
-    
     func setupNavBar() {
-        
         
         // camera button
         let cameraButton = UIBarButtonItem(image: UIImage(named: "camera")?.withRenderingMode(.alwaysTemplate), style: UIBarButtonItemStyle.plain, target: self, action: #selector(showORScanner))
@@ -300,31 +344,36 @@ class HomeController: UICollectionViewController {
     // setup header - event bar
     func setupHeaderView() {
         
-        view.addSubview(backgroundView)
-        backgroundView.addSubview(headerView)
-
-        view.addSubview(HomeController.countLabel)
-        view.addSubview(alarmButton)
         
+        view.addSubview(backgroundView)
+        backgroundView.addSubview(eventLabel)
+        backgroundView.addSubview(countLabelButton)
+        backgroundView.addSubview(alarmButton)
+        backgroundView.addSubview(eventLabel)
         
         backgroundView.topAnchor.constraint(equalTo: topLayoutGuide.bottomAnchor).isActive = true
-        backgroundView.heightAnchor.constraint(equalToConstant: 135).isActive = true
+        backgroundView.heightAnchor.constraint(equalToConstant: 90).isActive = true
         backgroundView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
         backgroundView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
         
+//
+//        headerView.topAnchor.constraint(equalTo: backgroundView.topAnchor, constant: 10).isActive = true
+//        headerView.widthAnchor.constraint(equalTo: backgroundView.widthAnchor, constant: -20).isActive = true
+//        headerView.heightAnchor.constraint(equalToConstant: 125).isActive = true
+//        headerView.leftAnchor.constraint(equalTo: backgroundView.leftAnchor, constant: 10).isActive = true
         
-        headerView.topAnchor.constraint(equalTo: backgroundView.topAnchor, constant: 10).isActive = true
-        headerView.widthAnchor.constraint(equalTo: backgroundView.widthAnchor, constant: -20).isActive = true
-        headerView.heightAnchor.constraint(equalToConstant: 125).isActive = true
-        headerView.leftAnchor.constraint(equalTo: backgroundView.leftAnchor, constant: 10).isActive = true
-        
-        alarmButton.topAnchor.constraint(equalTo: topLayoutGuide.bottomAnchor, constant: 22).isActive = true
-        alarmButton.rightAnchor.constraint(equalTo: headerView.rightAnchor, constant: -5).isActive = true
+        alarmButton.topAnchor.constraint(equalTo: topLayoutGuide.bottomAnchor, constant: 25).isActive = true
+        alarmButton.rightAnchor.constraint(equalTo: backgroundView.rightAnchor, constant: -15).isActive = true
         alarmButton.heightAnchor.constraint(equalToConstant: 35).isActive = true
         alarmButton.widthAnchor.constraint(equalToConstant: 35).isActive = true
         
-        HomeController.countLabel.leftAnchor.constraint(equalTo: view.leftAnchor, constant: 20).isActive = true
-        HomeController.countLabel.topAnchor.constraint(equalTo: topLayoutGuide.bottomAnchor, constant: 25).isActive = true
+        countLabelButton.topAnchor.constraint(equalTo: topLayoutGuide.bottomAnchor, constant: 30).isActive = true
+        countLabelButton.leftAnchor.constraint(equalTo: backgroundView.leftAnchor, constant: 20).isActive = true
+        countLabelButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
+        countLabelButton.widthAnchor.constraint(equalToConstant: 30).isActive = true
+        
+        eventLabel.leftAnchor.constraint(equalTo: countLabelButton.rightAnchor, constant: 10).isActive = true
+        eventLabel.topAnchor.constraint(equalTo: topLayoutGuide.bottomAnchor, constant: 35).isActive = true
         
     }
     
@@ -341,6 +390,14 @@ class HomeController: UICollectionViewController {
         return view
     }()
     
+    var eventLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.font = UIFont.systemFont(ofSize: 14)
+        label.textColor = .white
+        return label
+    }()
+    
     
     var backgroundView: UIView = {
         let view = UIView()
@@ -354,7 +411,6 @@ class HomeController: UICollectionViewController {
     var headerView: HeaderView = {
         let view = HeaderView()
         view.backgroundColor = .darkGray
-        view.layer.cornerRadius = 4
         view.translatesAutoresizingMaskIntoConstraints = false
         return view
     }()
@@ -369,14 +425,20 @@ class HomeController: UICollectionViewController {
     }()
     
     
-    static var countLabel: UILabel = {
-        let label = UILabel()
+     var countLabelButton: UIButton = {
+        let label = UIButton(type: .system)
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = UIFont.boldSystemFont(ofSize: 16)
-        label.textColor = .white
-        label.text = "Keine Events"
+        label.isHidden = true
+        label.titleLabel?.font = UIFont.boldSystemFont(ofSize: 14)
+        label.setTitleColor(UIColor.white, for: .normal)
+        label.backgroundColor = .red
+        label.layer.cornerRadius = 15
+        label.titleLabel?.textAlignment = .center
+        label.setTitle("!", for: .normal)
+        label.addTarget(self, action: #selector(eventButtonPressed), for: UIControlEvents.touchUpInside)
         return label
     }()
+    
     
     
     

@@ -10,7 +10,7 @@ import UIKit
 
 extension HomeController {
     
-    
+
     
     // show viewcontroller with sensordata
     func show(sensorData: SensorModel) {
@@ -49,8 +49,9 @@ extension HomeController {
     
     
     // updates sensor value in cell
-    func updateSensor(with id: String, sensor: SensorModel) {
+    func update(sensor: SensorModel) {
         
+        guard let id = sensor.id else { return }
         
         // Find the same beacons in the table.
         var indexPaths = [IndexPath]()
@@ -66,6 +67,8 @@ extension HomeController {
             for item in rowsToUpdate {
                 let cell = collectionView?.cellForItem(at: item) as! SensorTileCell
                 cell.sensor?.value = sensor.value
+                cell.sensor?.maxValue = sensor.maxValue
+                cell.sensor?.minValue = sensor.minValue
                 cell.refreshColor(from: cell.sensor!)
                 showAlarmFor(sensor: cell.sensor!, isActive: alarmIsActivated)
             }
@@ -79,7 +82,9 @@ extension HomeController {
     func getSensorIds() -> String {
         
         let idStrings = Constants.sensorData.map { $0.id! }
-        let ids = idStrings.joined(separator: "#, ")
+        var ids = idStrings.joined(separator: ",")
+        
+        ids.append("#")
         
         return ids
     }
@@ -99,13 +104,15 @@ extension HomeController {
         case let (value, _, max) where value > max:
             
             // if value is too high
-            EventsCV.events.insert(EventModel(type: sensor.type.rawValue, time: time, text: .Max), at: 0)
+            events?.insert(EventModel(type: sensor.type.rawValue, time: time, text: .Max), at: 0)
+            event = EventModel(type: sensor.type.rawValue, time: time, text: .Max)
             self.showAlert(with: EventModel(type: sensor.type.rawValue, time: time, text: .Max), activated: alarmIsActivated)
             
         case let (value, min, _) where value < min:
             
             // if value is too low
-            EventsCV.events.insert(EventModel(type: sensor.type.rawValue, time: time, text: .Min), at: 0)
+            events?.insert(EventModel(type: sensor.type.rawValue, time: time, text: .Min), at: 0)
+            event = EventModel(type: sensor.type.rawValue, time: time, text: .Min)
             self.showAlert(with: EventModel(type: sensor.type.rawValue, time: time, text: .Min), activated: alarmIsActivated)
             
         default:
@@ -138,9 +145,10 @@ extension HomeController {
                 let res = Socket.sharedInstance.connect(address: self.host, port: Int32(self.port));
                 
                 if(res.error == nil) {
-                    self.timer = Timer.scheduledTimer(timeInterval: 30, target: self, selector: #selector(self.self.checkDataFromServer), userInfo: nil, repeats: true)
+                    self.timer = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(self.self.checkDataFromServer), userInfo: nil, repeats: true)
                     self.timer?.fire()
                 } else {
+                    Socket.sharedInstance.disconnect()
                     print("\(String(describing: res.error?.localizedDescription))")
                 }
             }
@@ -154,11 +162,43 @@ extension HomeController {
         DispatchQueue.main.async {
             
             let result = Socket.sharedInstance.send(command: self.getSensorIds())
-            let index = result.data.index((result.data.startIndex), offsetBy: 2)
-            let response = result.data.substring(from: index)
+            let index = result.data?.index((result.data?.startIndex)!, offsetBy: 2)
+            let response = result.data?.substring(from: index!)
             
-            print(response)
+            self.readJsonToString(with: response!)
             
+        }
+        
+    }
+    
+    func readJsonToString(with jsonStr: String) {
+        
+        enum JSONParseError: Error {
+            case notADictionary
+            case missinSensorObjects
+        }
+        
+        let data = jsonStr.data(using: String.Encoding.ascii, allowLossyConversion: false)
+        do {
+            let json = try JSONSerialization.jsonObject(with: data!, options: [])
+            guard let dict = json as? [String: Any] else { throw JSONParseError.notADictionary }
+            
+            guard let time = dict["timestamp"] as? String else { throw JSONParseError.missinSensorObjects }
+            guard let value = dict["value"] as? String else { throw JSONParseError.missinSensorObjects }
+            guard let sensorId = dict["sensorID"] as? String else { throw JSONParseError.missinSensorObjects }
+            
+            print(time)
+            print(value)
+            print(sensorId)
+            
+            let sensor = SensorModel(id: sensorId, device: nil, type: .Helligkeit, entity: .Helligkeit, value: Double(value), minValue: -10, maxValue: 60, time: time)
+            
+            update(sensor: sensor)
+            
+            
+        }
+        catch {
+            print(error)
         }
         
     }
