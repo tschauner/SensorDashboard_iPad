@@ -27,8 +27,7 @@ extension HomeController: UICollectionViewDelegateFlowLayout {
         // shows alarm if value is higher or less
         showAlarmFor(sensor: cell.sensor!, isActive: alarmIsActivated)
         
-        headerView.eventBar.collectionView.reloadData()
-            
+        
         return cell
     }
     

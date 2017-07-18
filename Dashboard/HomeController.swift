@@ -13,9 +13,10 @@ import SwiftSocket
 
 class HomeController: UICollectionViewController {
     
-    //141.45.208.222
     var client: TCPClient?
-    //let host = "192.168.1.77"
+    
+    static var host = "141.45.211.190"
+    static var port: Int32 = 8080
     
     // cells & header id
     let headerId = "headerId"
@@ -243,6 +244,17 @@ class HomeController: UICollectionViewController {
         
     }
     
+    func showAdminSettings() {
+        
+        let admin = AdminController()
+        
+        UIView.animate(withDuration: 0.2) {
+            self.buttonView.alpha = 0
+        }
+        
+        navigationController?.pushViewController(admin, animated: true)
+    }
+    
     
     // if someone presses die Admin button
     func adminAlert() {
@@ -261,7 +273,7 @@ class HomeController: UICollectionViewController {
         navigationItem.leftBarButtonItem = cameraButton
         
         // profile Image in Nav
-        let nameLabel = UIBarButtonItem(title: "Admin", style: .done, target: self, action: #selector(adminAlert))
+        let nameLabel = UIBarButtonItem(title: "Admin", style: .done, target: self, action: #selector(showAdminSettings))
         nameLabel.tintColor = UIColor.darkGray
         
         let profileImageView = UIImageView()

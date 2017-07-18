@@ -10,7 +10,17 @@ import UIKit
 
 extension HomeController {
     
-
+    // shows detail view if beacon was found
+    func showSensorDetailViewController(with device: DeviceModel) {
+        
+        let sensorDetail = SensorDetailViewController()
+        sensorDetail.device = device
+        
+        let nav = UINavigationController(rootViewController: sensorDetail)
+        
+        present(nav, animated: true, completion: nil)
+        
+    }
     
     // show viewcontroller with sensordata
     func show(sensorData: SensorModel) {
@@ -123,14 +133,18 @@ extension HomeController {
     
     // asks user to add sensor to dashboard
     func promptUser() {
+        guard let beacon = self.closestBeacon else { return }
         
         let cancelAction = UIAlertAction(title: "Abbrechen", style: .cancel) { (action) in
             self.beaconIsConnected = false
         }
         let okAction = UIAlertAction(title: "OK", style: .default) { (action) in
-            self.addSensorManually()
+            
+            self.showSensorDetailViewController(with: Constants.beaconDevices[beacon.hashValue]!)
         }
-        showAlert(title: "Gerät erkannt", contentText: "Es wurde ein Gerät in ihrer Nähe erkannt. Wollen Sie es hinzufügen?", actions: [okAction, cancelAction])
+        
+        let deviceName = String(describing: Constants.beaconDevices[beacon.hashValue]!.name)
+        showAlert(title: "Gerät erkannt", contentText: "Es wurde das Gerät \(deviceName.uppercased()) in ihrer Nähe erkannt. Wollen Sie es hinzufügen?", actions: [okAction, cancelAction])
     }
     
     

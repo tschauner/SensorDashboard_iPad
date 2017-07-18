@@ -36,6 +36,7 @@ class SensorDetailViewController: UIViewController {
         super.viewDidLoad()
         
         setupViews()
+        setupNavbar()
         
     }
     
@@ -63,6 +64,13 @@ class SensorDetailViewController: UIViewController {
     
     
     // ------- SETUP VIEWS ---------
+    
+    
+    func setupNavbar() {
+        
+        let closeButton = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(dismissView))
+        navigationItem.leftBarButtonItem = closeButton
+    }
 
     func setupViews() {
         

@@ -13,7 +13,9 @@ struct DeviceModel {
     
     var id: String
     var name: String
+    var description: String
     var sensors: [SensorModel]
     var image: String
     let minorValue: CLBeaconMinorValue
+    
 }
