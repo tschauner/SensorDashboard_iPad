@@ -118,7 +118,7 @@ class SensorLibraryCell: UICollectionViewCell, CLLocationManagerDelegate {
         
         if beacons.count > 0 {
             let closestBeacon = beacons[0] as CLBeacon
-            if d == closestBeacon.minor.intValue {
+            if d.hashValue == closestBeacon.minor.intValue {
                 makeStringOutOf(beacons[0].proximity, beacon: closestBeacon)
             }
         } else {

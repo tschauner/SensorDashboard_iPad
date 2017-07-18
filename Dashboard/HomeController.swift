@@ -14,35 +14,17 @@ import SwiftSocket
 class HomeController: UICollectionViewController {
     
     //141.45.208.222
-    let host = "141.45.212.79"
     var client: TCPClient?
     //let host = "192.168.1.77"
-    let port = 8080
     
     // cells & header id
     let headerId = "headerId"
     let cellId = "cellId"
     
     // timer
-    var timer: Timer?
+    var timer = Timer()
     
-    var events: [EventModel]? = nil {
-        didSet {
-            if let events = events {
-                
-                guard let event = events.last else { return }
-                
-                if events.isEmpty {
-                    eventLabel.text = ""
-                    countLabelButton.isHidden = false
-                } else {
-                    eventLabel.text = "\(event.type)wert \(event.text.rawValue)"
-                    countLabelButton.isHidden = true
-                    
-                }
-            }
-        }
-    }
+    var events = [EventModel]()
     
     // beacons
     var closestBeacon: CLBeaconMinorValue?
@@ -78,18 +60,6 @@ class HomeController: UICollectionViewController {
         }
     }
     
-    var event: EventModel? = nil {
-        didSet {
-            if let event = event {
-                
-                eventLabel.text = "\(event.type)wert \(event.text.rawValue)"
-                
-            } else {
-                eventLabel.text = ""
-            }
-        }
-    }
-    
     
     // initial load
     override func viewDidLoad() {
@@ -100,8 +70,7 @@ class HomeController: UICollectionViewController {
         initLocationServices()
         
         initGestureRecognizer()
-        
-        //conntectToServer()
+    
         
         
     }
@@ -346,10 +315,8 @@ class HomeController: UICollectionViewController {
         
         
         view.addSubview(backgroundView)
-        backgroundView.addSubview(eventLabel)
-        backgroundView.addSubview(countLabelButton)
+        backgroundView.addSubview(HomeController.eventLabel)
         backgroundView.addSubview(alarmButton)
-        backgroundView.addSubview(eventLabel)
         
         backgroundView.topAnchor.constraint(equalTo: topLayoutGuide.bottomAnchor).isActive = true
         backgroundView.heightAnchor.constraint(equalToConstant: 90).isActive = true
@@ -367,13 +334,13 @@ class HomeController: UICollectionViewController {
         alarmButton.heightAnchor.constraint(equalToConstant: 35).isActive = true
         alarmButton.widthAnchor.constraint(equalToConstant: 35).isActive = true
         
-        countLabelButton.topAnchor.constraint(equalTo: topLayoutGuide.bottomAnchor, constant: 30).isActive = true
-        countLabelButton.leftAnchor.constraint(equalTo: backgroundView.leftAnchor, constant: 20).isActive = true
-        countLabelButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
-        countLabelButton.widthAnchor.constraint(equalToConstant: 30).isActive = true
+//        countLabelButton.topAnchor.constraint(equalTo: topLayoutGuide.bottomAnchor, constant: 30).isActive = true
+//        countLabelButton.leftAnchor.constraint(equalTo: backgroundView.leftAnchor, constant: 20).isActive = true
+//        countLabelButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
+//        countLabelButton.widthAnchor.constraint(equalToConstant: 30).isActive = true
         
-        eventLabel.leftAnchor.constraint(equalTo: countLabelButton.rightAnchor, constant: 10).isActive = true
-        eventLabel.topAnchor.constraint(equalTo: topLayoutGuide.bottomAnchor, constant: 35).isActive = true
+        HomeController.eventLabel.leftAnchor.constraint(equalTo: backgroundView.leftAnchor, constant: 20).isActive = true
+        HomeController.eventLabel.topAnchor.constraint(equalTo: topLayoutGuide.bottomAnchor, constant: 35).isActive = true
         
     }
     
@@ -390,10 +357,11 @@ class HomeController: UICollectionViewController {
         return view
     }()
     
-    var eventLabel: UILabel = {
+    static var eventLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.font = UIFont.systemFont(ofSize: 14)
+        label.font = UIFont.boldSystemFont(ofSize: 14)
+        label.text = "Nicht verbunden"
         label.textColor = .white
         return label
     }()

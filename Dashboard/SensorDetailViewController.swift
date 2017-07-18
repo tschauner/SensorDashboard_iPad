@@ -25,7 +25,7 @@ class SensorDetailViewController: UIViewController {
                 
                 sensors = device.sensors
                 
-                sensorStrings = sensors.map { $0.type.rawValue }
+                sensorStrings = sensors.map { $0.type }
                 
                 sensorLabel.text = sensorStrings.joined(separator: ", ")
             }

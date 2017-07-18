@@ -32,7 +32,7 @@ class ChartViewController: UIViewController, ChartDelegate {
         didSet {
             if let sensor = sensor {
                 
-                typeLabel.text = sensor.type.rawValue
+                typeLabel.text = sensor.type
             }
         }
     }

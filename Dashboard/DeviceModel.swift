@@ -16,15 +16,4 @@ struct DeviceModel {
     var sensors: [SensorModel]
     var image: String
     let minorValue: CLBeaconMinorValue
-    
-//    init(id: String, name: String, sensors: [SensorModel], image: String, minorValue: CLBeaconMinorValue) {
-//        self.id = id
-//        self.name = name
-//        self.sensors = sensors
-//        self.image = image
-//        self.minorValue = minorValue
-//    }
-    
-    
-
 }

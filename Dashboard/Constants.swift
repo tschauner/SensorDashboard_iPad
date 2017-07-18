@@ -25,41 +25,39 @@ struct Constants {
         
         DeviceModel(id: "device1", name: "KR QUANTEC ultra", sensors: [
             
-            SensorModel(id: "snid1", device: "KR QUANTEC ultra",  type: .Temperatur, entity: .Temperatur, value: -2, minValue: 0, maxValue: 60, time: ""),
-            SensorModel(id: "snid2", device: "KR QUANTEC ultra",  type: .Lautstärke, entity: .Lautstärke, value: 60, minValue: 0, maxValue: 60, time: ""),
-            SensorModel(id: "snid3", device: "KR QUANTEC ultra",  type: .Kohlenmonoxid, entity: .Kohlenmonoxid, value: 48.6, minValue: 0, maxValue: 150, time: ""),
-            SensorModel(id: "snid4", device: "KR QUANTEC ultra",  type: .Luftfeuchtigkeit, entity: .Luftfeuchtigkeit, value: 300, minValue: 0, maxValue: 550, time: ""),
-            SensorModel(id: "snid5", device: "KR QUANTEC ultra",  type: .Luftdruck, entity: .Luftdruck, value: 1060, minValue: 0, maxValue: 200, time: "")], image: "roboter", minorValue: 14042),
+            SensorModel(id: "snid1", device: "KR QUANTEC ultra",  type: "Temperatur", entity: " °C", value: -2, minValue: 0, maxValue: 60, time: ""),
+            SensorModel(id: "snid2", device: "KR QUANTEC ultra",  type: "Lautstärke", entity: " dB", value: 40, minValue: 0, maxValue: 60, time: ""),
+            SensorModel(id: "snid3", device: "KR QUANTEC ultra",  type: "Kohlenmonoxid", entity: " ppm", value: 220, minValue: 0, maxValue: 150, time: "")], image: "roboter", minorValue: 14042),
         
         DeviceModel(id: "snid2", name: "Gemüseplantage", sensors: [
             
-            SensorModel(id: "snid1", device: "Gemüseplantage",  type: .Temperatur, entity: .Temperatur, value: -2, minValue: 0, maxValue: 50, time: ""),
-            SensorModel(id: "snid2", device: "Gemüseplantage",  type: .Lautstärke, entity: .Lautstärke, value: 60, minValue: 0, maxValue: 50, time: ""),
-            SensorModel(id: "snid3", device: "Gemüseplantage",  type: .Kohlenmonoxid, entity: .Kohlenmonoxid, value: 48.6, minValue: 0, maxValue: 150, time: "")], image: "plantage", minorValue: 6333),
+            SensorModel(id: "snid1", device: "Gemüseplantage",  type: "Temperatur", entity: " °C", value: 0, minValue: 0, maxValue: 50, time: ""),
+            SensorModel(id: "snid2", device: "Gemüseplantage",  type: "Lautstärke", entity: " dB", value: 0, minValue: 0, maxValue: 50, time: ""),
+            SensorModel(id: "snid3", device: "Gemüseplantage",  type: "Kohlenmonoxid", entity: " ppm", value: 0, minValue: 0, maxValue: 150, time: "")], image: "plantage", minorValue: 6333),
         
         DeviceModel(id: "device2", name: "Serverraum", sensors: [
             
-            SensorModel(id: "snid1", device: "Serverraum",  type: .Temperatur, entity: .Temperatur, value: -2, minValue: 0, maxValue: 50, time: ""),
-            SensorModel(id: "snid2", device: "Serverraum",  type: .Lautstärke, entity: .Lautstärke, value: 60, minValue: 0, maxValue: 50, time: ""),
-            SensorModel(id: "snid3", device: "Serverraum",  type: .Kohlenmonoxid, entity: .Kohlenmonoxid, value: 48.6, minValue: 0, maxValue: 150, time: "")], image: "server", minorValue: 6179),
+            SensorModel(id: "snid1", device: "Serverraum",  type: "Temperatur", entity: " °C", value: 0, minValue: 0, maxValue: 50, time: ""),
+            SensorModel(id: "snid2", device: "Serverraum",  type: "Lautstärke", entity: " dB", value: 0, minValue: 0, maxValue: 50, time: ""),
+            SensorModel(id: "snid3", device: "Serverraum",  type: "Kohlenmonoxid", entity: " ppm", value: 0, minValue: 0, maxValue: 150, time: "")], image: "server", minorValue: 6179),
         
         DeviceModel(id: "device3", name: "Serverraum", sensors: [
             
-            SensorModel(id: "snid1", device: "ABB IRB 5400",  type: .Temperatur, entity: .Temperatur, value: -2, minValue: 0, maxValue: 50, time: ""),
-            SensorModel(id: "snid2", device: "ABB IRB 5400",  type: .Luftfeuchtigkeit, entity: .Luftfeuchtigkeit, value: 20, minValue: 0, maxValue: 50, time: ""),
-            SensorModel(id: "snid3", device: "ABB IRB 5400",  type: .Kohlenmonoxid, entity: .Kohlenmonoxid, value: 48.6, minValue: 0, maxValue: 150, time: "")], image: "", minorValue: 5555),
+            SensorModel(id: "snid1", device: "ABB IRB 5400",  type: "Temperatur", entity: " °C", value: 0, minValue: 0, maxValue: 50, time: ""),
+            SensorModel(id: "snid2", device: "ABB IRB 5400",  type: "Luftfeuchtigkeit", entity: " %", value: 0, minValue: 0, maxValue: 50, time: ""),
+            SensorModel(id: "snid3", device: "ABB IRB 5400",  type: "Kohlenmonoxid", entity: " ppm", value: 0, minValue: 0, maxValue: 150, time: "")], image: "", minorValue: 5555),
         
         DeviceModel(id: "device4", name: "ABB IRB 5410", sensors: [
             
-            SensorModel(id: "snid1", device: "ABB IRB 5400",  type: .Temperatur, entity: .Temperatur, value: -2, minValue: 0, maxValue: 50, time: ""),
-            SensorModel(id: "snid2", device: "ABB IRB 5400",  type: .Lautstärke, entity: .Lautstärke, value: 60, minValue: 0, maxValue: 50, time: ""),
-            SensorModel(id: "snid3", device: "ABB IRB 5400",  type: .Kohlenmonoxid, entity: .Kohlenmonoxid, value: 48.6, minValue: 0, maxValue: 150, time: "")], image: "", minorValue: 5555),
+            SensorModel(id: "snid1", device: "ABB IRB 5400",  type: "Temperatur", entity: " °C", value: 0, minValue: 0, maxValue: 50, time: ""),
+            SensorModel(id: "snid2", device: "ABB IRB 5400",  type: "Lautstärke", entity: " dB", value: 0, minValue: 0, maxValue: 50, time: ""),
+            SensorModel(id: "snid3", device: "ABB IRB 5400",  type: "Kohlenmonoxid", entity: " ppm", value: 0, minValue: 0, maxValue: 150, time: "")], image: "", minorValue: 5555),
         
         DeviceModel(id: "device5", name: "ABB IRB 5455", sensors: [
             
-            SensorModel(id: "snid1", device: "ABB IRB 5400", type: .Temperatur, entity: .Temperatur, value: -2, minValue: 0, maxValue: 50, time: ""),
-            SensorModel(id: "snid2", device: "ABB IRB 5400",  type: .Lautstärke, entity: .Lautstärke, value: 60, minValue: 0, maxValue: 50, time: ""),
-            SensorModel(id: "snid3", device: "ABB IRB 5400",  type: .Kohlenmonoxid, entity: .Kohlenmonoxid, value: 48.6, minValue: 0, maxValue: 150, time: "")], image: "", minorValue: 5555)
+            SensorModel(id: "snid1", device: "ABB IRB 5400", type: "Temperatur", entity: " °C", value: 0, minValue: 0, maxValue: 50, time: ""),
+            SensorModel(id: "snid2", device: "ABB IRB 5400",  type: "Lautstärke", entity: " dB", value: 0, minValue: 0, maxValue: 50, time: ""),
+            SensorModel(id: "snid3", device: "ABB IRB 5400",  type: "Kohlenmonoxid", entity: " ppm", value: 0, minValue: 0, maxValue: 150, time: "")], image: "", minorValue: 5555)
         
     ]
     

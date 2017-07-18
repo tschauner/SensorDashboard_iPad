@@ -79,12 +79,13 @@ extension HomeController {
     
     
     // should get all ids of the sensors in sensordata
-    func getSensorIds() -> String {
+    func sensorIds() -> String {
         
         let idStrings = Constants.sensorData.map { $0.id! }
         var ids = idStrings.joined(separator: ",")
         
         ids.append("#")
+        print(ids)
         
         return ids
     }
@@ -97,6 +98,8 @@ extension HomeController {
         let min = sensor.minValue ?? 0
         let max = sensor.maxValue ?? 0
         let value = sensor.value ?? 0
+        let type = ""
+        
         
         let time = currentTimeString()
         
@@ -104,16 +107,14 @@ extension HomeController {
         case let (value, _, max) where value > max:
             
             // if value is too high
-            events?.insert(EventModel(type: sensor.type.rawValue, time: time, text: .Max), at: 0)
-            event = EventModel(type: sensor.type.rawValue, time: time, text: .Max)
-            self.showAlert(with: EventModel(type: sensor.type.rawValue, time: time, text: .Max), activated: alarmIsActivated)
+            let event = EventModel(type: type, time: time, text: .Max)
+            self.showAlert(with: event, activated: alarmIsActivated)
             
         case let (value, min, _) where value < min:
             
-            // if value is too low
-            events?.insert(EventModel(type: sensor.type.rawValue, time: time, text: .Min), at: 0)
-            event = EventModel(type: sensor.type.rawValue, time: time, text: .Min)
-            self.showAlert(with: EventModel(type: sensor.type.rawValue, time: time, text: .Min), activated: alarmIsActivated)
+            
+            let event = EventModel(type: type, time: time, text: .Min)
+            self.showAlert(with: event, activated: alarmIsActivated)
             
         default:
             print("nothing happened")
@@ -138,17 +139,17 @@ extension HomeController {
         DispatchQueue.main.async {
             
             if(Socket.sharedInstance.connected) {
-                print("already connected")
-                self.timer?.invalidate()
+                self.timer.invalidate()
             } else {
-                print("connecting to server...")
-                let res = Socket.sharedInstance.connect(address: self.host, port: Int32(self.port));
+                HomeController.eventLabel.text = "Connecting to server..."
+                let res = Socket.sharedInstance.connect()
                 
                 if(res.error == nil) {
-                    self.timer = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(self.self.checkDataFromServer), userInfo: nil, repeats: true)
-                    self.timer?.fire()
+                    self.timer = Timer.scheduledTimer(timeInterval: 3, target: self, selector: #selector(self.checkDataFromServer), userInfo: nil, repeats: true)
+                    self.timer.fire()
                 } else {
                     Socket.sharedInstance.disconnect()
+                                    HomeController.eventLabel.text = "Connection closed"
                     print("\(String(describing: res.error?.localizedDescription))")
                 }
             }
@@ -161,11 +162,13 @@ extension HomeController {
         
         DispatchQueue.main.async {
             
-            let result = Socket.sharedInstance.send(command: self.getSensorIds())
-            let index = result.data?.index((result.data?.startIndex)!, offsetBy: 2)
-            let response = result.data?.substring(from: index!)
+            let result = Socket.sharedInstance.send(command: self.sensorIds())
             
-            self.readJsonToString(with: response!)
+            if result.isEmpty {
+                print("something went wrong")
+            } else {
+                self.readJsonToString(with: result)
+            }
             
         }
         
@@ -173,32 +176,56 @@ extension HomeController {
     
     func readJsonToString(with jsonStr: String) {
         
+        var sensortype: String?
+        var entity: String?
+        
+        
         enum JSONParseError: Error {
             case notADictionary
             case missinSensorObjects
         }
         
-        let data = jsonStr.data(using: String.Encoding.ascii, allowLossyConversion: false)
+        guard let data = jsonStr.data(using: String.Encoding.ascii, allowLossyConversion: false) else { return }
+        
         do {
-            let json = try JSONSerialization.jsonObject(with: data!, options: [])
-            guard let dict = json as? [String: Any] else { throw JSONParseError.notADictionary }
+            let json = try JSONSerialization.jsonObject(with: data, options: [])
+            guard let dict = json as? [[String: Any]] else { return }
             
-            guard let time = dict["timestamp"] as? String else { throw JSONParseError.missinSensorObjects }
-            guard let value = dict["value"] as? String else { throw JSONParseError.missinSensorObjects }
-            guard let sensorId = dict["sensorID"] as? String else { throw JSONParseError.missinSensorObjects }
-            
-            print(time)
-            print(value)
-            print(sensorId)
-            
-            let sensor = SensorModel(id: sensorId, device: nil, type: .Helligkeit, entity: .Helligkeit, value: Double(value), minValue: -10, maxValue: 60, time: time)
-            
-            update(sensor: sensor)
-            
-            
+            for data in dict {
+                
+                if let sensorId = data["sensorID"] as? String,
+                    let value = data["value"] as? String,
+                        let timestamp = data["timestamp"] as? String {
+                    
+                    switch sensorId {
+                    case "snid1":
+                        sensortype = "Helligkeit"
+                        entity = " lm"
+                    case "snid2":
+                        sensortype = "Kohlenstoffmonoxid"
+                        entity = " ppm"
+                    case "snid3":
+                        sensortype = "Luftfeuchtigkeit"
+                        entity = " %"
+                    case "snid4":
+                        sensortype = "Temperatur"
+                        entity = " °C"
+                    case "snid5":
+                        sensortype = "Lautstärke"
+                        entity = " dB"
+                    default:
+                        print("something went wrong")
+                    }
+                    
+                    
+                    let sensor = SensorModel(id: sensorId, device: "nil", type: sensortype!, entity: entity!, value: Double(value), minValue: -10, maxValue: 60, time: timestamp)
+                    
+                    update(sensor: sensor)
+                }
+            }
         }
         catch {
-            print(error)
+            print("Error deserializing JSON: \(error)")
         }
         
     }

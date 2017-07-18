@@ -13,6 +13,9 @@ import SwiftSocket
 
 class Socket {
     
+    let host = "141.45.211.190"
+    let port: Int32 = 8080
+    
 
     //Singleton
     public static let sharedInstance = Socket()
@@ -26,15 +29,15 @@ class Socket {
     }
     
     @discardableResult
-    public func connect(address: String, port: Int32) -> Result {
-        tcpClient = TCPClient(address: address, port: port)
+    public func connect() -> Result {
+        tcpClient = TCPClient(address: host, port: port)
         let result = tcpClient!.connect(timeout: 10)
         switch result {
         case .success:
             connected = true
-            print("Successfully connected to \(address)")
+            HomeController.eventLabel.text = "Successfully connected to \(host)"
         case .failure(let error):
-            print("\(error)")
+            HomeController.eventLabel.text = "\(error)"
         }
         
         return result
@@ -53,21 +56,21 @@ class Socket {
 extension Socket {
     
     @discardableResult
-    public func send(command: String) -> (result: Result?, data: String?) {
+    public func send(command: String) -> String {
         let res = tcpClient?.send(string: command)
         
         if (res?.isSuccess)! {
-            guard let data = tcpClient?.read(1024*10) else { return (nil, "nil")}
+            guard let data = tcpClient?.read(1024*10) else { return "" }
             
             if (!data.isEmpty) {
-                guard let response = String(bytes: data, encoding: .utf8) else { return (nil, "")}
-                return (res, response)
+                guard let response = String(bytes: data, encoding: .utf8) else { return ""}
+                return response
             }
-            return (res, "")
+            return ""
         }
         else {
-            guard let error = res?.error?.localizedDescription else { return (nil, "")}
-            return (res, error)
+            guard let error = res?.error?.localizedDescription else { return "" }
+            return error
         }
     }
     

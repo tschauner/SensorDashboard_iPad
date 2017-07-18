@@ -34,7 +34,7 @@ class SensorTileCell: UICollectionViewCell {
                 
                 typeLabel.text = "\(sensor.type)"
                 timeLabel.text = sensor.device
-                valueLabel.text = "\(value)\(sensor.entity.rawValue)"
+                valueLabel.text = "\(value)\(sensor.entity)"
                 
                 refreshColor(from: sensor)
                 
@@ -62,7 +62,7 @@ class SensorTileCell: UICollectionViewCell {
                 
                 self.colorView.backgroundColor = Constants.maxColor
                 self.errorLabel.isHidden = false
-                self.valueLabel.text = "\(value)\(self.sensor!.entity.rawValue)"
+                self.valueLabel.text = "\(value)\(self.sensor!.entity)"
                 
                 // wenn der wert größer als der max wert ist
                 
@@ -70,7 +70,7 @@ class SensorTileCell: UICollectionViewCell {
                 
                 self.colorView.backgroundColor = Constants.minColor
                 self.errorLabel.isHidden = false
-                self.valueLabel.text = "\(value)\(self.sensor!.entity.rawValue)"
+                self.valueLabel.text = "\(value)\(self.sensor!.entity)"
                 
 
                 // wenn der wert kleiner als der min wert ist
