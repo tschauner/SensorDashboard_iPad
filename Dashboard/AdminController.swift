@@ -24,7 +24,7 @@ class AdminController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        view.backgroundColor = .gray
+        view.backgroundColor = .white
         tableView.tableFooterView = UIView()
     }
     

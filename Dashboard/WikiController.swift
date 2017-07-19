@@ -16,7 +16,7 @@ class WikiController: UIViewController {
         
         setupWebView()
         
-        let helpURL = URL(string: "http://www.phitsch.com/")
+        let helpURL = URL(string: "https://www.google.com/")
         let helpRequest = URLRequest(url: helpURL!)
         
         webView.loadRequest(helpRequest)

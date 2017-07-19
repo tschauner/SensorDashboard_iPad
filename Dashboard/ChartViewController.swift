@@ -178,6 +178,13 @@ class ChartViewController: UIViewController, ChartDelegate {
         navigationController?.navigationBar.isTranslucent = false
     }
     
+    // show wiki page when button is clicked
+    func showWikiController() {
+        
+        let wiki = WikiController()
+        navigationController?.pushViewController(wiki, animated: true)
+    }
+    
     
     // if user toches the chart view
     func didTouchChart(_ chart: Chart, indexes: Array<Int?>, x: Float, left: CGFloat) {
@@ -298,7 +305,7 @@ class ChartViewController: UIViewController, ChartDelegate {
         button.setTitle("Wiki", for: .normal)
         button.setImage(UIImage(named: "wiki"), for: .normal)
         button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 16)
-        button.addTarget(self, action: #selector(emergencyCall), for: .touchUpInside)
+        button.addTarget(self, action: #selector(showWikiController), for: .touchUpInside)
         button.layer.cornerRadius = 4
         return button
     }()

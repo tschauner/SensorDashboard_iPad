@@ -46,8 +46,9 @@ extension HomeController {
     // check if sensor is already in use
     func checkIfSensorIsInUse() -> Bool {
         
-        for device in devices {
-            if beaconsFound.contains(device.minorValue) {
+        for _ in devices {
+            
+            if beaconsFound.contains((closestBeacon)!) {
                 print("beacon already in use")
                 return false
             }

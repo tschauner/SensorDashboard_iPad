@@ -80,7 +80,7 @@ extension HomeController: CLLocationManagerDelegate {
         case .immediate:
             beaconIsConnected = checkIfSensorIsInUse()
         case .far:
-            beaconIsConnected = checkIfSensorIsInUse()
+            print("far")
             
             
             
