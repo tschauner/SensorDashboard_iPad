@@ -10,13 +10,12 @@ import UIKit
 
 struct SensorModel {
     
-    var id: String?
+    var id: String
     var device: String
     var type: String
     var entity: String
-    var value: Double?
-    var minValue: Double?
-    var maxValue: Double?
-    var time: String
+    var value: Float?
+    var time: String?
+    var exValue: [ExtremeValueModel?]
      
 }

@@ -8,20 +8,20 @@
 
 import UIKit
 
-
 class SensorDetailViewController: UIViewController {
     
     var sensors = [SensorModel]()
     var sensorStrings = [String]()
     
-    // set up all views
+    // Property Observer für das DeviceModel
+    // - Daten von Device werden übergeben
+    // - Daten werden in Labels angezeigt
     var device: DeviceModel? = nil {
         didSet {
             if let device = device {
-                
-                // shows data of every device in Sensorview
                 deviceImage.image = UIImage(named: device.image)
                 sensorNameLabel.text = device.name
+                describtionLabel.text = device.description
                 
                 sensors = device.sensors
                 
@@ -40,20 +40,23 @@ class SensorDetailViewController: UIViewController {
         
     }
     
+    
+    // Funktion zum Beenden des VC
     func dismissView() {
-        
         dismiss(animated: true, completion: nil)
     }
     
     
-    // saves selected sensors
+    // Funtkion speichert alle Sensoren die im Device enthalten sind und schließt den VC
+    // - speichert den jewweilgen Beacon des Devices seperat
+    // - schliesst den VC
     func saveSensor() {
         
         let layout = UICollectionViewFlowLayout()
         let home = HomeController(collectionViewLayout: layout)
         home.devices.append(device!)
         home.beaconsFound.append(device!.minorValue)
-        home.conntectToServer()
+        home.sendDataWithTimer()
         
         let nav = UINavigationController(rootViewController: home)
         
@@ -66,12 +69,15 @@ class SensorDetailViewController: UIViewController {
     // ------- SETUP VIEWS ---------
     
     
+    // Funktion erstellt Schliessen Button in der NavBar
     func setupNavbar() {
         
         let closeButton = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(dismissView))
         navigationItem.leftBarButtonItem = closeButton
     }
-
+    
+    
+    // Erstellt alle Views im ViewController
     func setupViews() {
         
         view.backgroundColor = .white
@@ -174,7 +180,6 @@ class SensorDetailViewController: UIViewController {
     var describtionLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        label.text = "Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet."
         label.textColor = .gray
         label.numberOfLines = 0
         label.font = UIFont.systemFont(ofSize: 16)
@@ -184,7 +189,6 @@ class SensorDetailViewController: UIViewController {
     var headlineLabel: UILabel = {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
-        
         label.textColor = .black
         label.numberOfLines = 0
         label.textAlignment = .left

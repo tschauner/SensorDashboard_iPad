@@ -10,7 +10,8 @@ import UIKit
 
 extension HomeController {
     
-    // shows detail view if beacon was found
+    // Funktion zeigt den SensorDetailVC wenn ein Beacon mit dem
+    // entsprechenden Minorvalue gefunden wurde
     func showSensorDetailViewController(with device: DeviceModel) {
         
         let sensorDetail = SensorDetailViewController()
@@ -22,10 +23,13 @@ extension HomeController {
         
     }
     
-    // show viewcontroller with sensordata
+    // Funktion zeigt ChartviewController und übergibt die jeweiligen Sensor/Devicedaten
+    // - Button wird ausgeblendet
+    // - Timer wird gestoppt
     func show(sensorData: SensorModel) {
         
         let chart = ChartViewController()
+        chart.deviceName = sensorData.device
         
         for device in devices {
             for sensor in device.sensors {
@@ -39,100 +43,111 @@ extension HomeController {
         UIView.animate(withDuration: 0.2) {
             self.buttonView.alpha = 0
         }
-        
+        HomeController.timer.invalidate()
         navigationController?.pushViewController(chart, animated: true)
     }
     
-    // check if sensor is already in use
+    // Funktion prüft ob ein Beacon Device schon in Verwendung ist
+    // und gibt dann entweder ein false oder true zurück
     func checkIfSensorIsInUse() -> Bool {
         
-        for _ in devices {
-            
-            if beaconsFound.contains((closestBeacon)!) {
-                print("beacon already in use")
-                return false
-            }
+        if beaconsFound.contains((closestBeacon)!) {
+            return false
         }
-        print("beacon not in use")
+        print("already in use")
         return true
     }
     
     
     
-    // updates sensor value in cell
+    // Funktion aktualisiert den Wert in der Cell
+    // - vergleicht die Id der des im Array befindenen Sensors
+    // - Sucht den enstprechenden IndexPath im CollectionView
+    // - Aktualisiert den Wert und passt die Farbe an, falls EV an
+    // - Zeigt Alarm, falls EV über/unterschritten ist
     func update(sensor: SensorModel) {
-        
-        guard let id = sensor.id else { return }
-        
-        // Find the same beacons in the table.
+        let id = sensor.id
         var indexPaths = [IndexPath]()
         for row in 0..<Constants.sensorData.count {
             if Constants.sensorData[row].id == id {
                 indexPaths += [IndexPath(row: row, section: 0)]
             }
         }
-        
-        // Update beacon locations of visible rows.
+
         if let visibleRows = collectionView?.indexPathsForVisibleItems {
             let rowsToUpdate = visibleRows.filter { indexPaths.contains($0) }
             for item in rowsToUpdate {
                 let cell = collectionView?.cellForItem(at: item) as! SensorTileCell
                 cell.sensor?.value = sensor.value
-                cell.sensor?.maxValue = sensor.maxValue
-                cell.sensor?.minValue = sensor.minValue
                 cell.refreshColor(from: cell.sensor!)
-                showAlarmFor(sensor: cell.sensor!, isActive: alarmIsActivated)
+                showAlarmFor(sensor: cell.sensor!)
             }
         }
-        
     }
     
     
     
-    // should get all ids of the sensors in sensordata
+    // Funktion liest alle SensorId im Array als String und gibt diese zurück
+    // - Sensorid entpacken
+    // - # an String anhängen
     func sensorIds() -> String {
         
-        let idStrings = Constants.sensorData.map { $0.id! }
+        let idStrings = Constants.sensorData.map { $0.id }
         var ids = idStrings.joined(separator: ",")
         
         ids.append("#")
-        print(ids)
-        
+
         return ids
     }
     
+    // Funktion gibt den errechneten Extremevaluecodes zurück
+    func getEmergencyCode(from sensor: SensorModel) -> Int {
+        
+        var valCode = 0
+        guard let value = sensor.value else { return 0 }
+        let exValue = sensor.exValue
+        
+        for ex in exValue {
+            
+            guard let exValue = ex?.value else { return 0 }
+            guard let newCode = ex?.emergencyCode else { return 0 }
+            guard let greater = ex?.greater else { return 0 }
+            
+            switch (value, greater, exValue) {
+            case let (value, greater ,exValue) where greater && value >= exValue && newCode > valCode:
+                valCode = newCode
+            case let (value, greater ,exValue) where !greater && value <= exValue && newCode > valCode:
+                valCode = newCode
+            default:
+                print("something went wrong")
+            }
+        }
+
+        return valCode
+        
+    }
     
     
-    // shows alarm wheter or not data is too high or low
-    func showAlarmFor(sensor: SensorModel, isActive: Bool) {
+    // Funktion die einen Alarmt zeigt wenn entsprechende Extremwerte über/unterschritten wurden
+    // - Funktion wird nur ausgelöst, wenn der Alarm aktiviert wurde
+    func showAlarmFor(sensor: SensorModel) {
         
-        let min = sensor.minValue ?? 0
-        let max = sensor.maxValue ?? 0
-        let value = sensor.value ?? 0
-        let type = ""
-        
-        
+        let type = sensor.type
+    
+        let valCode = getEmergencyCode(from: sensor)
         let time = currentTimeString()
         
-        switch (value, min, max) {
-        case let (value, _, max) where value > max:
+        let event = EventModel(type: type, time: time, text: Constants.errorCode[valCode])
+    
+        if alarmIsActivated {
+            let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+            showAlert(title: "ACHTUNG", contentText: "Beim \(event.type.uppercased())SENSOR wurde der \(event.text)", actions: [okAction])
             
-            // if value is too high
-            let event = EventModel(type: type, time: time, text: .Max)
-            self.showAlert(with: event, activated: alarmIsActivated)
-            
-        case let (value, min, _) where value < min:
-            
-            
-            let event = EventModel(type: type, time: time, text: .Min)
-            self.showAlert(with: event, activated: alarmIsActivated)
-            
-        default:
-            print("nothing happened")
         }
     }
     
-    // asks user to add sensor to dashboard
+    
+    // Funktion die den User fragt ob er das Gerät in der Nähe hinzufügen möchte
     func promptUser() {
         guard let beacon = self.closestBeacon else { return }
         
@@ -149,38 +164,72 @@ extension HomeController {
     }
     
     
-    // dashboard connects to server
+    // Asynchrone Funktion zum Verbinden des Sickets mit dem Server
+    // - Beim ersten Verwenden der App werden default Werte geladen,
+    // - ansonsten werden gepeicherte Werte genommen
     func conntectToServer() {
-        DispatchQueue.main.async {
+        
+        let isFirstLaunch = UserDefaults.isFirstLaunch()
+        
+        if isFirstLaunch {
+            port = 8082
+            host = "192.168.178.39"
             
+        } else {
+            if let ip = UserDefaults.standard.value(forKey: "host"),
+                let po = UserDefaults.standard.value(forKey: "port") {
+                
+                host = ip as? String
+                port = po as? Int
+            }
+        }
+        
+        guard let serverHost = host else { return }
+        guard let serverPort = port else { return }
+        
+        DispatchQueue.main.async {
             if(Socket.sharedInstance.connected) {
-                self.timer.invalidate()
+                HomeController.timer.invalidate()
             } else {
-                HomeController.eventLabel.text = "Connecting to server..."
-                let res = Socket.sharedInstance.connect()
+                
+                let res = Socket.sharedInstance.connect(with: serverHost, port: serverPort)
                 
                 if(res.error == nil) {
-                    self.timer = Timer.scheduledTimer(timeInterval: 3, target: self, selector: #selector(self.checkDataFromServer), userInfo: nil, repeats: true)
-                    self.timer.fire()
+
+                    // connect button ändern
+                    let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+                    self.showAlert(title: "Yaaaay", contentText: "Verbindung erfolgreich zu \(serverHost) hergestellt", actions: [okAction])
+                    
+                    if !self.devices.isEmpty {
+                        self.sendDataWithTimer()
+                    }
+                    
                 } else {
                     Socket.sharedInstance.disconnect()
-                                    HomeController.eventLabel.text = "Connection closed"
-                    print("\(String(describing: res.error?.localizedDescription))")
+                    
+                    let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+                    self.showAlert(title: "Ooohh", contentText: "Verbindung konnte nicht hergestellt werden", actions: [okAction])
                 }
             }
         }
     }
     
+    // Funktion die einen Funktion alle 5 sek aufruft
+    func sendDataWithTimer() {
+        if Socket.sharedInstance.connected {
+            HomeController.timer = Timer.scheduledTimer(timeInterval: 5, target: self, selector: #selector(self.sendData), userInfo: nil, repeats: true)
+            HomeController.timer.fire()
+        } else {
+            
+        }
+    }
     
-    // should ask sensor for data with ids of all stored sensors
-    @objc func checkDataFromServer() {
-        
+    // Asynchrone Funktion sendet alle Sensor Ids und übergibt das Ergebnis an readJsonToString
+    @objc func sendData() {
         DispatchQueue.main.async {
-            
             let result = Socket.sharedInstance.send(command: self.sensorIds())
-            
             if result.isEmpty {
-                print("something went wrong")
+                print("json is empty")
             } else {
                 self.readJsonToString(with: result)
             }
@@ -189,52 +238,21 @@ extension HomeController {
         
     }
     
+    // Funktion liest den übergebenen JSON String und aktualisiert den Sensor in der Cell
+    // - String lesen
+    // - Sensor updaten
     func readJsonToString(with jsonStr: String) {
-        
-        var sensortype: String?
-        var entity: String?
-        
-        
-        enum JSONParseError: Error {
-            case notADictionary
-            case missinSensorObjects
-        }
-        
         guard let data = jsonStr.data(using: String.Encoding.ascii, allowLossyConversion: false) else { return }
-        
         do {
             let json = try JSONSerialization.jsonObject(with: data, options: [])
+
             guard let dict = json as? [[String: Any]] else { return }
-            
             for data in dict {
-                
                 if let sensorId = data["sensorID"] as? String,
                     let value = data["value"] as? String,
-                        let timestamp = data["timestamp"] as? String {
-                    
-                    switch sensorId {
-                    case "snid1":
-                        sensortype = "Helligkeit"
-                        entity = " lm"
-                    case "snid2":
-                        sensortype = "Kohlenstoffmonoxid"
-                        entity = " ppm"
-                    case "snid3":
-                        sensortype = "Luftfeuchtigkeit"
-                        entity = " %"
-                    case "snid4":
-                        sensortype = "Temperatur"
-                        entity = " °C"
-                    case "snid5":
-                        sensortype = "Lautstärke"
-                        entity = " dB"
-                    default:
-                        print("something went wrong")
-                    }
-                    
-                    
-                    let sensor = SensorModel(id: sensorId, device: "nil", type: sensortype!, entity: entity!, value: Double(value), minValue: -10, maxValue: 60, time: timestamp)
-                    
+                    let timestamp = data["timestamp"] as? String {
+
+                    let sensor = SensorModel(id: sensorId, device: "", type: "", entity: "", value: Float(value), time: timestamp, exValue: [nil])
                     update(sensor: sensor)
                 }
             }

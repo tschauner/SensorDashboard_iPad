@@ -11,18 +11,21 @@ import UIKit
 class EventModel {
     
     var time: String
-    var text: Events
+    var text: String
     var type: String
     
     
-    // possible events
-    
-    enum Events: String {
-        case Max = "wurde überschritten"
-        case Min = "wurde unterschritten"
+    enum ErrorCode: String {
+        case min1 = "Messbrereich unterschritten"
+        case min2 = "Grenzwert unterschritten"
+        case min3 = "Äußerer Grenzwert unterschritten"
+        case max1 = "Messbrereich überschritten"
+        case max2 = "Grenzwert überschritten"
+        case max3 = "Äußerer Grenzwert überschritten"
+        
     }
     
-    init(type: String, time: String, text: Events) {
+    init(type: String, time: String, text: String) {
         self.time = time
         self.text = text
         self.type = type

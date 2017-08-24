@@ -12,28 +12,30 @@ import AVFoundation
 import SwiftSocket
 
 class HomeController: UICollectionViewController {
+
+    var host: String?
+    var port: Int?
     
-    var client: TCPClient?
-    
-    static var host = "141.45.211.190"
-    static var port: Int32 = 8080
-    
-    // cells & header id
+    // Cell & Header ID
     let headerId = "headerId"
     let cellId = "cellId"
     
-    // timer
-    var timer = Timer()
+    let unityScheme = "UnitySensorApp://"
+    
+    // Timer
+    static var timer = Timer()
     
     var events = [EventModel]()
     
-    // beacons
+    // Beacons
     var closestBeacon: CLBeaconMinorValue?
     let locationManager = CLLocationManager()
     static var allBeacons = [CLBeacon]()
     var beaconsFound = [CLBeaconMinorValue]()
     let region = CLBeaconRegion(proximityUUID: UUID(uuidString: "f7826da6-4fa2-4e98-8024-bc5b71e0893e")!, identifier: "MyBeacon")
     
+    // Property Observer Bool
+    // - wenn true dann wird User gefragt ob Sensor hinzugefügt werden soll
     var beaconIsConnected = false {
         didSet {
             
@@ -41,14 +43,13 @@ class HomeController: UICollectionViewController {
                 promptUser()
             }
         }
-        
     }
     
-    // alarm
-    var alarmIsActivated = true
+    // Alarm
+    var alarmIsActivated = false
     
-    
-    //setup every device for detailed view
+    // Property Observer Variable
+    // - speichert alle Sensoren aus dem Device im Array
     var devices = [DeviceModel]() {
         didSet {
             for device in devices {
@@ -62,7 +63,6 @@ class HomeController: UICollectionViewController {
     }
     
     
-    // initial load
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -71,18 +71,18 @@ class HomeController: UICollectionViewController {
         initLocationServices()
         
         initGestureRecognizer()
-    
-        
-        
+
     }
     
-    // starts background view again & makes buttonview visible
+    // Funktion wird geladen bevor ViewVC angezeigt wird
+    // - startet den Timer
+    // - fügt den AddButton hinzu
+    // - läd den BackgroundView
     override func viewWillAppear(_ animated: Bool) {
         
+        sendDataWithTimer()
         addSensorsManuallyButton()
-        EventsCV.events.removeAll()
-    
-        
+
         if Constants.sensorData.isEmpty {
             collectionView?.backgroundView = backGroundView()
         } else {
@@ -96,12 +96,8 @@ class HomeController: UICollectionViewController {
     }
     
     
+	// ---------- SETUP VIEWS ------------
     
-    
-    // ----------- FUNCTIONS -----------
-    
-    
-    // setup views
     func setupViews() {
         
         view.backgroundColor = .darkGray
@@ -116,18 +112,19 @@ class HomeController: UICollectionViewController {
         
     }
     
+    // ----------- FUNCTIONS -----------
     
-    // init gestures
+    
+    // Funktion initialisiert die LongPressGesture zum verschieben der Cells
     func initGestureRecognizer() {
         let longPressGesture = UILongPressGestureRecognizer(target: self, action: #selector(handleLongGesture(_:)))
         self.collectionView?.addGestureRecognizer(longPressGesture)
     }
     
-    // gesture states to move item in collection view
+    // Funktion zum verschieben der Cells
     func handleLongGesture(_ gesture: UILongPressGestureRecognizer) {
         
         switch(gesture.state) {
-            
         case UIGestureRecognizerState.began:
             guard let selectedIndexPath = self.collectionView?.indexPathForItem(at: gesture.location(in: self.collectionView)) else {
                 break
@@ -143,16 +140,20 @@ class HomeController: UICollectionViewController {
     }
     
     
-    /// presents qr code scanner vc
-    func showORScanner() {
+    
+    // Funktion öffnet die Unity App über eine Url
+    func openUnityApp() {
         
-        let qrcode = ScannerController()
-        let nav = UINavigationController(rootViewController: qrcode)
-        
-        present(nav, animated: true, completion: nil)
+        let url = URL(string: unityScheme)!
+        if #available(iOS 10.0, *) {
+            UIApplication.shared.open(url, options: [:], completionHandler: nil)
+        } else {
+            UIApplication.shared.openURL(url)
+        }
     }
     
-    /// presents sensor library vc
+    
+    // Funktion öffnet den SensorLibraryViewController
     func addSensorManually() {
         
         let layout = UICollectionViewFlowLayout()
@@ -161,33 +162,9 @@ class HomeController: UICollectionViewController {
         present(nav, animated: true, completion: nil)
     }
     
-    /// shows alert if event appears and activated
-    func showAlert(with event: EventModel, activated: Bool) {
-        
-        if activated {
-            let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
-            showAlert(title: "ACHTUNG", contentText: "\(event.type)wert \(event.text.rawValue)", actions: [okAction])
-        }
-    }
-    
-    func eventButtonPressed() {
-        
-        print("event button pressed")
-        let tableViewController = UITableViewController()
-        tableViewController.modalPresentationStyle = UIModalPresentationStyle.popover
-        
-        present(tableViewController, animated: true, completion: nil)
-        
-        let presenter = tableViewController.popoverPresentationController
-        presenter?.sourceView = countLabelButton
-        presenter?.sourceRect = countLabelButton.bounds
-        presenter?.permittedArrowDirections = .left
-    }
     
     
-    
-    
-    /// current time string (short)
+    // Funktion gibt die aktuelle Zeit als String zurück
     func currentTimeString() -> String {
         
         let date = Date()
@@ -201,7 +178,7 @@ class HomeController: UICollectionViewController {
     }
     
     
-    // change alarm button icon if pressed and de/activates it
+    // Funktion ändert den Alarmbutton wenn dieser gedrückt wird
     func alarmButtonPressed() {
         
         if alarmIsActivated {
@@ -213,7 +190,18 @@ class HomeController: UICollectionViewController {
         }
     }
     
-    // init locations services for ibeacon
+    // Funktion verbindet Socket mit dem Server
+    func conntectButtonPressed() {
+        
+        if Socket.sharedInstance.connected {
+            print("already connected")
+        } else {
+            conntectToServer()
+        }
+    }
+    
+    // Funktion initialisiert die LocationServices und Beacons
+    // - holt sich die Erlaubnis die Location im Hintergrund (whenInUse) abzufragen
     func initLocationServices() {
         locationManager.delegate = self
         if (CLLocationManager.authorizationStatus() != CLAuthorizationStatus.authorizedWhenInUse) {
@@ -223,12 +211,12 @@ class HomeController: UICollectionViewController {
     }
     
     
-    
-    
     // ---------- SETUP VIEWS ------------
     
     
-    // setup collection view
+    // Funktion zum initialisiertn des CollectionViews
+    // - Frame, Scrollrichtung, Spacing, BackgroundColor wird festgelegt
+    // - Cell wird registriert
     func setupCollectionView() {
         if let flowLayout = collectionView?.collectionViewLayout as? UICollectionViewFlowLayout {
             flowLayout.scrollDirection = .vertical
@@ -245,34 +233,25 @@ class HomeController: UICollectionViewController {
     }
     
     func showAdminSettings() {
-        
         let admin = AdminController()
         
         UIView.animate(withDuration: 0.2) {
             self.buttonView.alpha = 0
         }
-        
         navigationController?.pushViewController(admin, animated: true)
     }
     
     
-    // if someone presses die Admin button
-    func adminAlert() {
-        
-        let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
-        showAlert(title: "Zugang verweigert", contentText: Constants.adminAlarmText, actions: [okAction])
-    }
     
-    
-    // setup navbar
+    // Funktion für den NavBar View
     func setupNavBar() {
         
-        // camera button
-        let cameraButton = UIBarButtonItem(image: UIImage(named: "camera")?.withRenderingMode(.alwaysTemplate), style: UIBarButtonItemStyle.plain, target: self, action: #selector(showORScanner))
+        // Camera Button (Unity App) in NavBar
+        let cameraButton = UIBarButtonItem(image: UIImage(named: "camera")?.withRenderingMode(.alwaysTemplate), style: UIBarButtonItemStyle.plain, target: self, action: #selector(openUnityApp))
         cameraButton.tintColor = .darkGray
         navigationItem.leftBarButtonItem = cameraButton
         
-        // profile Image in Nav
+        // Profil Bild in NavBar
         let nameLabel = UIBarButtonItem(title: "Admin", style: .done, target: self, action: #selector(showAdminSettings))
         nameLabel.tintColor = UIColor.darkGray
         
@@ -289,9 +268,8 @@ class HomeController: UICollectionViewController {
     }
     
     
-    // setup button view
+    // Funktion fügt den Button zum manuellen hinzufügen der Sensoren hinzu
     func addSensorsManuallyButton() {
-        
         
         guard let frame = navigationController?.view.frame else { return }
         let width: CGFloat = frame.width
@@ -306,13 +284,11 @@ class HomeController: UICollectionViewController {
         
         buttonView.backgroundColor = UIColor(white: 0.3, alpha: 0.8)
         
-        
-        // subview stack
+        // Subview Stack
         self.navigationController?.view.addSubview(buttonView)
         buttonView.addSubview(okButton)
         
-        
-        // main frame
+        // Main frame
         buttonView.frame = CGRect(x: 0, y: frame.height - 90, width: width, height: height)
         
         okButton.bottomAnchor.constraint(equalTo: buttonView.bottomAnchor, constant: -20).isActive = true
@@ -322,34 +298,32 @@ class HomeController: UICollectionViewController {
     }
     
     
-    // setup header - event bar
+    // Funktion zum erstellen der restlichen Views
+    // - evenLabel
+    // - AlarmButton
+    // - connectButton
     func setupHeaderView() {
         
         
         view.addSubview(backgroundView)
         backgroundView.addSubview(HomeController.eventLabel)
         backgroundView.addSubview(alarmButton)
+        backgroundView.addSubview(HomeController.connectButton)
         
         backgroundView.topAnchor.constraint(equalTo: topLayoutGuide.bottomAnchor).isActive = true
         backgroundView.heightAnchor.constraint(equalToConstant: 90).isActive = true
         backgroundView.widthAnchor.constraint(equalTo: view.widthAnchor).isActive = true
         backgroundView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
         
-//
-//        headerView.topAnchor.constraint(equalTo: backgroundView.topAnchor, constant: 10).isActive = true
-//        headerView.widthAnchor.constraint(equalTo: backgroundView.widthAnchor, constant: -20).isActive = true
-//        headerView.heightAnchor.constraint(equalToConstant: 125).isActive = true
-//        headerView.leftAnchor.constraint(equalTo: backgroundView.leftAnchor, constant: 10).isActive = true
-        
         alarmButton.topAnchor.constraint(equalTo: topLayoutGuide.bottomAnchor, constant: 25).isActive = true
         alarmButton.rightAnchor.constraint(equalTo: backgroundView.rightAnchor, constant: -15).isActive = true
         alarmButton.heightAnchor.constraint(equalToConstant: 35).isActive = true
         alarmButton.widthAnchor.constraint(equalToConstant: 35).isActive = true
         
-//        countLabelButton.topAnchor.constraint(equalTo: topLayoutGuide.bottomAnchor, constant: 30).isActive = true
-//        countLabelButton.leftAnchor.constraint(equalTo: backgroundView.leftAnchor, constant: 20).isActive = true
-//        countLabelButton.heightAnchor.constraint(equalToConstant: 30).isActive = true
-//        countLabelButton.widthAnchor.constraint(equalToConstant: 30).isActive = true
+        HomeController.connectButton.centerYAnchor.constraint(equalTo: alarmButton.centerYAnchor).isActive = true
+        HomeController.connectButton.rightAnchor.constraint(equalTo: alarmButton.leftAnchor, constant: -10).isActive = true
+        HomeController.connectButton.heightAnchor.constraint(equalToConstant: 25).isActive = true
+        HomeController.connectButton.widthAnchor.constraint(equalToConstant: 90).isActive = true
         
         HomeController.eventLabel.leftAnchor.constraint(equalTo: backgroundView.leftAnchor, constant: 20).isActive = true
         HomeController.eventLabel.topAnchor.constraint(equalTo: topLayoutGuide.bottomAnchor, constant: 35).isActive = true
@@ -358,9 +332,7 @@ class HomeController: UICollectionViewController {
     
     
     
-    
-    
-    // ------ views -------
+    // ------ VIEWS -------
     
     
     var buttonView: UIView = {
@@ -373,7 +345,6 @@ class HomeController: UICollectionViewController {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.font = UIFont.boldSystemFont(ofSize: 14)
-        label.text = "Nicht verbunden"
         label.textColor = .white
         return label
     }()
@@ -387,16 +358,8 @@ class HomeController: UICollectionViewController {
     }()
     
     
-    // init headerView
-    var headerView: HeaderView = {
-        let view = HeaderView()
-        view.backgroundColor = .darkGray
-        view.translatesAutoresizingMaskIntoConstraints = false
-        return view
-    }()
-    
     var alarmButton: UIButton = {
-        let button = UIButton()
+        let button = UIButton(type: .system)
         button.translatesAutoresizingMaskIntoConstraints = false
         button.tintColor = .white
         button.setBackgroundImage(UIImage(named: "alarm")?.withRenderingMode(.alwaysTemplate), for: .normal)
@@ -404,25 +367,20 @@ class HomeController: UICollectionViewController {
         return button
     }()
     
-    
-     var countLabelButton: UIButton = {
-        let label = UIButton(type: .system)
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.isHidden = true
-        label.titleLabel?.font = UIFont.boldSystemFont(ofSize: 14)
-        label.setTitleColor(UIColor.white, for: .normal)
-        label.backgroundColor = .red
-        label.layer.cornerRadius = 15
-        label.titleLabel?.textAlignment = .center
-        label.setTitle("!", for: .normal)
-        label.addTarget(self, action: #selector(eventButtonPressed), for: UIControlEvents.touchUpInside)
-        return label
+    static var connectButton: UIButton = {
+        let button = UIButton(type: .system)
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.tintColor = .white
+        button.layer.cornerRadius = 13
+        button.backgroundColor = UIColor(white: 0.4, alpha: 1)
+        button.titleLabel?.font = UIFont.boldSystemFont(ofSize: 12)
+        button.setTitleColor(UIColor.white, for: .normal)
+        button.setTitle("Verbinden", for: .normal)
+        button.addTarget(self, action: #selector(conntectButtonPressed), for: UIControlEvents.touchUpInside)
+        return button
     }()
     
-    
-    
-    
-    
+
 
 }
 

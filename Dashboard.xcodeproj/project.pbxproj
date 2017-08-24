@@ -8,8 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		2C087293023912A0D24B12D7 /* Pods_Dashboard.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 228D064E75BA5EE5E192C3FE /* Pods_Dashboard.framework */; };
+		A201F5951F2368140039EE38 /* ExtremeValueModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A201F5941F2368140039EE38 /* ExtremeValueModel.swift */; };
 		A2041CCA1F07C5C6007DA142 /* Socket.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2041CC91F07C5C6007DA142 /* Socket.swift */; };
-		A2052F071EE2AAD600768692 /* EventCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2052F061EE2AAD600768692 /* EventCell.swift */; };
 		A205999E1F0FA03A00956D4C /* Helpers_HomeController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A205999D1F0FA03A00956D4C /* Helpers_HomeController.swift */; };
 		A260E8B41F1DDA7000658D3D /* WikiController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A260E8B31F1DDA7000658D3D /* WikiController.swift */; };
 		A260E8D61F1EB46500658D3D /* AdminController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A260E8D51F1EB46500658D3D /* AdminController.swift */; };
@@ -31,21 +31,18 @@
 		A2C94A391ECF70B8006BFFA6 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A2C94A381ECF70B8006BFFA6 /* Assets.xcassets */; };
 		A2C94A3C1ECF70B8006BFFA6 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = A2C94A3A1ECF70B8006BFFA6 /* LaunchScreen.storyboard */; };
 		A2C94A441ECF7648006BFFA6 /* SensorModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2C94A431ECF7648006BFFA6 /* SensorModel.swift */; };
-		A2C94A471ECFBA1F006BFFA6 /* EventsCV.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2C94A461ECFBA1F006BFFA6 /* EventsCV.swift */; };
 		A2C94A491ECFBC19006BFFA6 /* EventModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2C94A481ECFBC19006BFFA6 /* EventModel.swift */; };
 		A2DECF861ED091450054C2A5 /* SensorCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2DECF851ED091450054C2A5 /* SensorCell.swift */; };
-		A2DECF881ED0919B0054C2A5 /* HeaderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2DECF871ED0919B0054C2A5 /* HeaderView.swift */; };
 		A2E59F281EF29572001066AE /* SensorDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2E59F271EF29572001066AE /* SensorDetailViewController.swift */; };
 		A2EE4A0D1EE088760005B953 /* iBeacon.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2EE4A0C1EE088760005B953 /* iBeacon.swift */; };
 		A2EE4A0F1EE1A54A0005B953 /* DeviceModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2EE4A0E1EE1A54A0005B953 /* DeviceModel.swift */; };
-		A2F894491EDC6DE100A96446 /* Mock.json in Resources */ = {isa = PBXBuildFile; fileRef = A2F894481EDC6DE100A96446 /* Mock.json */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
 		131D9CECEAFABF72740D590B /* Pods-Dashboard.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Dashboard.release.xcconfig"; path = "Pods/Target Support Files/Pods-Dashboard/Pods-Dashboard.release.xcconfig"; sourceTree = "<group>"; };
 		228D064E75BA5EE5E192C3FE /* Pods_Dashboard.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Dashboard.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		A201F5941F2368140039EE38 /* ExtremeValueModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtremeValueModel.swift; sourceTree = "<group>"; };
 		A2041CC91F07C5C6007DA142 /* Socket.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Socket.swift; sourceTree = "<group>"; };
-		A2052F061EE2AAD600768692 /* EventCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventCell.swift; sourceTree = "<group>"; };
 		A205999D1F0FA03A00956D4C /* Helpers_HomeController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helpers_HomeController.swift; sourceTree = "<group>"; };
 		A260E8B31F1DDA7000658D3D /* WikiController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WikiController.swift; sourceTree = "<group>"; };
 		A260E8D51F1EB46500658D3D /* AdminController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdminController.swift; sourceTree = "<group>"; };
@@ -69,14 +66,11 @@
 		A2C94A3B1ECF70B8006BFFA6 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		A2C94A3D1ECF70B8006BFFA6 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		A2C94A431ECF7648006BFFA6 /* SensorModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SensorModel.swift; sourceTree = "<group>"; };
-		A2C94A461ECFBA1F006BFFA6 /* EventsCV.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventsCV.swift; sourceTree = "<group>"; };
 		A2C94A481ECFBC19006BFFA6 /* EventModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EventModel.swift; sourceTree = "<group>"; };
 		A2DECF851ED091450054C2A5 /* SensorCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SensorCell.swift; sourceTree = "<group>"; };
-		A2DECF871ED0919B0054C2A5 /* HeaderView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HeaderView.swift; sourceTree = "<group>"; };
 		A2E59F271EF29572001066AE /* SensorDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SensorDetailViewController.swift; sourceTree = "<group>"; };
 		A2EE4A0C1EE088760005B953 /* iBeacon.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = iBeacon.swift; sourceTree = "<group>"; };
 		A2EE4A0E1EE1A54A0005B953 /* DeviceModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceModel.swift; sourceTree = "<group>"; };
-		A2F894481EDC6DE100A96446 /* Mock.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = Mock.json; sourceTree = "<group>"; };
 		F028ACC5963D4F648AC57849 /* Pods-Dashboard.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Dashboard.debug.xcconfig"; path = "Pods/Target Support Files/Pods-Dashboard/Pods-Dashboard.debug.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -112,7 +106,6 @@
 		A205999F1F11960700956D4C /* Sonstiges */ = {
 			isa = PBXGroup;
 			children = (
-				A2F894481EDC6DE100A96446 /* Mock.json */,
 				A2041CC91F07C5C6007DA142 /* Socket.swift */,
 				A2EE4A0C1EE088760005B953 /* iBeacon.swift */,
 				A2A785CF1F0905F300AC4CD9 /* Constants.swift */,
@@ -187,11 +180,8 @@
 		A2DECF891ED091F30054C2A5 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				A2C94A461ECFBA1F006BFFA6 /* EventsCV.swift */,
 				A2DECF851ED091450054C2A5 /* SensorCell.swift */,
 				A2A658FA1EEDBDE10066FC9D /* SensorLibraryCell.swift */,
-				A2052F061EE2AAD600768692 /* EventCell.swift */,
-				A2DECF871ED0919B0054C2A5 /* HeaderView.swift */,
 			);
 			name = Views;
 			sourceTree = "<group>";
@@ -200,6 +190,7 @@
 			isa = PBXGroup;
 			children = (
 				A2C94A431ECF7648006BFFA6 /* SensorModel.swift */,
+				A201F5941F2368140039EE38 /* ExtremeValueModel.swift */,
 				A2EE4A0E1EE1A54A0005B953 /* DeviceModel.swift */,
 				A2C94A481ECFBC19006BFFA6 /* EventModel.swift */,
 			);
@@ -272,7 +263,6 @@
 				A2C94A3C1ECF70B8006BFFA6 /* LaunchScreen.storyboard in Resources */,
 				A2C94A391ECF70B8006BFFA6 /* Assets.xcassets in Resources */,
 				A2C94A341ECF70B7006BFFA6 /* Main.storyboard in Resources */,
-				A2F894491EDC6DE100A96446 /* Mock.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -291,7 +281,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "diff \"${PODS_ROOT}/../Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n";
 			showEnvVarsInLog = 0;
 		};
 		81FC4AB52BD897C85FEEA1C0 /* [CP] Embed Pods Frameworks */ = {
@@ -333,8 +323,8 @@
 			files = (
 				A2C94A311ECF70B7006BFFA6 /* HomeController.swift in Sources */,
 				A289A18D1EF5583400D909D4 /* ChartColors.swift in Sources */,
+				A201F5951F2368140039EE38 /* ExtremeValueModel.swift in Sources */,
 				A2EE4A0F1EE1A54A0005B953 /* DeviceModel.swift in Sources */,
-				A2C94A471ECFBA1F006BFFA6 /* EventsCV.swift in Sources */,
 				A289A18C1EF5583400D909D4 /* ChartSeries.swift in Sources */,
 				A2A785D01F0905F300AC4CD9 /* Constants.swift in Sources */,
 				A2A658FB1EEDBDE10066FC9D /* SensorLibraryCell.swift in Sources */,
@@ -342,14 +332,12 @@
 				A289A18E1EF5583400D909D4 /* Chart.swift in Sources */,
 				A2C94A2F1ECF70B7006BFFA6 /* AppDelegate.swift in Sources */,
 				A264CC0A1EF2E34D00686713 /* ScannerController.swift in Sources */,
-				A2DECF881ED0919B0054C2A5 /* HeaderView.swift in Sources */,
 				A2C94A491ECFBC19006BFFA6 /* EventModel.swift in Sources */,
 				A2A658F91EEDA5590066FC9D /* SensorLibraryController.swift in Sources */,
 				A2C94A441ECF7648006BFFA6 /* SensorModel.swift in Sources */,
 				A260E8B41F1DDA7000658D3D /* WikiController.swift in Sources */,
 				A27C61591EF52E6E001A45D9 /* Delegates_HomeController.swift in Sources */,
 				A2A658F71EED86FC0066FC9D /* AddSensorController.swift in Sources */,
-				A2052F071EE2AAD600768692 /* EventCell.swift in Sources */,
 				A205999E1F0FA03A00956D4C /* Helpers_HomeController.swift in Sources */,
 				A2DECF861ED091450054C2A5 /* SensorCell.swift in Sources */,
 				A28CACDB1EF6E3A4001C298B /* Extensions.swift in Sources */,

@@ -19,15 +19,19 @@ class SensorLibraryCell: UICollectionViewCell, CLLocationManagerDelegate {
         
     }
     
+    // Property Observer für die Cells
+    // 1. wenn die Cell gehiglightet ist, background = grau, ansonsten weiss
     override var isHighlighted: Bool {
         didSet {
             self.backgroundColor = isHighlighted ? UIColor(white: 0.95, alpha: 1) : UIColor.white
         }
     }
     
+    // location Manager Object
     let locationManager = CLLocationManager()
+    
+    // UUID String der Beacons. Der String ist je nach Hersteller unterschiedlich
     let region = CLBeaconRegion(proximityUUID: UUID(uuidString: "f7826da6-4fa2-4e98-8024-bc5b71e0893e")!, identifier: "MyBeacon")
-    var location: String?
     
     
     // -----  VIEWS ------
@@ -81,7 +85,9 @@ class SensorLibraryCell: UICollectionViewCell, CLLocationManagerDelegate {
         return view
     }()
     
-    // setting up device
+    // Property Observer für DeviceModel
+    // 1. wenn das Device.image leer ist - setze ein dummy Bild
+    // 2. ansonsten setze das übergebene Bild + Text
     var device: DeviceModel? = nil {
         didSet {
             if let device = device {
@@ -100,6 +106,10 @@ class SensorLibraryCell: UICollectionViewCell, CLLocationManagerDelegate {
     
     // ------- FUNCTIONS ---------
     
+    
+    // Initialisierung des Locationsmanagers
+    // 1. Wenn die App zum ersten Mal gestartet wird, Authorisierung für die Benutzung notwendig
+    // 2. Location wird nur abgefragt wenn App in Verwendung ist (requestWhenInUseAuthorization)
     func initLocationService() {
         
         locationManager.delegate = self
@@ -110,23 +120,28 @@ class SensorLibraryCell: UICollectionViewCell, CLLocationManagerDelegate {
         locationManager.startRangingBeacons(in: region)
     }
     
+    // Funktion zeigt an ob ein oder mehrere Beacons sich in der Nähe befinden
     func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
         
         guard let d = device?.minorValue else { return }
         
-        region.notifyEntryStateOnDisplay = true
-        
+        // 1. speichert den nächsten Beacon in der var closestBeacon
+        // 2. vergleicht den Minorvalue vom closestBeacon und device Beacon (d)
+        // 3. wenn beide Beacons den gleichen Value haben, wird die Entfernung (proximity) übergeben
+        // 4. die Entfernung wird in Meter ausgegeben mit (makeStringOutof)
         if beacons.count > 0 {
             let closestBeacon = beacons[0] as CLBeacon
             if d.hashValue == closestBeacon.minor.intValue {
                 makeStringOutOf(beacons[0].proximity, beacon: closestBeacon)
             }
         } else {
-            
             makeStringOutOf(beacons[0].proximity, beacon: beacons[0])
         }
     }
     
+    // Funktion berechnet die Entfernung der Beacons in Metern
+    // 1. CLProximity und CLBeacon werden übergeben
+    // 2. Entfernung wird in Metern im rangeLabel angezeigt
     func makeStringOutOf(_ distance: CLProximity, beacon: CLBeacon) {
         UIView.animate(withDuration: 0.8) {
             
@@ -135,19 +150,12 @@ class SensorLibraryCell: UICollectionViewCell, CLLocationManagerDelegate {
             switch distance {
             case .unknown:
                 self.rangeLabel.text  = "Location Unbekannt"
-                print("location: unbekannt")
-                
             case .far:
                 self.rangeLabel.text  = "Ca \(accuracy) Meter entfernt"
-                print("location: weit")
-                
             case .near:
                 self.rangeLabel.text  = "Ca \(accuracy) Meter entfernt"
-                print("location: nähe")
-                
             case .immediate:
                 self.rangeLabel.text  = "Ca \(accuracy) Meter entfernt"
-                print("location: unmittelbar")
             }
         }
     }

@@ -13,53 +13,53 @@ import UIKit
 
 extension HomeController: UICollectionViewDelegateFlowLayout {
     
+    // Funktion zum bewegen und verschieben der Cells im CollectionView
     override func collectionView(_ collectionView: UICollectionView, moveItemAt sourceIndexPath: IndexPath, to destinationIndexPath: IndexPath) {
         
         let temp = Constants.sensorData.remove(at: sourceIndexPath.item)
         Constants.sensorData.insert(temp, at: destinationIndexPath.item)
     }
     
+    // Funktion gibt die Cell zurück und legt fest was in der Cell angezeigt wird
     override func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
         
         let cell = collectionView.dequeueReusableCell(withReuseIdentifier: cellId, for: indexPath) as! SensorTileCell
         cell.sensor = Constants.sensorData[indexPath.item]
         
-        // shows alarm if value is higher or less
-        showAlarmFor(sensor: cell.sensor!, isActive: alarmIsActivated)
-        
+        // zeigt den Alarm an, falls ein Wert überschritten wurde
+        showAlarmFor(sensor: cell.sensor!)
         
         return cell
     }
     
     
+    // Funktion gibt die Anzahl der Objecte im ColectionView zurück
+    // - Wenn die Anzahl == 0, pulsierende Ringe werden angezeigt
     override func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
         
         if Constants.sensorData.count == 0 {
-            
             collectionView.backgroundView = backGroundView()
-            
             return 0
         } else {
-            
             collectionView.backgroundView = UIView()
             return Constants.sensorData.count
             
         }
     }
     
-    
+    // Funktion gibt Anzahl der Sections zurück
     override func numberOfSections(in collectionView: UICollectionView) -> Int {
         return 1
     }
     
+    // Funktion gibt Größe des Headers zurück
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForHeaderInSection section: Int) -> CGSize {
-        
         
         return CGSize(width: view.frame.width, height: 90)
         
     }
     
-    
+    // Funktion gibt die Größe der Cells zurück
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         
         let itemWidth = (collectionView.bounds.size.width  / 4)
@@ -67,32 +67,27 @@ extension HomeController: UICollectionViewDelegateFlowLayout {
         return CGSize(width: itemWidth - 10, height: 150)
     }
     
+    // Funktion gibt Space zwischen den Cells zurück
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, minimumLineSpacingForSectionAt section: Int) -> CGFloat {
         
         return 10
     }
     
     
+    // Funktion zeigt DetailController an wenn Cell gedrückt wird
     override func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
         
-        // falls man mit der geklicken cell was anstellen will
-        if let cell = collectionView.cellForItem(at: indexPath) as? SensorTileCell {
-            
-            
-            let data = Constants.sensorData[indexPath.item]
-            
-            
-            show(sensorData: data)
-            
-            
-            
-        }
+        let data = Constants.sensorData[indexPath.item]
+        
+        show(sensorData: data)
+        
         
     }
     
 }
 
-// Background view
+// Extension für den BackgroundView im HomeController
+// zeigt die pulsierenden Kreise wenn keine Sensoren im Array sind
 extension HomeController {
     
     func backGroundView() -> UIView {
@@ -125,7 +120,7 @@ extension HomeController {
         shapeView.isHidden = true
         
         
-        // first ring
+        // erster Ring
         
         UIView.animate(withDuration: 2, delay: 0, options: [.curveEaseOut, .repeat], animations: {
             
@@ -146,7 +141,7 @@ extension HomeController {
         containerView.addSubview(shapeView2)
         
         
-        // second ring
+        // zweiter Ring
         
         UIView.animate(withDuration: 2, delay: 1, options: [.curveEaseOut, .repeat], animations: {
             

@@ -14,14 +14,16 @@ import UserNotifications
 
 extension HomeController: CLLocationManagerDelegate {
     
+    
+    // Funktion die alle Beacons in der Range angibt
+    // - nächster Beacon in der Nähe wird in Variable gespeichert
+    // - nächster Beacon wird an updateDistance übergeben
+    // - updateDistance prüft ob beacon schon in Verwendung ist
     func locationManager(_ manager: CLLocationManager, didRangeBeacons beacons: [CLBeacon], in region: CLBeaconRegion) {
-        
-        region.notifyEntryStateOnDisplay = true
-        
+
         if beacons.count > 0 {
             closestBeacon = beacons[0].minor.uint16Value
             updateDistance(beacons[0].proximity)
-            
             
         } else {
             updateDistance(.unknown)
@@ -29,60 +31,36 @@ extension HomeController: CLLocationManagerDelegate {
     }
     
     
-    // if user enters beacon range
+    // Funktion setzt beaconIsConnected auf true wenn der user in die Beacon Range kommt
     func locationManager(_ manager: CLLocationManager, didEnterRegion region: CLRegion) {
         guard region is CLBeaconRegion else { return }
         
         beaconIsConnected = true
-        print("conected")
     }
     
     
-    // if user exits beacon range
+    // Funktion setzt beaconIsConnected auf false wenn der user die Beacon Range verlässt
+    
     func locationManager(_ manager: CLLocationManager, didExitRegion region: CLRegion) {
         guard region is CLBeaconRegion else { return }
         
         beaconIsConnected = false
-        print("deconnected")
-        
-        // removes data when beacon is out of range
-        
-        collectionView?.reloadData()
-        
-        EventsCV.events.removeAll()
-        headerView.eventBar.collectionView.reloadData()
-        
-        // device name
-        
-        let content = UNMutableNotificationContent()
-        
-        content.title = "name"
-        content.body = "Verbindung getrennt"
-        content.sound = .default()
-        
-        
-        let request = UNNotificationRequest(identifier: "ForgetMeNot", content: content, trigger: nil)
-        UNUserNotificationCenter.current().add(request, withCompletionHandler: nil)
     }
     
     
-    // for another use later
+    // Funktion prüft anhand der Entfernung ob beaconIsConnected auf true oder false gesetzt wird
+    // - hier kann die Entfernung festgelegt werden, in welcher Range ein Beacon erkannt werden soll
     func updateDistance(_ distance: CLProximity) {
-        
         
         switch distance {
         case .unknown:
-            
             beaconIsConnected = false
-            
         case .near:
             beaconIsConnected = checkIfSensorIsInUse()
         case .immediate:
             beaconIsConnected = checkIfSensorIsInUse()
         case .far:
             print("far")
-            
-            
             
         }
         

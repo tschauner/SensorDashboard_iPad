@@ -7,7 +7,6 @@
 //
 
 import UIKit
-import CoreData
 import UserNotifications
 import CoreLocation
 
@@ -26,23 +25,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         
         let navigationBarAppearace = UINavigationBar.appearance()
         
+        // Navigationbar Transparenz wird deaktiviert
         navigationBarAppearace.isTranslucent = false
         
-        // remove the shadow
+        // entfernt den Schatten in der Navigationbar in allen Viewcontrollern
         navigationBarAppearace.shadowImage = UIImage()
         navigationBarAppearace.setBackgroundImage(UIImage(), for: .default)
         
-        // color for every button in nav bar
+        // Hintergrundfarbe der Navigationbar in allen Viewcontrollern
         navigationBarAppearace.tintColor = .black
         
-        // makes the status bar white
+        // Textfarbe des Titels in der Navigationbar in allen Viewcontrollern
         navigationBarAppearace.titleTextAttributes = [NSForegroundColorAttributeName: UIColor.white]
-
         
-        // Request permission to send notifications
-        let center = UNUserNotificationCenter.current()
-        center.requestAuthorization(options:[.alert, .sound]) { (granted, error) in }
-        
+        // Anzeige des Viewcontrollers ohne ein Storyboard beim öffnen der App
         window = UIWindow(frame: UIScreen.main.bounds)
         window?.makeKeyAndVisible()
         
@@ -62,6 +58,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Use this method to release sharedInstance resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
         // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
         
+        // Socket beendet die Verbindung wenn App minimiert wird
+        Socket.sharedInstance.send(command: "quit#")
     }
 
     func applicationWillEnterForeground(_ application: UIApplication) {
@@ -75,55 +73,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     func applicationWillTerminate(_ application: UIApplication) {
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
         // Saves changes in the application's managed object context before the application terminates.
+        
+        // Socket beendet die Verbindung wenn App geschlossen wird
         Socket.sharedInstance.send(command: "quit#")
-        self.saveContext()
     }
 
-    // MARK: - Core Data stack
-
-    lazy var persistentContainer: NSPersistentContainer = {
-        /*
-         The persistent container for the application. This implementation
-         creates and returns a container, having loaded the store for the
-         application to it. This property is optional since there are legitimate
-         error conditions that could cause the creation of the store to fail.
-        */
-        let container = NSPersistentContainer(name: "Dashboard")
-        container.loadPersistentStores(completionHandler: { (storeDescription, error) in
-            if let error = error as NSError? {
-                // Replace this implementation with code to handle the error appropriately.
-                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                 
-                /*
-                 Typical reasons for an error here include:
-                 * The parent directory does not exist, cannot be created, or disallows writing.
-                 * The persistent store is not accessible, due to permissions or data protection when the device is locked.
-                 * The device is out of space.
-                 * The store could not be migrated to the current model version.
-                 Check the error message to determine what the actual problem was.
-                 */
-                fatalError("Unresolved error \(error), \(error.userInfo)")
-            }
-        })
-        return container
-    }()
-
-    // MARK: - Core Data Saving support
-
-    func saveContext () {
-        let context = persistentContainer.viewContext
-        if context.hasChanges {
-            do {
-                try context.save()
-            } catch {
-                // Replace this implementation with code to handle the error appropriately.
-                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                let nserror = error as NSError
-                fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
-            }
-        }
-    }
-
+    
 }
 
 // MARK: CLLocationManagerDelegate

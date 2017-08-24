@@ -15,7 +15,6 @@ import UIKit
 class ScannerController: UIViewController, AVCaptureMetadataOutputObjectsDelegate {
     
     //available devices
-    
     var captureSession:AVCaptureSession?
     var videoPreviewLayer:AVCaptureVideoPreviewLayer?
     var qrCodeFrameView:UIView?
@@ -39,6 +38,7 @@ class ScannerController: UIViewController, AVCaptureMetadataOutputObjectsDelegat
         initScanner()
     }
     
+    // Funktion für die Initialisierung des Scanners
     func initScanner() {
         
         // Get an instance of the AVCaptureDevice class to initialize a device object and provide the video as the media type parameter.
@@ -92,40 +92,46 @@ class ScannerController: UIViewController, AVCaptureMetadataOutputObjectsDelegat
         }
     }
     
-    // starts qr scanner again
+    // Funktion startet bevor der VC zu sehen ist
+    // 1. QR code scanner wird gestartet
     override func viewWillAppear(_ animated: Bool) {
         captureSession?.startRunning()
     }
     
-    // shows detailed view of scanned device
+    // Funktion zeigt den DetailViewController von dem jeweiligen Device an
+    // als Parameter wird das device übergeben
     func showDetailView(with device: DeviceModel) {
         
         let sensorDetail = SensorDetailViewController()
         sensorDetail.device = device
-        navigationController?.pushViewController(sensorDetail, animated: true)
+        let nav = UINavigationController(rootViewController: sensorDetail)
+        present(nav, animated: true, completion: nil)
     }
     
     
-    // checks if scanned id == id of device
+    // Funktion prüft ob die Device Id == der Id vom QR code ist
+    // 1. wenn die ID gleich ist, wird der jeweilige VC angezeigt
     func scannerAction(with id: String) {
         
         for device in Constants.devices {
             
             if device.id == id {
                 showDetailView(with: device)
-                //stops scanner
-                captureSession?.stopRunning()
                 
             } else {
-                
-                let action = UIAlertAction(title: "OK", style: .default, handler: nil)
-                showAlert(title: "UUPS", contentText: Constants.scannerLesefehler, actions: [action])
+                print("something went wrong")
             }
         }
         
     }
     
-    //setup views
+    // Funktion um den ViewController auszublenden
+    func dismissView() {
+        dismiss(animated: true, completion: nil)
+    }
+    
+    // -------- SETUP VIEWS ---------
+    
     func setupViews() {
         
         view.addSubview(contentView)
@@ -158,9 +164,7 @@ class ScannerController: UIViewController, AVCaptureMetadataOutputObjectsDelegat
         
     }
     
-    func dismissView() {
-        dismiss(animated: true, completion: nil)
-    }
+    // ------ VIEWS --------
     
     let contentView: UIView = {
         let view = UIView()
@@ -225,7 +229,7 @@ class ScannerController: UIViewController, AVCaptureMetadataOutputObjectsDelegat
     }()
     
     
-    // MARK: - AVCaptureMetadataOutputObjectsDelegate Methods
+    // AVCaptureMetadataOutputObjectsDelegate Methods
     
     func captureOutput(_ captureOutput: AVCaptureOutput!, didOutputMetadataObjects metadataObjects: [Any]!, from connection: AVCaptureConnection!) {
         
@@ -245,7 +249,7 @@ class ScannerController: UIViewController, AVCaptureMetadataOutputObjectsDelegat
             qrCodeFrameView?.frame = barCodeObject!.bounds
             
             if metadataObj.stringValue != nil {
-                print(metadataObj.stringValue)
+                print("das ist der scann", metadataObj.stringValue)
                 scannerAction(with: metadataObj.stringValue)
             }
         }

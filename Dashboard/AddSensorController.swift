@@ -13,13 +13,12 @@ class AddSensorController: UIViewController, UIPickerViewDelegate, UIPickerViewD
     
     var pickerView = UIPickerView()
     
+    // Array mit allen vorhandenen Sensortypen
     let sensorTypes = ["Temperatur", "Luftfeuchtigkeit", "Sauerstoff", "Kohlenmonoxid", "Helligkeit", "Infrarot", "Luftdruck"]
     
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        view.backgroundColor = UIColor(white: 1, alpha: 1)
         
         pickerView.delegate = self
         pickerView.dataSource = self
@@ -29,46 +28,41 @@ class AddSensorController: UIViewController, UIPickerViewDelegate, UIPickerViewD
         initTapGesture()
     }
     
+    // Funktion zum speichern des Sensors
+    func saveSensor() {
+        
+    }
     
+    // Funktion verbirgt die Tastatur wenn User auf den Screen klickt
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesBegan(touches, with: event)
         self.view.endEditing(true)
     }
     
-
-    
-    func saveSensor() {
-        
-    }
-    
+    // Funktion zum Beenden des Views
     func dismissView() {
-        
         dismiss(animated: true, completion: nil)
     }
     
-    
+    // Initialisierung der Tap Gesture
     func initTapGesture() {
-        
         let pan = UITapGestureRecognizer(target: self, action: #selector(showPickerView))
         touchView.addGestureRecognizer(pan)
-        
     }
     
+    // Funktion zum Anzeigen des PickerViews
     func showPickerView() {
-        
-        print("tapped")
-        
-        UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseOut, animations: { 
-            
+        UIView.animate(withDuration: 0.3, delay: 0, options: .curveEaseOut, animations: {
             self.pickerView.alpha = 1
             self.addButton.alpha = 0
-            
         }, completion: nil)
     }
     
     // -------- SETUP VIEWS --------
     
     func setupViews() {
+        
+        view.backgroundColor = UIColor(white: 1, alpha: 1)
         
         view.addSubview(pickerView)
         
@@ -116,14 +110,17 @@ class AddSensorController: UIViewController, UIPickerViewDelegate, UIPickerViewD
     
     // ----- delegate methods -----
     
+    // Funktion gibt Anzahl der Sections im PickerView zurück
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
     }
     
+    // Funktion gibgt die Titel für den PickerView zurück
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         return sensorTypes[row]
     }
     
+    // Funktion die bestimmte Methoden auslösten beim klicken einer Cell
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         
         typeTextField.text = sensorTypes[row]
@@ -131,11 +128,10 @@ class AddSensorController: UIViewController, UIPickerViewDelegate, UIPickerViewD
         self.addButton.alpha = 1
     }
     
-    
+    // Funktion gibt die Anzahl der Komponenten im PickerView zurück
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
         return sensorTypes.count
     }
-    
     
     
     // ------- VIEWS --------

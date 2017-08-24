@@ -20,7 +20,7 @@ class SensorTileCell: UICollectionViewCell {
     // transforms cell when pressed
     override var isHighlighted: Bool {
         didSet {
-            colorView.transform = isHighlighted ? CGAffineTransform(scaleX: 0.99, y: 0.95) : CGAffineTransform.identity
+            self.transform = isHighlighted ? CGAffineTransform(scaleX: 0.99, y: 0.95) : CGAffineTransform.identity
         }
     }
     
@@ -30,7 +30,7 @@ class SensorTileCell: UICollectionViewCell {
         didSet {
             if let sensor = sensor {
                 
-                guard let value = sensor.value else { return }
+                let value = sensor.value ?? 0.0
                 
                 typeLabel.text = "\(sensor.type)"
                 timeLabel.text = sensor.device
@@ -46,43 +46,79 @@ class SensorTileCell: UICollectionViewCell {
         }
     }
     
-    // refresh backgroundColor depending on value
     func refreshColor(from sensor: SensorModel) {
-        
-        guard let value = sensor.value else { return }
-        guard let min = sensor.minValue else { return }
-        guard let max = sensor.maxValue else { return }
-        
-        print("max: ", max)
         
         UIView.animate(withDuration: 0.8) {
             
-            switch (value, min, max) {
-            case let (value, _, max) where value > max:
-                
-                self.colorView.backgroundColor = Constants.maxColor
-                self.errorLabel.isHidden = false
-                self.valueLabel.text = "\(value)\(self.sensor!.entity)"
-                
-                // wenn der wert größer als der max wert ist
-                
-            case let (value, min, _) where value < min:
-                
+            switch self.getEmergencyCode(from: sensor) {
+            case 1:
+                // farbe ändern, alpha runter
                 self.colorView.backgroundColor = Constants.minColor
+                self.colorView.alpha = 0.3
                 self.errorLabel.isHidden = false
-                self.valueLabel.text = "\(value)\(self.sensor!.entity)"
-                
-
-                // wenn der wert kleiner als der min wert ist
-                
-                
+            case 2:
+                self.colorView.backgroundColor = Constants.minColor
+                self.colorView.alpha = 0.6
+                self.errorLabel.isHidden = false
+            case 3:
+                self.colorView.backgroundColor = Constants.minColor
+                self.colorView.alpha = 1
+                self.errorLabel.isHidden = false
+                self.errorLabel.backgroundColor = .red
+                self.errorLabel.textColor = .white
+            case 4:
+                self.colorView.backgroundColor = Constants.maxColor
+                self.colorView.alpha = 0.3
+                self.errorLabel.isHidden = false
+            case 5:
+                self.colorView.backgroundColor = Constants.maxColor
+                self.colorView.alpha = 0.6
+                self.errorLabel.isHidden = false
+            case 6:
+                self.colorView.backgroundColor = Constants.maxColor
+                self.colorView.alpha = 1
+                self.errorLabel.isHidden = false
+                self.errorLabel.backgroundColor = .red
+                self.errorLabel.textColor = .white
             default:
                 self.errorLabel.isHidden = true
+                self.colorView.alpha = 1
                 self.colorView.backgroundColor = UIColor(white: 0.4, alpha: 1)
-                
             }
         }
     }
+    
+    
+    func getEmergencyCode(from sensor: SensorModel) -> Int {
+        
+        var valCode = 0
+        guard let value = sensor.value else { return 0 }
+        let exValue = sensor.exValue
+        
+        for ex in exValue {
+            
+            guard let exValue = ex?.value else { return 0 }
+            guard let newCode = ex?.emergencyCode else { return 0 }
+            guard let greater = ex?.greater else { return 0 }
+            
+            
+            switch (value, greater, exValue) {
+            case let (value, greater ,exValue) where greater && value >= exValue && newCode > valCode:
+                print("true grösser")
+                valCode = newCode
+            case let (value, greater ,exValue) where !greater && value <= exValue && newCode > valCode:
+                print("false grösser")
+                valCode = newCode
+            default:
+                print("something went wrong")
+            }
+                
+        }
+
+        return valCode
+        
+    }
+    
     
     // get current time as string
     func currentTimeString() -> String {
@@ -103,7 +139,6 @@ class SensorTileCell: UICollectionViewCell {
         let v = UIView()
         v.translatesAutoresizingMaskIntoConstraints = false
         v.layer.cornerRadius = 4
-        v.backgroundColor = UIColor(white: 0.4, alpha: 1)
         return v
         
     }()
@@ -139,12 +174,12 @@ class SensorTileCell: UICollectionViewCell {
         let lv = UILabel()
         lv.translatesAutoresizingMaskIntoConstraints = false
         lv.font = UIFont.systemFont(ofSize: 14)
-        lv.textColor = .white
+        lv.textColor = .black
         lv.text = "!"
         lv.isHidden = true
         lv.layer.cornerRadius = 10
         lv.clipsToBounds = true
-        lv.backgroundColor = .red
+        lv.backgroundColor = .yellow
         lv.textAlignment = .center
         return lv
     }()
@@ -173,6 +208,10 @@ class SensorTileCell: UICollectionViewCell {
     
     func setupViews() {
         
+        self.layer.cornerRadius = 4
+        self.clipsToBounds = true
+        self.backgroundColor = UIColor(white: 0.4, alpha: 1)
+        
         addSubview(colorView)
         
         colorView.topAnchor.constraint(equalTo: self.topAnchor).isActive = true
@@ -180,32 +219,30 @@ class SensorTileCell: UICollectionViewCell {
         colorView.heightAnchor.constraint(equalToConstant: 150).isActive = true
         colorView.widthAnchor.constraint(equalToConstant: 174).isActive = true
         
-        colorView.addSubview(errorLabel)
+        self.addSubview(errorLabel)
         
         errorLabel.topAnchor.constraint(equalTo: colorView.topAnchor, constant: 10).isActive = true
         errorLabel.leftAnchor.constraint(equalTo: colorView.leftAnchor, constant: 10).isActive = true
         errorLabel.heightAnchor.constraint(equalToConstant: 20).isActive = true
         errorLabel.widthAnchor.constraint(equalToConstant: 20).isActive = true
         
-        colorView.addSubview(timeLabel)
+        self.addSubview(timeLabel)
         
         timeLabel.topAnchor.constraint(equalTo: colorView.topAnchor, constant: 40).isActive = true
         timeLabel.leftAnchor.constraint(equalTo: colorView.leftAnchor, constant: 10).isActive = true
         
         
-        colorView.addSubview(typeLabel)
+        self.addSubview(typeLabel)
         
         typeLabel.topAnchor.constraint(equalTo: timeLabel.bottomAnchor).isActive = true
         typeLabel.leftAnchor.constraint(equalTo: colorView.leftAnchor, constant: 10).isActive = true
         
-        colorView.addSubview(valueLabel)
+        self.addSubview(valueLabel)
         
         valueLabel.bottomAnchor.constraint(equalTo: colorView.bottomAnchor, constant: -10).isActive = true
         valueLabel.leftAnchor.constraint(equalTo: typeLabel.leftAnchor).isActive = true
         
-        
-        
-        
+ 
     }
     
     required init?(coder aDecoder: NSCoder) {

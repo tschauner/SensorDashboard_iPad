@@ -11,11 +11,11 @@ import CoreLocation
 
 struct DeviceModel {
     
-    var id: String
+    var id: String?
     var name: String
-    var description: String
-    var sensors: [SensorModel]
+    var description: String?
     var image: String
     let minorValue: CLBeaconMinorValue
+    var sensors: [SensorModel]
     
 }
